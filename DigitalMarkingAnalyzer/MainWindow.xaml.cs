@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,35 @@ namespace DigitalMarkingAnalyzer
 		public MainWindow()
 		{
 			InitializeComponent();
+		}
+
+		private void BrowseOriginalButton_Click(object sender, RoutedEventArgs e)
+		{
+			BrowseImage(OriginalImage);
+		}
+
+		private void BrowseWatermarkButton_Click(object sender, RoutedEventArgs e)
+		{
+			BrowseImage(WatermarkImage);
+		}
+
+		private void BrowseImage(Image imageContainer)
+		{
+			var openFileDialog = new OpenFileDialog();
+			if (openFileDialog.ShowDialog() == true)
+			{
+				imageContainer.Source = new BitmapImage(new Uri(openFileDialog.FileName, UriKind.Absolute));
+			}
+		}
+
+		private void ProcessButton_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void CloseResultTabButton_Click(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 }

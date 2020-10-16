@@ -6,4 +6,26 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Resources\c_corgi.jpg" />
+    <None Remove="Resources\r_corgi_tekst_dolny.jpg" />
+    <None Remove="Resources\t_corgi_tekst_dolny.jpg" />
+    <None Remove="Resources\w_tekst_dolny.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\c_corgi.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\r_corgi_tekst_dolny.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\t_corgi_tekst_dolny.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\w_tekst_dolny.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
 </Project>

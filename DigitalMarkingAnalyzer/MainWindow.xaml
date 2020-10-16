@@ -3,10 +3,54 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DigitalMarkingAnalyzer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Watermark Analyzer" Height="700" Width="850">
+    <Window.Resources>
+        <DataTemplate x:Key="resultTabTemplate">
+            <Grid Background="#FFE5E5E5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid Background="#FFE5E5E5" Width="425" Height="500" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Label Content="Watermarked" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"></Label>
+                    <Button x:Name="SaveWatermarkedButton" Content="Save" HorizontalAlignment="Center" Margin="10,0,0,10" VerticalAlignment="Bottom" Height="30" Width="100" Click="BrowseOriginalButton_Click"/>
+                    <Image x:Name="OriginalImage" HorizontalAlignment="Left" Height="400" Margin="10,50,0,0" VerticalAlignment="Top" Width="400" Source="/DigitalMarkingAnalyzer;component/Resources/t_corgi_tekst_dolny.jpg" Stretch="Fill"/>
+                </Grid>
+                <Grid Background="#FFE5E5E5" Width="425" Height="500" HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Label Content="Cleaned" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,10,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"></Label>
+                    <Button x:Name="SaveCleanedButton" Content="Save" HorizontalAlignment="Center" Margin="10,0,10,10" VerticalAlignment="Bottom" Height="30" Width="100" Click="BrowseWatermarkButton_Click"/>
+                    <Image x:Name="WatermarkImage" HorizontalAlignment="Right" Height="400" Margin="0,50,10,0" VerticalAlignment="Top" Width="400" Source="/DigitalMarkingAnalyzer;component/Resources/r_corgi_tekst_dolny.jpg" Stretch="Fill"/>
+                </Grid>
+                <Button x:Name="Close" Content="Close" HorizontalAlignment="Center" Margin="0,0,0,10" VerticalAlignment="Bottom" Height="50" Width="100" Click="CloseResultTabButton_Click"/>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
-
+        <Grid>
+            <TabControl>
+                <TabItem Header="Main">
+                    <Grid Background="#FFE5E5E5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid Background="#FFE5E5E5" Width="425" Height="500" HorizontalAlignment="Left" VerticalAlignment="Top">
+                            <Label Content="Original" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"></Label>
+                            <Button x:Name="BrowseOriginalButton" Content="Browse" HorizontalAlignment="Center" Margin="10,0,0,10" VerticalAlignment="Bottom" Height="30" Width="100" Click="BrowseOriginalButton_Click"/>
+                            <Image x:Name="OriginalImage" HorizontalAlignment="Left" Height="400" Margin="10,50,0,0" VerticalAlignment="Top" Width="400" Source="/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg" Stretch="Fill"/>
+                        </Grid>
+                        <Grid Background="#FFE5E5E5" Width="425" Height="500" HorizontalAlignment="Right" VerticalAlignment="Top">
+                            <Label Content="Watermark" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,10,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"></Label>
+                            <Button x:Name="BrowseWatermarkButton" Content="Browse" HorizontalAlignment="Center" Margin="10,0,10,10" VerticalAlignment="Bottom" Height="30" Width="100" Click="BrowseWatermarkButton_Click"/>
+                            <Image x:Name="WatermarkImage" HorizontalAlignment="Right" Height="400" Margin="0,50,10,0" VerticalAlignment="Top" Width="400" Source="/DigitalMarkingAnalyzer;component/Resources/w_tekst_dolny.png" Stretch="Fill"/>
+                        </Grid>
+                        <Grid Background="#FFE5E5E5" Height="100" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                            <ComboBox Name="AlgorithmBox" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" IsEditable="True" Text="LSB" />
+                            <Label Content="Parameter 1" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="150,10,0,0" VerticalAlignment="Top" Height="30" Width="100" FontSize="12"></Label>
+                            <TextBox Text="3" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="250,10,0,0" VerticalAlignment="Top" Height="30" Width="100" FontSize="12"/>
+                            <Label Content="Parameter 2" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="150,50,0,0" VerticalAlignment="Top" Height="30" Width="100" FontSize="12"></Label>
+                            <TextBox Text="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="250,50,0,0" VerticalAlignment="Top" Height="30" Width="100" FontSize="12"/>
+                            <Button x:Name="Process" Content="Process" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="50" Width="100" Click="ProcessButton_Click"/>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Result">
+                    <ContentPresenter Content="{Binding obj}" ContentTemplate="{StaticResource resultTabTemplate}"></ContentPresenter>
+                </TabItem>
+            </TabControl>
+        </Grid>
     </Grid>
 </Window>
