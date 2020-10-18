@@ -14,6 +14,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Algorithms\Algorithms.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Resources\c_corgi.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
