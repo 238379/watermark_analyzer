@@ -1,4 +1,5 @@
 ﻿using Algorithms;
+using LoggerUtils;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -9,61 +10,92 @@ namespace DigitalMarkingAnalyzer
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		private Logger logger;
+
 		public MainWindow()
 		{
+			logger = LoggerFactory.Create(GetType());
 			InitializeComponent();
 			ResultTab.Visibility = Visibility.Hidden;
 
 			OriginalImage.Source = new BitmapImage(new System.Uri("/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg", System.UriKind.RelativeOrAbsolute));
 			WatermarkImage.Source = new BitmapImage(new System.Uri("/DigitalMarkingAnalyzer;component/Resources/w_tekst_dolny.png", System.UriKind.RelativeOrAbsolute));
+
+			StartLogConsole();
+
+			logger.LogDebug("Created MainWindow");
+		}
+
+		public void StartLogConsole()
+		{
+			new LogConsole(this)
+			{
+				Left = Left + 0,
+				Top = Top + 0
+			}.Show();
 		}
 
 		private void BrowseOriginalButton_Click(object sender, RoutedEventArgs e)
 		{
+			logger.LogDebug("Clicked BrowseOriginalButton.");
 			InterfaceTools.SetImageFromDrive(OriginalImage);
 		}
 
 		private void BrowseWatermarkButton_Click(object sender, RoutedEventArgs e)
 		{
+			logger.LogDebug("Clicked BrowseWatermarkButton.");
 			InterfaceTools.SetImageFromDrive(WatermarkImage);
 		}
 
 
 		private void ProcessButton_Click(object sender, RoutedEventArgs e)
 		{
+			logger.LogDebug("Clicked ProcessButton.");
 			var originalAsBitmapImage = (BitmapImage)OriginalImage.Source;
 			var watermarkedAsBitmapImage = (BitmapImage)WatermarkImage.Source;
 
 			var originalAsBitmap = originalAsBitmapImage.ToBitmap();
 			var watermarkedAsBitmap = watermarkedAsBitmapImage.ToBitmap();
 
-			var lsb = new Lsb(originalAsBitmap.Width, originalAsBitmap.Height, 0.5);
+			if(int.TryParse(BitsForWatermarkTextBox.Text, out var bitsForWatermark) && bitsForWatermark >= 0 && bitsForWatermark <= 8)
+			{
+				var lsb = new Lsb(originalAsBitmap.Width, originalAsBitmap.Height, bitsForWatermark);
 
-			var watermarkingResult = lsb.Watermark(originalAsBitmap, watermarkedAsBitmap);
-			var cleaningResult = lsb.CleanWatermark(watermarkingResult);
+				var watermarkingResult = lsb.Watermark(originalAsBitmap, watermarkedAsBitmap);
+				var cleaningResult = lsb.CleanWatermark(watermarkingResult);
 
-			WatermarkedImage.Source = InterfaceTools.BitmapToImageSource(watermarkingResult);
-			CleanedImage.Source = InterfaceTools.BitmapToImageSource(cleaningResult);
+				WatermarkedImage.Source = InterfaceTools.BitmapToImageSource(watermarkingResult);
+				CleanedImage.Source = InterfaceTools.BitmapToImageSource(cleaningResult);
 
-			ResultTab.Visibility = Visibility.Visible;
-			Tabs.SelectedIndex = 1;
+				ResultTab.Visibility = Visibility.Visible;
+				Tabs.SelectedIndex = 1;
+				logger.LogInfo("Processed image.");
+			}
+			else
+			{
+				logger.LogError($"Could not process image. Bits for watermark value has to be a number between 0 and 8 but it is '{BitsForWatermarkTextBox.Text}'");
+			}
 		}
 
 
 		private void CloseResultTabButton_Click(object sender, RoutedEventArgs e)
 		{
+			logger.LogDebug("Clicked CloseResultTabButto.");
 			Tabs.SelectedIndex = 0;
 			ResultTab.Visibility = Visibility.Hidden;
 		}
 
 		private void SaveWatermarkedButton_Click(object sender, RoutedEventArgs e)
 		{
+			logger.LogDebug("Clicked SaveWatermarkedButton.");
 			InterfaceTools.SaveImageToDrive(WatermarkedImage);
 		}
 
 		private void SaveCleanedButton_Click(object sender, RoutedEventArgs e)
 		{
+			logger.LogDebug("Clicked SaveCleanedButton.");
 			InterfaceTools.SaveImageToDrive(CleanedImage);
 		}
 	}
 }
+

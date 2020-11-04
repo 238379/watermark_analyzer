@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DigitalMarkingAnalyzer", "DigitalMarkingAnalyzer\DigitalMarkingAnalyzer.csproj", "{6A3BAB77-6E14-4C40-BFA2-E682DD8E0917}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Algorithms", "Algorithms\Algorithms.csproj", "{D29BC125-72F6-4BCB-92E0-ABF338190BF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Algorithms", "Algorithms\Algorithms.csproj", "{D29BC125-72F6-4BCB-92E0-ABF338190BF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerUtils", "Logger\LoggerUtils.csproj", "{42E3D7DA-BBD1-437B-9397-B4D1B3319960}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D29BC125-72F6-4BCB-92E0-ABF338190BF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D29BC125-72F6-4BCB-92E0-ABF338190BF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D29BC125-72F6-4BCB-92E0-ABF338190BF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42E3D7DA-BBD1-437B-9397-B4D1B3319960}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42E3D7DA-BBD1-437B-9397-B4D1B3319960}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42E3D7DA-BBD1-437B-9397-B4D1B3319960}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42E3D7DA-BBD1-437B-9397-B4D1B3319960}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -22,10 +22,8 @@
                         </Grid>
                         <Grid Background="#FFE5E5E5" Height="100" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                             <ComboBox Name="AlgorithmBox" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" IsEditable="True" Text="LSB" />
-                            <Label Content="Parameter 1" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="150,10,0,0" VerticalAlignment="Top" Height="30" Width="100" FontSize="12"></Label>
-                            <TextBox Text="3" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="250,10,0,0" VerticalAlignment="Top" Height="30" Width="100" FontSize="12"/>
-                            <Label Content="Parameter 2" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="150,50,0,0" VerticalAlignment="Top" Height="30" Width="100" FontSize="12"></Label>
-                            <TextBox Text="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="250,50,0,0" VerticalAlignment="Top" Height="30" Width="100" FontSize="12"/>
+                            <Label Content="Bits for watermark" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="150,10,0,0" VerticalAlignment="Top" Height="30" Width="120" FontSize="12"></Label>
+                            <TextBox Name="BitsForWatermarkTextBox" Text="2" TextAlignment="Right" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="280,10,0,0" VerticalAlignment="Top" Height="30" Width="30" FontSize="12"/>
                             <Button x:Name="Process" Content="Process" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="50" Width="100" Click="ProcessButton_Click"/>
                         </Grid>
                     </Grid>
