@@ -57,15 +57,17 @@ namespace DigitalMarkingAnalyzer
 			var originalAsBitmap = originalAsBitmapImage.ToBitmap();
 			var watermarkedAsBitmap = watermarkedAsBitmapImage.ToBitmap();
 
-			if(int.TryParse(BitsForWatermarkTextBox.Text, out var bitsForWatermark) && bitsForWatermark >= 0 && bitsForWatermark <= 8)
+			if(int.TryParse(BitsForWatermarkTextBox.Text, out var bitsForWatermark) && bitsForWatermark >= 1 && bitsForWatermark <= 8)
 			{
 				var lsb = new Lsb(originalAsBitmap.Width, originalAsBitmap.Height, bitsForWatermark);
 
 				var watermarkingResult = lsb.Watermark(originalAsBitmap, watermarkedAsBitmap);
 				var cleaningResult = lsb.CleanWatermark(watermarkingResult);
+				var extractingResult = lsb.ExtractWatermark(watermarkingResult);
 
 				WatermarkedImage.Source = InterfaceTools.BitmapToImageSource(watermarkingResult);
 				CleanedImage.Source = InterfaceTools.BitmapToImageSource(cleaningResult);
+				ExtractedWatermarkImage.Source = InterfaceTools.BitmapToImageSource(extractingResult);
 
 				ResultTab.Visibility = Visibility.Visible;
 				Tabs.SelectedIndex = 1;
@@ -80,7 +82,7 @@ namespace DigitalMarkingAnalyzer
 
 		private void CloseResultTabButton_Click(object sender, RoutedEventArgs e)
 		{
-			logger.LogDebug("Clicked CloseResultTabButto.");
+			logger.LogDebug("Clicked CloseResultTabButton.");
 			Tabs.SelectedIndex = 0;
 			ResultTab.Visibility = Visibility.Hidden;
 		}
@@ -96,6 +98,12 @@ namespace DigitalMarkingAnalyzer
 			logger.LogDebug("Clicked SaveCleanedButton.");
 			InterfaceTools.SaveImageToDrive(CleanedImage);
 		}
+
+		private void SaveExtractedWatermarkButton_Click(object sender, RoutedEventArgs e)
+		{
+			logger.LogDebug("Clicked SaveExtractedWatermarkButton.");
+			InterfaceTools.SaveImageToDrive(ExtractedWatermarkImage);
+		}	
 	}
 }
 

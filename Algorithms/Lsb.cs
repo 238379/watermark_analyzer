@@ -30,9 +30,9 @@ namespace Algorithms
 				var watermarkPixel = simplifiedWatermark.GetPixel(i, j);
 
 				var divider = (int)Math.Pow(2, bitsForWatermark);
-				var r = pixel.R - pixel.R % divider + watermarkPixel.R;
-				var g = pixel.G - pixel.G % divider + watermarkPixel.G;
-				var b = pixel.B - pixel.B % divider + watermarkPixel.B;
+				var r = Math.Clamp(pixel.R - pixel.R % divider + watermarkPixel.R, 0, 255);
+				var g = Math.Clamp(pixel.G - pixel.G % divider + watermarkPixel.G, 0, 255);
+				var b = Math.Clamp(pixel.B - pixel.B % divider + watermarkPixel.B, 0, 255);
 
 				watermarkedBitmap.SetPixel(i, j, Color.FromArgb(r, g, b));
 			});
@@ -60,6 +60,26 @@ namespace Algorithms
 			return newBitmap;
 		}
 
+		public Bitmap ExtractWatermark(Bitmap watermarked)
+		{
+			var newBitmap = new Bitmap(watermarked.Width, watermarked.Height);
+
+			watermarked.RunOnEveryPixel((i, j) =>
+			{
+				var pixel = watermarked.GetPixel(i, j);
+
+				var divider = (int)Math.Pow(2, bitsForWatermark);
+				var multiplier = 255 / (divider - 1);
+				byte r = (byte)(pixel.R % divider * multiplier);
+				byte g = (byte)(pixel.G % divider * multiplier);
+				byte b = (byte)(pixel.B % divider * multiplier);
+
+				newBitmap.SetPixel(i, j, Color.FromArgb(r, g, b));
+			});
+
+			return newBitmap;
+		}
+
 		private Bitmap PreprocessToSimplifiedWatermark(Bitmap watermark)
 		{
 			Bitmap simplifiedBitmap = new Bitmap(watermark.Width, watermark.Height);
@@ -76,7 +96,6 @@ namespace Algorithms
 
 				simplifiedBitmap.SetPixel(i, j, Color.FromArgb(r, g, b));
 			});
-
 			return simplifiedBitmap;
 		}
 
