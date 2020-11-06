@@ -1,5 +1,6 @@
 ﻿using Algorithms;
 using LoggerUtils;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -57,28 +58,43 @@ namespace DigitalMarkingAnalyzer
 			var originalAsBitmap = originalAsBitmapImage.ToBitmap();
 			var watermarkedAsBitmap = watermarkedAsBitmapImage.ToBitmap();
 
-			if(int.TryParse(BitsForWatermarkTextBox.Text, out var bitsForWatermark) && bitsForWatermark >= 1 && bitsForWatermark <= 8)
-			{
-				var lsb = new Lsb(originalAsBitmap.Width, originalAsBitmap.Height, bitsForWatermark);
+			var selectedAlgorithm = AlgorithmBox.SelectedItem.ToString();
+			if (selectedAlgorithm == "LSB") {
+				if (int.TryParse(BitsForWatermarkTextBox.Text, out var bitsForWatermark) && bitsForWatermark >= 1 && bitsForWatermark <= 8)
+				{
+					var lsb = new Lsb(originalAsBitmap.Width, originalAsBitmap.Height, bitsForWatermark);
 
-				var watermarkingResult = lsb.Watermark(originalAsBitmap, watermarkedAsBitmap);
-				var cleaningResult = lsb.CleanWatermark(watermarkingResult);
-				var extractingResult = lsb.ExtractWatermark(watermarkingResult);
+					var watermarkingResult = lsb.Watermark(originalAsBitmap, watermarkedAsBitmap);
+					var cleaningResult = lsb.CleanWatermark(watermarkingResult);
+					var extractingResult = lsb.ExtractWatermark(watermarkingResult);
 
-				WatermarkedImage.Source = InterfaceTools.BitmapToImageSource(watermarkingResult);
-				CleanedImage.Source = InterfaceTools.BitmapToImageSource(cleaningResult);
-				ExtractedWatermarkImage.Source = InterfaceTools.BitmapToImageSource(extractingResult);
+					PrintAlgorithmOutput(watermarkingResult, cleaningResult, extractingResult);
+				}
+				else
+				{
+					logger.LogError($"Could not process image. Bits for watermark value has to be a number between 0 and 8 but it is '{BitsForWatermarkTextBox.Text}'");
+				}
+			}else if (selectedAlgorithm == "PixelAveraging")
+            {
+				var pixelAveraging = new PixelAveraging(1);
 
-				ResultTab.Visibility = Visibility.Visible;
-				Tabs.SelectedIndex = 1;
-				logger.LogInfo("Processed image.");
-			}
-			else
-			{
-				logger.LogError($"Could not process image. Bits for watermark value has to be a number between 0 and 8 but it is '{BitsForWatermarkTextBox.Text}'");
-			}
+				var watermarkingResult = pixelAveraging.Watermark(originalAsBitmap, watermarkedAsBitmap);
+				var cleaningResult = pixelAveraging.CleanWatermark(watermarkingResult, watermarkedAsBitmap);
+				var extractingResult = pixelAveraging.ExtractWatermark(watermarkingResult, originalAsBitmap);
+
+				PrintAlgorithmOutput(watermarkingResult, cleaningResult, extractingResult);
+            }
 		}
+		private void PrintAlgorithmOutput(Bitmap watermarkingResult, Bitmap cleaningResult, Bitmap extractingResult)
+		{
+			WatermarkedImage.Source = InterfaceTools.BitmapToImageSource(watermarkingResult);
+			CleanedImage.Source = InterfaceTools.BitmapToImageSource(cleaningResult);
+			ExtractedWatermarkImage.Source = InterfaceTools.BitmapToImageSource(extractingResult);
 
+			ResultTab.Visibility = Visibility.Visible;
+			Tabs.SelectedIndex = 1;
+			logger.LogInfo("Processed image.");
+		}
 
 		private void CloseResultTabButton_Click(object sender, RoutedEventArgs e)
 		{
