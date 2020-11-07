@@ -16,66 +16,55 @@ namespace Algorithms
 
 		public Bitmap Watermark(Bitmap original, Bitmap watermark)
 		{
-			Bitmap watermarkedBitmap = new Bitmap(original.Width, original.Height);
-			original.RunOnEveryPixel((i, j) =>
+			return BitmapOperations.Create((sources, i, j) =>
 			{
-				var pixel = original.GetPixel(i, j);
-				var watermarkPixel = watermark.GetPixel(i, j);
+				var originalPixel = sources[0].GetPixel(i, j);
+				var watermarkPixel = sources[1].GetPixel(i, j);
 
-				var r = (int)(pixel.R + (watermarkPixel.R * ratio)) / 2;
-				var g = (int)(pixel.G + (watermarkPixel.G * ratio)) / 2;
-				var b = (int)(pixel.B + (watermarkPixel.B * ratio)) / 2;
+				var r = (int)(originalPixel.R + (watermarkPixel.R * ratio)) / 2;
+				var g = (int)(originalPixel.G + (watermarkPixel.G * ratio)) / 2;
+				var b = (int)(originalPixel.B + (watermarkPixel.B * ratio)) / 2;
 
-				watermarkedBitmap.SetPixel(i, j, Color.FromArgb(r, g, b));
-			});
-
-			return watermarkedBitmap;
+				return new PixelInfo(r, g, b);
+			}, original, watermark);
 		}
 
 		public Bitmap CleanWatermark(Bitmap imgWatermarked, Bitmap watermark)
 		{
-			Bitmap newBitmap = new Bitmap(imgWatermarked.Width, imgWatermarked.Height);
-
-			imgWatermarked.RunOnEveryPixel((i, j) =>
+			return BitmapOperations.Create((sources, i, j) =>
 			{
-				var imgPixel = imgWatermarked.GetPixel(i, j);
-				var watermarkPixel = watermark.GetPixel(i, j);
+				var watermarkedImgPixel = sources[0].GetPixel(i, j);
+				var watermarkPixel = sources[1].GetPixel(i, j);
 
-				var r = (int)(imgPixel.R * 2 - watermarkPixel.R * ratio);
-				var g = (int)(imgPixel.G * 2 - watermarkPixel.G * ratio);
-				var b = (int)(imgPixel.B * 2 - watermarkPixel.B * ratio);
+				var r = (int)(watermarkedImgPixel.R * 2 - watermarkPixel.R * ratio);
+				var g = (int)(watermarkedImgPixel.G * 2 - watermarkPixel.G * ratio);
+				var b = (int)(watermarkedImgPixel.B * 2 - watermarkPixel.B * ratio);
 
 				r = r < 0 ? r + 1 : r;
 				g = g < 0 ? g + 1 : g;
 				b = b < 0 ? b + 1 : b;
 
-				newBitmap.SetPixel(i, j, Color.FromArgb(r, g, b));
-			});
-
-			return newBitmap;
+				return new PixelInfo(r, g, b);
+			}, imgWatermarked, watermark);
 		}
 
 		public Bitmap ExtractWatermark(Bitmap imgWatermarked, Bitmap original)
 		{
-			Bitmap newBitmap = new Bitmap(imgWatermarked.Width, imgWatermarked.Height);
-
-			imgWatermarked.RunOnEveryPixel((i, j) =>
+			return BitmapOperations.Create((sources, i, j) =>
 			{
-				var imgPixel = imgWatermarked.GetPixel(i, j);
-				var originalPixel = original.GetPixel(i, j);
+				var watermarkedImgPixel = sources[0].GetPixel(i, j);
+				var originalPixel = sources[1].GetPixel(i, j);
 
-				var r = (int)((2 * imgPixel.R - originalPixel.R) * (1 / ratio));
-				var g = (int)((2 * imgPixel.G - originalPixel.G) * (1 / ratio));
-				var b = (int)((2 * imgPixel.B - originalPixel.B) * (1 / ratio));
+				var r = (int)((2 * watermarkedImgPixel.R - originalPixel.R) * (1 / ratio));
+				var g = (int)((2 * watermarkedImgPixel.G - originalPixel.G) * (1 / ratio));
+				var b = (int)((2 * watermarkedImgPixel.B - originalPixel.B) * (1 / ratio));
 
 				r = r < 0 ? 0 : r;
 				g = g < 0 ? 0 : g;
 				b = b < 0 ? 0 : b;
 
-				newBitmap.SetPixel(i, j, Color.FromArgb(r, g, b));
-			});
-
-			return newBitmap;
+				return new PixelInfo(r, g, b);
+			}, imgWatermarked, original);
 		}
 	}
 }

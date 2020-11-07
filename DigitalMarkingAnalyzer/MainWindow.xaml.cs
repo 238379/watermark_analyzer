@@ -1,5 +1,6 @@
 ﻿using Algorithms;
 using LoggerUtils;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -52,6 +53,9 @@ namespace DigitalMarkingAnalyzer
 		private void ProcessButton_Click(object sender, RoutedEventArgs e)
 		{
 			logger.LogDebug("Clicked ProcessButton.");
+
+			var sw = Stopwatch.StartNew();
+
 			var originalAsBitmapImage = (BitmapImage)OriginalImage.Source;
 			var watermarkedAsBitmapImage = (BitmapImage)WatermarkImage.Source;
 
@@ -74,7 +78,8 @@ namespace DigitalMarkingAnalyzer
 				{
 					logger.LogError($"Could not process image. Bits for watermark value has to be a number between 0 and 8 but it is '{BitsForWatermarkTextBox.Text}'");
 				}
-			}else if (selectedAlgorithm == "PixelAveraging")
+			}
+			else if (selectedAlgorithm == "PixelAveraging")
             {
 				var pixelAveraging = new PixelAveraging(1);
 
@@ -84,6 +89,8 @@ namespace DigitalMarkingAnalyzer
 
 				PrintAlgorithmOutput(watermarkingResult, cleaningResult, extractingResult);
             }
+
+			logger.LogInfo($"Processing time: {sw.ElapsedMilliseconds} ms");
 		}
 		private void PrintAlgorithmOutput(Bitmap watermarkingResult, Bitmap cleaningResult, Bitmap extractingResult)
 		{
