@@ -22,7 +22,7 @@ namespace LoggerUtils
 
 		protected abstract void Log(string log);
 
-		protected string ConcatLog(string log, Severity severity, Type type)
+		protected virtual string ConcatLog(string log, Severity severity, Type type)
 		{
 			return $"{Process.GetCurrentProcess().Id} {DateTime.Now} [{severity}] {type.FullName}: '{log}'";
 		}

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
-namespace Algorithms
+namespace Algorithms.common
 {
 	public class BitmapOperations
 	{
@@ -14,7 +15,7 @@ namespace Algorithms
 			var source = sources[0];
 			var buffer = new byte[source.Width * source.Height * source.GetDepth()];
 
-			Process(effectiveBitmaps, buffer, source.Width, source.Height, source.Width, source.GetDepth(), creator);
+			Process(effectiveBitmaps, buffer, source.Width, source.Height, source.GetDepth(), creator);
 
 			var resultBitmap = new Bitmap(source.Width, source.Height, source.PixelFormat);
 
@@ -25,24 +26,22 @@ namespace Algorithms
 			return resultBitmap;
 		}
 
-		private static void Process(EffectiveBitmap[] sources, byte[] buffer, int endx, int endy, int width, int depth,
+		private static void Process(EffectiveBitmap[] sources, byte[] buffer, int width, int height, int depth,
 			Func<EffectiveBitmap[], int, int, PixelInfo> creator)
 		{
-			for (int i = 0; i < endx; i++)
-			{
-				for (int j = 0; j < endy; j++)
-				{
+			Parallel.For(0, width, (i) => {
+				Parallel.For(0, height, (j) => {
 					var result = creator(sources, i, j);
 					var offset = ((j * width) + i) * depth;
 					buffer[offset + 0] = result.R;
 					buffer[offset + 1] = result.G;
 					buffer[offset + 2] = result.B;
-					if(depth > 3)
+					if (depth > 3)
 					{
 						buffer[offset + 3] = result.A;
 					}
-				}
-			}
+				});
+			});
 		}
 
 		private static EffectiveBitmap[] TransformToEffectiveBitmaps(Bitmap[] sources)

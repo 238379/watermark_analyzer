@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Algorithms
+namespace Algorithms.common
 {
 	public class Common
 	{

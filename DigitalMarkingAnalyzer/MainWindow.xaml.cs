@@ -1,8 +1,13 @@
 ﻿using Algorithms;
+using Algorithms.common;
+using DigitalMarkingAnalyzer.viewmodels;
 using LoggerUtils;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace DigitalMarkingAnalyzer
@@ -13,6 +18,7 @@ namespace DigitalMarkingAnalyzer
 	public partial class MainWindow : Window
 	{
 		private Logger logger;
+		private AlgorithmViewModel algorithmViewModel;
 
 		public MainWindow()
 		{
@@ -20,8 +26,8 @@ namespace DigitalMarkingAnalyzer
 			InitializeComponent();
 			ResultTab.Visibility = Visibility.Hidden;
 
-			OriginalImage.Source = new BitmapImage(new System.Uri("/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg", System.UriKind.RelativeOrAbsolute));
-			WatermarkImage.Source = new BitmapImage(new System.Uri("/DigitalMarkingAnalyzer;component/Resources/w_tekst_dolny.png", System.UriKind.RelativeOrAbsolute));
+			OriginalImage.Source = new BitmapImage(new Uri("/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg", System.UriKind.RelativeOrAbsolute));
+			WatermarkImage.Source = new BitmapImage(new Uri("/DigitalMarkingAnalyzer;component/Resources/w_tekst_dolny.png", System.UriKind.RelativeOrAbsolute));
 
 			StartLogConsole();
 
@@ -56,51 +62,46 @@ namespace DigitalMarkingAnalyzer
 
 			var sw = Stopwatch.StartNew();
 
-			var originalAsBitmapImage = (BitmapImage)OriginalImage.Source;
-			var watermarkedAsBitmapImage = (BitmapImage)WatermarkImage.Source;
+			try
+			{
+				ErrorMessage.Visibility = Visibility.Hidden;
 
-			var originalAsBitmap = originalAsBitmapImage.ToBitmap();
-			var watermarkedAsBitmap = watermarkedAsBitmapImage.ToBitmap();
+				var parameters = algorithmViewModel.ReadParameters();
+				var selectedAlgorithm = AlgorithmBox.SelectedItem.ToString();
+				Algorithm algorithm = Algorithm.Create(selectedAlgorithm, parameters);
 
-			var selectedAlgorithm = AlgorithmBox.SelectedItem.ToString();
-			if (selectedAlgorithm == "LSB") {
-				if (int.TryParse(BitsForWatermarkTextBox.Text, out var bitsForWatermark) && bitsForWatermark >= 1 && bitsForWatermark <= 8)
-				{
-					var lsb = new Lsb(originalAsBitmap.Width, originalAsBitmap.Height, bitsForWatermark);
+				var (originalAsBitmap, watermarkAsBitmap) = ReadInputBitmaps();
 
-					var watermarkingResult = lsb.Watermark(originalAsBitmap, watermarkedAsBitmap);
-					var cleaningResult = lsb.CleanWatermark(watermarkingResult);
-					var extractingResult = lsb.ExtractWatermark(watermarkingResult);
-
-					PrintAlgorithmOutput(watermarkingResult, cleaningResult, extractingResult);
-				}
-				else
-				{
-					logger.LogError($"Could not process image. Bits for watermark value has to be a number between 0 and 8 but it is '{BitsForWatermarkTextBox.Text}'");
-				}
+				var results = algorithm.Run(originalAsBitmap, watermarkAsBitmap);
+				ShowAlgorithmOutput(results);
 			}
-			else if (selectedAlgorithm == "PixelAveraging")
-            {
-				var pixelAveraging = new PixelAveraging(1);
-
-				var watermarkingResult = pixelAveraging.Watermark(originalAsBitmap, watermarkedAsBitmap);
-				var cleaningResult = pixelAveraging.CleanWatermark(watermarkingResult, watermarkedAsBitmap);
-				var extractingResult = pixelAveraging.ExtractWatermark(watermarkingResult, originalAsBitmap);
-
-				PrintAlgorithmOutput(watermarkingResult, cleaningResult, extractingResult);
-            }
+			catch (Exception ex)
+			{
+				logger.LogError(ex.Message);
+				logger.LogDebug(ex.StackTrace);
+				ErrorMessage.Text = ex.Message;
+				ErrorMessage.Visibility = Visibility.Visible;
+			}
 
 			logger.LogInfo($"Processing time: {sw.ElapsedMilliseconds} ms");
 		}
-		private void PrintAlgorithmOutput(Bitmap watermarkingResult, Bitmap cleaningResult, Bitmap extractingResult)
+
+		private (Bitmap, Bitmap) ReadInputBitmaps()
 		{
-			WatermarkedImage.Source = InterfaceTools.BitmapToImageSource(watermarkingResult);
-			CleanedImage.Source = InterfaceTools.BitmapToImageSource(cleaningResult);
-			ExtractedWatermarkImage.Source = InterfaceTools.BitmapToImageSource(extractingResult);
+			var originalAsBitmapImage = (BitmapImage)OriginalImage.Source;
+			var watermarkAsBitmapImage = (BitmapImage)WatermarkImage.Source;
+
+			return (originalAsBitmapImage.ToBitmap(), watermarkAsBitmapImage.ToBitmap());
+		}
+
+		private void ShowAlgorithmOutput(AlgorithmResult result)
+		{
+			WatermarkedImage.Source = InterfaceTools.BitmapToImageSource(result.Watermarked);
+			CleanedImage.Source = InterfaceTools.BitmapToImageSource(result.Cleaned);
+			ExtractedWatermarkImage.Source = InterfaceTools.BitmapToImageSource(result.ExtractedWatermark);
 
 			ResultTab.Visibility = Visibility.Visible;
 			Tabs.SelectedIndex = 1;
-			logger.LogInfo("Processed image.");
 		}
 
 		private void CloseResultTabButton_Click(object sender, RoutedEventArgs e)
@@ -126,7 +127,23 @@ namespace DigitalMarkingAnalyzer
 		{
 			logger.LogDebug("Clicked SaveExtractedWatermarkButton.");
 			InterfaceTools.SaveImageToDrive(ExtractedWatermarkImage);
-		}	
+		}
+
+		private void AlgorithmBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			string algorithm = (sender as ComboBox).SelectedItem.ToString();
+			logger.LogDebug($"Selected algorithm: {algorithm}.");
+
+			algorithmViewModel?.Dispose();
+
+			algorithmViewModel = AlgorithmViewModel.Create(algorithm, ParametersGrid);
+			algorithmViewModel.PrepareControlls();
+
+			if(Process.Visibility == Visibility.Hidden)
+			{
+				Process.Visibility = Visibility.Visible;
+			}
+		}
 	}
 }
 

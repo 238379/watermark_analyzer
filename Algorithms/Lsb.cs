@@ -1,25 +1,34 @@
-﻿using System;
+﻿using Algorithms.common;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Algorithms
 {
-	public class Lsb
+	public class Lsb : Algorithm
 	{
-		// TODO use these width and height, scale if necessary
-		private readonly int width;
-		private readonly int height;
-		private readonly int bitsForWatermark;
-		private readonly Random random;
+		public const string ALGORITHM_NAME = "LSB";
 
-		public Lsb(int width, int height, int bitsForWatermark)
+		public const string BITS_PARAM = "BITS_PARAM";
+
+		// TODO width and height
+		private readonly int bitsForWatermark;
+		private readonly Random random = new Random();
+
+		public Lsb(Dictionary<string, dynamic> parameters) : base(parameters)
 		{
-			this.width = width;
-			this.height = height;
-			this.bitsForWatermark = bitsForWatermark;
-			this.random = new Random();
+			this.bitsForWatermark = parameters[BITS_PARAM];
 		}
 
-		public Bitmap Watermark(Bitmap original, Bitmap watermark)
+		public override AlgorithmResult Run(Bitmap original, Bitmap watermark)
+		{
+			var watermarked = Watermark(original, watermark);
+			var cleaned = CleanWatermark(watermarked);
+			var extracted = ExtractWatermark(watermarked);
+			return new AlgorithmResult(watermarked, cleaned, extracted);
+		}
+
+		private Bitmap Watermark(Bitmap original, Bitmap watermark)
 		{
 			var simplifiedWatermark = PreprocessToSimplifiedWatermark(watermark);
 
@@ -37,7 +46,7 @@ namespace Algorithms
 			}, original, simplifiedWatermark);
 		}
 
-		public Bitmap CleanWatermark(Bitmap watermarked)
+		private Bitmap CleanWatermark(Bitmap watermarked)
 		{
 			return BitmapOperations.Create((sources, i, j) =>
 			{
@@ -53,7 +62,7 @@ namespace Algorithms
 			}, watermarked);
 		}
 
-		public Bitmap ExtractWatermark(Bitmap watermarked)
+		private Bitmap ExtractWatermark(Bitmap watermarked)
 		{
 			return BitmapOperations.Create((sources, i, j) =>
 			{

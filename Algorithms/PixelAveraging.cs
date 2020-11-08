@@ -1,20 +1,31 @@
-﻿using System;
+﻿using Algorithms.common;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 
 namespace Algorithms
 {
-	public class PixelAveraging
+	public class PixelAveraging : Algorithm
 	{
+		public const string ALGORITHM_NAME = "PixelAveraging";
+
+		public const string RATIO_PARAM = "RATIO_PARAM";
+
 		private readonly double ratio;
 
-		public PixelAveraging(double ratio)
+		public PixelAveraging(Dictionary<string, dynamic> parameters) : base(parameters)
 		{
-			this.ratio = ratio;
+			this.ratio = parameters[RATIO_PARAM];
 		}
 
-		public Bitmap Watermark(Bitmap original, Bitmap watermark)
+		public override AlgorithmResult Run(Bitmap original, Bitmap watermark)
+		{
+			var watermarked = Watermark(original, watermark);
+			var cleaned = CleanWatermark(watermarked, watermark);
+			var extracted = ExtractWatermark(watermarked, original);
+			return new AlgorithmResult(watermarked, cleaned, extracted);
+		}
+
+		private Bitmap Watermark(Bitmap original, Bitmap watermark)
 		{
 			return BitmapOperations.Create((sources, i, j) =>
 			{
@@ -29,7 +40,7 @@ namespace Algorithms
 			}, original, watermark);
 		}
 
-		public Bitmap CleanWatermark(Bitmap imgWatermarked, Bitmap watermark)
+		private Bitmap CleanWatermark(Bitmap imgWatermarked, Bitmap watermark)
 		{
 			return BitmapOperations.Create((sources, i, j) =>
 			{
@@ -48,7 +59,7 @@ namespace Algorithms
 			}, imgWatermarked, watermark);
 		}
 
-		public Bitmap ExtractWatermark(Bitmap imgWatermarked, Bitmap original)
+		private Bitmap ExtractWatermark(Bitmap imgWatermarked, Bitmap original)
 		{
 			return BitmapOperations.Create((sources, i, j) =>
 			{

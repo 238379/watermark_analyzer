@@ -17,5 +17,10 @@ namespace LoggerUtils
 		{
 			loggerConfigurationProvider().WriteAction(log + Environment.NewLine);
 		}
+
+		protected override string ConcatLog(string log, Severity severity, Type type)
+		{
+			return $"{DateTime.Now} [{severity}] {type.Name}: '{log}'";
+		}
 	}
 }
