@@ -39,7 +39,7 @@ namespace Algorithms
             });
         }
 
-        private static Color ColorFromYCbCr(int y, int cb, int cr)
+        public static Color ColorFromYCbCr(int y, int cb, int cr)
         {
             double Y = y;
             double Cb = cb;

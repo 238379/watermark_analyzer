@@ -24,18 +24,10 @@ namespace Algorithms
 
 		public Bitmap Watermark(Bitmap original, Bitmap watermark)
 		{
-			var watermarkedBitmap = new Bitmap(original.Width, original.Height);
-			byte[,,] ycbcr = BitmapExtensions.Rgb2Ycbcr(original);
-
-			watermarkedBitmap.RunOnEveryPixel((i, j) =>
-			{
-				watermarkedBitmap.SetPixel(i, j, Color.FromArgb(ycbcr[i, j, 0], ycbcr[i, j, 0], ycbcr[i, j, 0]));
-			});
-
-			ComplexImage complexImage = ComplexImage.FromBitmap(watermarkedBitmap);
+			ComplexImage complexImage = ComplexImage.FromBitmap(original);
             complexImage.ForwardFourierTransform();
             complexImage.BackwardFourierTransform();
-            watermarkedBitmap = complexImage.ToBitmap();
+            var watermarkedBitmap = complexImage.ToBitmap();
 
             return watermarkedBitmap;
 		}
