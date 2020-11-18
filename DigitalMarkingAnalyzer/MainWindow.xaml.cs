@@ -1,11 +1,13 @@
 ﻿using Algorithms;
 using Algorithms.common;
 using DigitalMarkingAnalyzer.viewmodels;
+using Generators;
 using LoggerUtils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -55,6 +57,32 @@ namespace DigitalMarkingAnalyzer
 			InterfaceTools.SetImageFromDrive(WatermarkImage);
 		}
 
+		private void GenerateOriginalButton_Click(object sender, RoutedEventArgs e)
+		{
+			logger.LogDebug("Clicked GenerateOriginalButton.");
+			var sw = Stopwatch.StartNew();
+
+			var generator = new InternetImageGenerator(null);
+			var bitmap = generator.Generate();
+
+			InterfaceTools.SetImageFromBitmap(OriginalImage, bitmap);
+
+			logger.LogDebug($"Generated image in {sw.ElapsedMilliseconds}ms.");
+		}		
+
+		private void GenerateWatermarkButton_Click(object sender, RoutedEventArgs e)
+		{
+			logger.LogDebug("Clicked GenerateWatermarkButton.");
+			var sw = Stopwatch.StartNew();
+
+			var vm = new GeneratorViewModel(null);
+			var parameters = vm.ReadParameters();
+			var generator = new TextImageGenerator(parameters);
+			var bitmap = generator.Generate();
+			InterfaceTools.SetImageFromBitmap(WatermarkImage, bitmap);
+
+			logger.LogDebug($"Generated image in {sw.ElapsedMilliseconds}ms.");
+		}
 
 		private void ProcessButton_Click(object sender, RoutedEventArgs e)
 		{
