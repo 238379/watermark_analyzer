@@ -13,6 +13,7 @@ namespace Algorithms.common
 			{
 				Lsb.ALGORITHM_NAME => new Lsb(parameters),
 				PixelAveraging.ALGORITHM_NAME => new PixelAveraging(parameters),
+				Dft.ALGORITHM_NAME => new Dft(parameters),
 				_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
 			};
 		}

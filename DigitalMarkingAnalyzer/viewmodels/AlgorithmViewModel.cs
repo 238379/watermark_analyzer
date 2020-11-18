@@ -17,6 +17,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			{
 				Lsb.ALGORITHM_NAME => new LsbViewModel(grid),
 				PixelAveraging.ALGORITHM_NAME => new PixelAveragingViewModel(grid),
+				Dft.ALGORITHM_NAME => new DftViewModel(grid),
 				_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
 			};
 		}

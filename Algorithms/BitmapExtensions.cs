@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 
-namespace Algorithms.common
+namespace Algorithms
 {
     public static class BitmapExtensions
     {
@@ -16,35 +15,6 @@ namespace Algorithms.common
                     action(i, j);
                 }
             }
-        }
-
-        public static EffectiveBitmap TransformToEffectiveBitmap(this Bitmap that)
-        {
-            var data = that.LockAllBitsReadOnly();
-            var depth = that.GetDepth();
-            var buffer = new byte[that.Width * that.Height * depth];
-
-            Marshal.Copy(data.Scan0, buffer, 0, buffer.Length);
-            that.UnlockBits(data);
-
-            return new EffectiveBitmap(that.Width, that.Height, depth, buffer);
-        }
-
-        public static int GetDepth(this Bitmap that)
-        {
-            return Image.GetPixelFormatSize(that.PixelFormat) / 8;
-        }
-
-        public static BitmapData LockAllBitsReadOnly(this Bitmap that)
-        {
-            var rect = new Rectangle(0, 0, that.Width, that.Height);
-            return that.LockBits(rect, ImageLockMode.ReadOnly, that.PixelFormat);
-        }
-
-        public static BitmapData LockAllBitsReadWrite(this Bitmap that)
-        {
-            var rect = new Rectangle(0, 0, that.Width, that.Height);
-            return that.LockBits(rect, ImageLockMode.ReadWrite, that.PixelFormat);
         }
 
         public static byte[,,] Rgb2Ycbcr(Bitmap bmp)
