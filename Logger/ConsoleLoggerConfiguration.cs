@@ -4,7 +4,7 @@ using System.Text;
 
 namespace LoggerUtils
 {
-	public class ConsoleLoggerConfiguration : FileLoggerConfiguration
+	public class ConsoleLoggerConfiguration : LoggerConfiguration
 	{
 		public Action<string> WriteAction = _ => { };
 	}

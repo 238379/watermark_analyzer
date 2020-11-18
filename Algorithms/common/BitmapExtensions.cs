@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
@@ -45,6 +46,36 @@ namespace Algorithms.common
         {
             var rect = new Rectangle(0, 0, that.Width, that.Height);
             return that.LockBits(rect, ImageLockMode.ReadWrite, that.PixelFormat);
+        }
+
+        public static Bitmap Resize(this Bitmap that, Size size)
+        {
+            return Resize(that, size.Width, size.Height);
+        }
+
+        public static Bitmap Resize(this Bitmap that, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(that.HorizontalResolution, that.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(that, destRect, 0, 0, that.Width, that.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
         }
 
         public static byte[,,] Rgb2Ycbcr(Bitmap bmp)

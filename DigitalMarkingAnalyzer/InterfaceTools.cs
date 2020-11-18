@@ -30,6 +30,11 @@ namespace DigitalMarkingAnalyzer
 			}
 		}
 
+		public static void SetImageFromBitmap(System.Windows.Controls.Image imageContainer, Bitmap bitmap)
+		{
+			imageContainer.Source = BitmapToImageSource(bitmap);
+		}
+
 		public static void SaveImageToDrive(System.Windows.Controls.Image image)
 		{
 			var path = GetSavePathForPngFromDialog();

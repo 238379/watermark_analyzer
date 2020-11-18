@@ -12,7 +12,6 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		public PixelAveragingViewModel(Grid grid) : base(grid)
 		{
-
 		}
 
 		public override void PrepareControlls()

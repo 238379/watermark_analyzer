@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Algorithms\Algorithms.csproj" />
+    <ProjectReference Include="..\Generators\Generators.csproj" />
     <ProjectReference Include="..\Logger\LoggerUtils.csproj" />
   </ItemGroup>
 

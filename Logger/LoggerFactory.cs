@@ -9,7 +9,11 @@ namespace LoggerUtils
 		private static FileLoggerConfiguration fileLoggerConfiguration = new FileLoggerConfiguration();
 		private static ConsoleLoggerConfiguration consoleLoggerConfiguration = new ConsoleLoggerConfiguration()
 		{
+#if DEBUG
+			Severity = Severity.Debug
+#else
 			Severity = Severity.Info
+#endif
 		};
 
 		public static void SetConsoleLoggerWriteAction(Action<string> writeAction)
