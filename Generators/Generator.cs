@@ -12,6 +12,7 @@ namespace Generators
 		{
 			return generatorName switch
 			{
+				InternetImageGenerator.GENERATOR_NAME => new InternetImageGenerator(parameters),
 				TextImageGenerator.GENERATOR_NAME => new TextImageGenerator(parameters),
 				_ => throw new ArgumentException($"Unknown generatorName '{generatorName}'."),
 			};

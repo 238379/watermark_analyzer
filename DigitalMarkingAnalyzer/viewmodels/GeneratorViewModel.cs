@@ -6,25 +6,13 @@ using System.Windows.Controls;
 
 namespace DigitalMarkingAnalyzer.viewmodels
 {
-	class GeneratorViewModel : ViewModel
+	public abstract class GeneratorViewModel : ViewModel
 	{
-		public GeneratorViewModel(Grid grid) : base(grid)
-		{
-		}
+		protected Image imageContainer;
 
-		public override void PrepareControlls()
+		public GeneratorViewModel(Grid parametersGrid, TextBlock errorTextBlock, Image imageContainer) : base(parametersGrid, errorTextBlock)
 		{
-			throw new NotImplementedException();
-		}
-
-		public override Dictionary<string, dynamic> ReadParameters()
-		{
-			return new Dictionary<string, dynamic>
-			{
-				{ TextImageGenerator.TEXT_PARAM, LoremIpsumGenerator.LoremIpsum(2, 4, 1, 2, 10) },
-				{ TextImageGenerator.WIDTH_PARAM, 800 },
-				{ TextImageGenerator.HEIGHT_PARAM, 800 }
-			};
+			this.imageContainer = imageContainer;
 		}
 	}
 }

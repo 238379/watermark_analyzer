@@ -40,7 +40,7 @@ namespace Generators
         /// <param name="backColorOptional">Background color, defaults to white</param>
         /// <param name="minSizeOptional">Minimum image size, defaults the size required to display the text</param>
         /// <returns>The image containing the text, which should be disposed after use</returns>
-        public Bitmap DrawText(string text, Size targetSize, Font fontOptional = null, Color? textColorOptional = null, Color? backColorOptional = null)
+        private Bitmap DrawText(string text, Size targetSize, Font fontOptional = null, Color? textColorOptional = null, Color? backColorOptional = null)
         {
             Font font = new Font("Arial", GetMaximumFontSizeFitInRectangle(text, new Font("Arial", 1), targetSize, false, 3));
             if (fontOptional != null)

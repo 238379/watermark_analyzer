@@ -4,10 +4,8 @@ using DigitalMarkingAnalyzer.viewmodels;
 using Generators;
 using LoggerUtils;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -19,7 +17,11 @@ namespace DigitalMarkingAnalyzer
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private Logger logger;
+		private readonly Logger logger;
+
+		private readonly InternetImageGeneratorViewModel internetImageGeneratorViewModel;
+		private readonly TextImageGeneratorViewModel textImageGeneratorViewModel;
+
 		private AlgorithmViewModel algorithmViewModel;
 
 		public MainWindow()
@@ -32,6 +34,11 @@ namespace DigitalMarkingAnalyzer
 			WatermarkImage.Source = new BitmapImage(new Uri("/DigitalMarkingAnalyzer;component/Resources/w_tekst_dolny.png", System.UriKind.RelativeOrAbsolute));
 
 			StartLogConsole();
+
+			internetImageGeneratorViewModel = new InternetImageGeneratorViewModel(null, ErrorMessage, OriginalImage);
+			internetImageGeneratorViewModel.SetUp();
+			textImageGeneratorViewModel = new TextImageGeneratorViewModel(null, ErrorMessage, WatermarkImage);
+			textImageGeneratorViewModel.SetUp();
 
 			logger.LogDebug("Created MainWindow");
 		}
@@ -62,10 +69,7 @@ namespace DigitalMarkingAnalyzer
 			logger.LogDebug("Clicked GenerateOriginalButton.");
 			var sw = Stopwatch.StartNew();
 
-			var generator = new InternetImageGenerator(null);
-			var bitmap = generator.Generate();
-
-			InterfaceTools.SetImageFromBitmap(OriginalImage, bitmap);
+			internetImageGeneratorViewModel.Submit();
 
 			logger.LogDebug($"Generated image in {sw.ElapsedMilliseconds}ms.");
 		}		
@@ -75,11 +79,7 @@ namespace DigitalMarkingAnalyzer
 			logger.LogDebug("Clicked GenerateWatermarkButton.");
 			var sw = Stopwatch.StartNew();
 
-			var vm = new GeneratorViewModel(null);
-			var parameters = vm.ReadParameters();
-			var generator = new TextImageGenerator(parameters);
-			var bitmap = generator.Generate();
-			InterfaceTools.SetImageFromBitmap(WatermarkImage, bitmap);
+			textImageGeneratorViewModel.Submit();
 
 			logger.LogDebug($"Generated image in {sw.ElapsedMilliseconds}ms.");
 		}
@@ -88,20 +88,13 @@ namespace DigitalMarkingAnalyzer
 		{
 			logger.LogDebug("Clicked ProcessButton.");
 
-			var sw = Stopwatch.StartNew();
+			algorithmViewModel.Submit();
 
 			try
 			{
 				ErrorMessage.Visibility = Visibility.Hidden;
 
-				var parameters = algorithmViewModel.ReadParameters();
-				var selectedAlgorithm = AlgorithmBox.SelectedItem.ToString();
-				Algorithm algorithm = Algorithm.Create(selectedAlgorithm, parameters);
-
-				var (originalAsBitmap, watermarkAsBitmap) = ReadInputBitmaps();
-
-				var results = algorithm.Run(originalAsBitmap, watermarkAsBitmap);
-				ShowAlgorithmOutput(results);
+				ShowAlgorithmOutput(algorithmViewModel.LastResult);
 			}
 			catch (Exception ex)
 			{
@@ -110,16 +103,6 @@ namespace DigitalMarkingAnalyzer
 				ErrorMessage.Text = ex.Message;
 				ErrorMessage.Visibility = Visibility.Visible;
 			}
-
-			logger.LogInfo($"Processing time: {sw.ElapsedMilliseconds} ms");
-		}
-
-		private (Bitmap, Bitmap) ReadInputBitmaps()
-		{
-			var originalAsBitmapImage = (BitmapImage)OriginalImage.Source;
-			var watermarkAsBitmapImage = (BitmapImage)WatermarkImage.Source;
-
-			return (originalAsBitmapImage.ToBitmap(), watermarkAsBitmapImage.ToBitmap());
 		}
 
 		private void ShowAlgorithmOutput(AlgorithmResult result)
@@ -164,8 +147,8 @@ namespace DigitalMarkingAnalyzer
 
 			algorithmViewModel?.Dispose();
 
-			algorithmViewModel = AlgorithmViewModel.Create(algorithm, ParametersGrid);
-			algorithmViewModel.PrepareControlls();
+			algorithmViewModel = AlgorithmViewModel.Create(algorithm, ParametersGrid, ErrorMessage, OriginalImage, WatermarkImage);
+			algorithmViewModel.SetUp();
 
 			if(Process.Visibility == Visibility.Hidden)
 			{
