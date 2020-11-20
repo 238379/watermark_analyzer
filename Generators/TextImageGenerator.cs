@@ -27,7 +27,7 @@ namespace Generators
             generatorParameters.TryGetValue(TEXT_COLOR_PARAM, out var textColor);
             generatorParameters.TryGetValue(BACKGROUND_COLOR_PARAM, out var backgroundColor);
 
-            return DrawText(generatorParameters[TEXT_PARAM], new Size(generatorParameters[WIDTH_PARAM], generatorParameters[HEIGHT_PARAM]), font, textColor, backgroundColor);
+            return DrawText(generatorParameters[TEXT_PARAM](), new Size(generatorParameters[WIDTH_PARAM], generatorParameters[HEIGHT_PARAM]), font, textColor, backgroundColor);
 		}
 
         /// <summary>

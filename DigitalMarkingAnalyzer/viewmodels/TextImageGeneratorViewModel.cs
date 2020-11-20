@@ -24,11 +24,12 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		{
 			generator = new TextImageGenerator(MockParameters());
 		}
+
 		private Dictionary<string, dynamic> MockParameters()
 		{
 			return new Dictionary<string, dynamic>
 			{
-				{ TextImageGenerator.TEXT_PARAM, LoremIpsumGenerator.LoremIpsum(2, 4, 1, 2, 10) },
+				{ TextImageGenerator.TEXT_PARAM, new Func<string>(() => LoremIpsumGenerator.LoremIpsum(2, 4, 1, 2, 10)) },
 				{ TextImageGenerator.WIDTH_PARAM, 800 },
 				{ TextImageGenerator.HEIGHT_PARAM, 800 }
 			};
