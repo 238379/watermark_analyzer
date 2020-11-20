@@ -1,11 +1,6 @@
-﻿using Algorithms;
-using Algorithms.common;
-using DigitalMarkingAnalyzer.viewmodels;
-using Generators;
+﻿using DigitalMarkingAnalyzer.viewmodels;
 using LoggerUtils;
 using System;
-using System.Diagnostics;
-using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -35,9 +30,9 @@ namespace DigitalMarkingAnalyzer
 
 			StartLogConsole();
 
-			internetImageGeneratorViewModel = new InternetImageGeneratorViewModel(null, ErrorMessage, OriginalImage);
+			internetImageGeneratorViewModel = new InternetImageGeneratorViewModel(this, OriginalImage);
 			internetImageGeneratorViewModel.SetUp();
-			textImageGeneratorViewModel = new TextImageGeneratorViewModel(null, ErrorMessage, WatermarkImage);
+			textImageGeneratorViewModel = new TextImageGeneratorViewModel(this, WatermarkImage);
 			textImageGeneratorViewModel.SetUp();
 
 			logger.LogDebug("Created MainWindow");
@@ -67,52 +62,19 @@ namespace DigitalMarkingAnalyzer
 		private void GenerateOriginalButton_Click(object sender, RoutedEventArgs e)
 		{
 			logger.LogDebug("Clicked GenerateOriginalButton.");
-			var sw = Stopwatch.StartNew();
-
 			internetImageGeneratorViewModel.Submit();
-
-			logger.LogDebug($"Generated image in {sw.ElapsedMilliseconds}ms.");
 		}		
 
 		private void GenerateWatermarkButton_Click(object sender, RoutedEventArgs e)
 		{
 			logger.LogDebug("Clicked GenerateWatermarkButton.");
-			var sw = Stopwatch.StartNew();
-
 			textImageGeneratorViewModel.Submit();
-
-			logger.LogDebug($"Generated image in {sw.ElapsedMilliseconds}ms.");
 		}
 
 		private void ProcessButton_Click(object sender, RoutedEventArgs e)
 		{
 			logger.LogDebug("Clicked ProcessButton.");
-
 			algorithmViewModel.Submit();
-
-			try
-			{
-				ErrorMessage.Visibility = Visibility.Hidden;
-
-				ShowAlgorithmOutput(algorithmViewModel.LastResult);
-			}
-			catch (Exception ex)
-			{
-				logger.LogError(ex.Message);
-				logger.LogDebug(ex.StackTrace);
-				ErrorMessage.Text = ex.Message;
-				ErrorMessage.Visibility = Visibility.Visible;
-			}
-		}
-
-		private void ShowAlgorithmOutput(AlgorithmResult result)
-		{
-			WatermarkedImage.Source = InterfaceTools.BitmapToImageSource(result.Watermarked);
-			CleanedImage.Source = InterfaceTools.BitmapToImageSource(result.Cleaned);
-			ExtractedWatermarkImage.Source = InterfaceTools.BitmapToImageSource(result.ExtractedWatermark);
-
-			ResultTab.Visibility = Visibility.Visible;
-			Tabs.SelectedIndex = 1;
 		}
 
 		private void CloseResultTabButton_Click(object sender, RoutedEventArgs e)
@@ -147,7 +109,7 @@ namespace DigitalMarkingAnalyzer
 
 			algorithmViewModel?.Dispose();
 
-			algorithmViewModel = AlgorithmViewModel.Create(algorithm, ParametersGrid, ErrorMessage, OriginalImage, WatermarkImage);
+			algorithmViewModel = AlgorithmViewModel.Create(algorithm, this);
 			algorithmViewModel.SetUp();
 
 			if(Process.Visibility == Visibility.Hidden)
@@ -157,4 +119,3 @@ namespace DigitalMarkingAnalyzer
 		}
 	}
 }
-

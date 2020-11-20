@@ -2,6 +2,7 @@
 using Algorithms.common;
 using System;
 using System.Drawing;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
@@ -9,34 +10,36 @@ namespace DigitalMarkingAnalyzer.viewmodels
 {
 	public abstract class AlgorithmViewModel : ViewModel
 	{
-		protected readonly System.Windows.Controls.Image originalImageContainer;
-		protected readonly System.Windows.Controls.Image watermarkImageContainer;
-
-		protected AlgorithmResult algorithmResult;
-		public AlgorithmResult LastResult => algorithmResult; // TODO
-
-		public static AlgorithmViewModel Create(string algorithmName, Grid grid, TextBlock errorTextBlock, System.Windows.Controls.Image originalImageContainer, System.Windows.Controls.Image watermarkImageContainer)
+		public static AlgorithmViewModel Create(string algorithmName, MainWindow window)
 		{
 			return algorithmName switch
 			{
-				Lsb.ALGORITHM_NAME => new LsbViewModel(grid, errorTextBlock, originalImageContainer, watermarkImageContainer),
-				PixelAveraging.ALGORITHM_NAME => new PixelAveragingViewModel(grid, errorTextBlock, originalImageContainer, watermarkImageContainer),
+				Lsb.ALGORITHM_NAME => new LsbViewModel(window),
+				PixelAveraging.ALGORITHM_NAME => new PixelAveragingViewModel(window),
 				_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
 			};
 		}
 
-		public AlgorithmViewModel(Grid parametersGrid, TextBlock errorTextBlock, System.Windows.Controls.Image orignalBitmap, System.Windows.Controls.Image watermarkBitmap) : base(parametersGrid, errorTextBlock)
+		public AlgorithmViewModel(MainWindow window) : base(window)
 		{
-			this.originalImageContainer = orignalBitmap;
-			this.watermarkImageContainer = watermarkBitmap;
 		}
 
 		protected (Bitmap, Bitmap) ReadInputBitmaps()
 		{
-			var originalAsBitmapImage = (BitmapImage)originalImageContainer.Source;
-			var watermarkAsBitmapImage = (BitmapImage)watermarkImageContainer.Source;
+			var originalAsBitmapImage = (BitmapImage)window.OriginalImage.Source;
+			var watermarkAsBitmapImage = (BitmapImage)window.WatermarkImage.Source;
 
 			return (originalAsBitmapImage.ToBitmap(), watermarkAsBitmapImage.ToBitmap());
+		}
+
+		protected void ShowAlgorithmOutput(AlgorithmResult result)
+		{
+			window.WatermarkedImage.Source = InterfaceTools.BitmapToImageSource(result.Watermarked);
+			window.CleanedImage.Source = InterfaceTools.BitmapToImageSource(result.Cleaned);
+			window.ExtractedWatermarkImage.Source = InterfaceTools.BitmapToImageSource(result.ExtractedWatermark);
+
+			window.ResultTab.Visibility = Visibility.Visible;
+			window.Tabs.SelectedIndex = 1;
 		}
 	}
 }

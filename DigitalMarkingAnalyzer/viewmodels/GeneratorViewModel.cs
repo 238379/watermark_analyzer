@@ -10,7 +10,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		protected Image imageContainer;
 
-		public GeneratorViewModel(Grid parametersGrid, TextBlock errorTextBlock, Image imageContainer) : base(parametersGrid, errorTextBlock)
+		public GeneratorViewModel(MainWindow window, Image imageContainer) : base(window)
 		{
 			this.imageContainer = imageContainer;
 		}

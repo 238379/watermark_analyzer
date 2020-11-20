@@ -10,14 +10,12 @@ namespace DigitalMarkingAnalyzer.viewmodels
 {
 	public abstract class ViewModel : IDisposable
 	{
-		protected readonly Grid parametersGrid;
-		protected readonly TextBlock errorTextBlock;
+		protected readonly MainWindow window;
 		protected readonly Logger logger;
 
-		public ViewModel(Grid parametersGrid, TextBlock errorTextBlock)
+		public ViewModel(MainWindow window)
 		{
-			this.parametersGrid = parametersGrid;
-			this.errorTextBlock = errorTextBlock;
+			this.window = window;
 			logger = LoggerFactory.Create(GetType());
 		}
 
@@ -28,22 +26,22 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			var sw = Stopwatch.StartNew();
 			try
 			{
-				errorTextBlock.Visibility = Visibility.Hidden;
+				window.ErrorMessage.Visibility = Visibility.Hidden;
 				OnSubmit();
 			}
 			catch (Exception ex)
 			{
 				logger.LogError(ex.Message);
 				logger.LogDebug(ex.StackTrace);
-				errorTextBlock.Text = ex.Message;
-				errorTextBlock.Visibility = Visibility.Visible;
+				window.ErrorMessage.Text = ex.Message;
+				window.ErrorMessage.Visibility = Visibility.Visible;
 			}
 			logger.LogInfo($"Processing time: {sw.ElapsedMilliseconds} ms");
 		}
 
 		public virtual void Dispose()
 		{
-			parametersGrid.Children.RemoveRange(0, parametersGrid.Children.Count);
+			window.ParametersGrid.Children.RemoveRange(0, window.ParametersGrid.Children.Count);
 		}
 
 		protected abstract void OnSubmit();
@@ -74,7 +72,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		private void AddAtPositionInGrid(UIElement element, int x, int y)
 		{
-			parametersGrid.Children.Add(element);
+			window.ParametersGrid.Children.Add(element);
 			Grid.SetColumn(element, x);
 			Grid.SetRow(element, y);
 		}

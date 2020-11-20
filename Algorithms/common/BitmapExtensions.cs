@@ -55,6 +55,9 @@ namespace Algorithms.common
 
 		public static Bitmap Resize(this Bitmap that, int width, int height)
 		{
+			if (that.Width == width && that.Height == height)
+				return that;
+
 			var destRect = new Rectangle(0, 0, width, height);
 			var destImage = new Bitmap(width, height);
 

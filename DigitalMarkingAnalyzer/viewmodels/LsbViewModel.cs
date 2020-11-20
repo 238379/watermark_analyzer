@@ -1,9 +1,5 @@
 ﻿using Algorithms;
-using Algorithms.common;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 using System.Windows.Controls;
 
 namespace DigitalMarkingAnalyzer.viewmodels
@@ -12,10 +8,8 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private TextBox bitsTextBox;
 
-		public LsbViewModel(Grid grid, TextBlock errorTextBlock, System.Windows.Controls.Image originalImageContainer, System.Windows.Controls.Image watermarkImageContainer)
-			: base(grid, errorTextBlock, originalImageContainer, watermarkImageContainer)
+		public LsbViewModel(MainWindow window) : base(window)
 		{
-
 		}
 
 		public override void SetUp()
@@ -28,15 +22,17 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		{
 			var p = ReadParameters();
 			var algorithm = new Lsb(p);
-			var (originalAsBitmap, watermarkAsBitmap) = ReadInputBitmaps();
-			algorithmResult = algorithm.Run(originalAsBitmap, watermarkAsBitmap);
+			var result = algorithm.Run();
+			ShowAlgorithmOutput(result);
 		}
 
-		private Dictionary<string, dynamic> ReadParameters()
+		private LsbParameters ReadParameters()
 		{
+			var (original, watermark) = ReadInputBitmaps();
+
 			if (int.TryParse(bitsTextBox.Text, out var bitsForWatermark) && bitsForWatermark >= 1 && bitsForWatermark <= 8)
 			{
-				return new Dictionary<string, dynamic> { { Lsb.BITS_PARAM, bitsForWatermark } };
+				return new LsbParameters(original, watermark, bitsForWatermark);
 			}
 			else
 			{

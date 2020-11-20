@@ -10,7 +10,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private TextImageGenerator generator;
 
-		public TextImageGeneratorViewModel(Grid parametersGrid, TextBlock errorTextBlock, Image imageContainer) : base(parametersGrid, errorTextBlock, imageContainer)
+		public TextImageGeneratorViewModel(MainWindow window, Image imageContainer) : base(window, imageContainer)
 		{
 		}
 

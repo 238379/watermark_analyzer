@@ -11,8 +11,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private TextBox ratioTextBox;
 
-		public PixelAveragingViewModel(Grid grid, TextBlock errorTextBlock, System.Windows.Controls.Image originalImageContainer, System.Windows.Controls.Image watermarkImageContainer)
-			: base(grid, errorTextBlock, originalImageContainer, watermarkImageContainer)
+		public PixelAveragingViewModel(MainWindow window) : base(window)
 		{
 		}
 
@@ -26,15 +25,17 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		{
 			var p = ReadParameters();
 			var algorithm = new PixelAveraging(p);
-			var (originalAsBitmap, watermarkAsBitmap) = ReadInputBitmaps();
-			algorithmResult = algorithm.Run(originalAsBitmap, watermarkAsBitmap);
+			var result = algorithm.Run();
+			ShowAlgorithmOutput(result);
 		}
 
-		private Dictionary<string, dynamic> ReadParameters()
+		private PixelAveragingParameters ReadParameters()
 		{
+			var (original, watermark) = ReadInputBitmaps();
+
 			if (double.TryParse(ratioTextBox.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out var ratio) && ratio >= 0 && ratio <= 1)
 			{
-				return new Dictionary<string, dynamic> { { PixelAveraging.RATIO_PARAM, ratio } };
+				return new PixelAveragingParameters(original, watermark, ratio);
 			}
 			else
 			{

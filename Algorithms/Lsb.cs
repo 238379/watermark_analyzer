@@ -1,28 +1,36 @@
 ﻿using Algorithms.common;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 
 namespace Algorithms
 {
+	public class LsbParameters : AlgorithmParameters
+	{
+		public readonly int BitsForWatermark;
+
+		public LsbParameters(Bitmap original, Bitmap watermark, int bitsForWatermark) : base(original, watermark)
+		{
+			BitsForWatermark = bitsForWatermark;
+		}
+	}
+
 	public class Lsb : Algorithm
 	{
 		public const string ALGORITHM_NAME = "LSB";
 
-		public const string BITS_PARAM = "BITS_PARAM";
+		private readonly LsbParameters parameters;
 
 		// TODO width and height
-		private readonly int bitsForWatermark;
 		private readonly Random random = new Random();
 
-		public Lsb(Dictionary<string, dynamic> parameters) : base(parameters)
+		public Lsb(LsbParameters parameters) : base()
 		{
-			this.bitsForWatermark = parameters[BITS_PARAM];
+			this.parameters = parameters;
 		}
 
-		public override AlgorithmResult Run(Bitmap original, Bitmap watermark)
+		public override AlgorithmResult Run()
 		{
-			var watermarked = Watermark(original, watermark);
+			var watermarked = Watermark(parameters.Original, parameters.Watermark);
 			var cleaned = CleanWatermark(watermarked);
 			var extracted = ExtractWatermark(watermarked);
 			return new AlgorithmResult(watermarked, cleaned, extracted);
@@ -37,7 +45,7 @@ namespace Algorithms
 				var originalPixel = sources[0].GetPixel(i, j);
 				var watermarkPixel = sources[1].GetPixel(i, j);
 
-				var divider = (int)Math.Pow(2, bitsForWatermark);
+				var divider = (int)Math.Pow(2, parameters.BitsForWatermark);
 				var r = (byte)(Math.Clamp(originalPixel.R - originalPixel.R % divider + watermarkPixel.R, 0, 255));
 				var g = (byte)(Math.Clamp(originalPixel.G - originalPixel.G % divider + watermarkPixel.G, 0, 255));
 				var b = (byte)(Math.Clamp(originalPixel.B - originalPixel.B % divider + watermarkPixel.B, 0, 255));
@@ -52,7 +60,7 @@ namespace Algorithms
 			{
 				var watermarkedImgPixel = sources[0].GetPixel(i, j);
 
-				var divider = (int)Math.Pow(2, bitsForWatermark);
+				var divider = (int)Math.Pow(2, parameters.BitsForWatermark);
 				// TODO better method instead of random bit on last position
 				var r = (byte)(watermarkedImgPixel.R - watermarkedImgPixel.R % divider + CreateRandomNumber(divider));
 				var g = (byte)(watermarkedImgPixel.G - watermarkedImgPixel.G % divider + CreateRandomNumber(divider));
@@ -68,7 +76,7 @@ namespace Algorithms
 			{
 				var watermarkedImgPixel = sources[0].GetPixel(i, j);
 
-				var divider = (int)Math.Pow(2, bitsForWatermark);
+				var divider = (int)Math.Pow(2, parameters.BitsForWatermark);
 				var multiplier = 255 / (divider - 1);
 				byte r = (byte)(watermarkedImgPixel.R % divider * multiplier);
 				byte g = (byte)(watermarkedImgPixel.G % divider * multiplier);
@@ -80,7 +88,7 @@ namespace Algorithms
 
 		private Bitmap PreprocessToSimplifiedWatermark(Bitmap watermark)
 		{
-			var divider = (byte)(Math.Ceiling(255 / Math.Pow(2, bitsForWatermark)) + 0.5);
+			var divider = (byte)(Math.Ceiling(255 / Math.Pow(2, parameters.BitsForWatermark)) + 0.5);
 
 			return BitmapOperations.Create((sources, i, j) =>
 			{

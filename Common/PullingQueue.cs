@@ -7,13 +7,13 @@ namespace Common
 {
 	public class PullingQueue<T>
 	{
-		private readonly Func<T> pullingFunction;
+		private readonly Func<Task<T>> pullingFunction;
 		private readonly Action<Exception> exceptionAction;
 		private readonly int capacity;
 		private readonly int timeout;
 		private readonly ConcurrentQueue<T> queue;
 
-		public PullingQueue(Func<T> pullingFunction, Action<Exception> exceptionAction, int capacity, int timeout)
+		public PullingQueue(Func<Task<T>> pullingFunction, Action<Exception> exceptionAction, int capacity, int timeout)
 		{
 			this.pullingFunction = pullingFunction;
 			this.exceptionAction = exceptionAction;
@@ -45,11 +45,6 @@ namespace Common
 			return result;
 		}
 
-		/*public async Task<T> PullAsync()
-		{
-			// TODO
-		}*/
-
 		private void PullToFull()
 		{
 			for(int i = 0; i < capacity; i++)
@@ -75,20 +70,26 @@ namespace Common
 
 		private Task<T> GetOne()
 		{
-			var pullingTask = Task.Run(() => pullingFunction());
-			pullingTask.ContinueWith(async t =>
+			return Task.Run(() =>
 			{
-				if (!t.IsCompletedSuccessfully)
+				var successfull = false;
+				while (!successfull)
 				{
-					exceptionAction(t.Exception);
-					return await GetOne();
+					try
+					{
+						return pullingFunction();
+					}
+					catch (Exception e)
+					{
+						try
+						{
+							exceptionAction?.Invoke(e);
+						}
+						catch { }
+					}
 				}
-				else
-				{
-					return await t;
-				}
+				return default;
 			});
-			return pullingTask;
 		}
 	}
 }

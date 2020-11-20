@@ -4,24 +4,33 @@ using System.Drawing;
 
 namespace Algorithms
 {
+	public class PixelAveragingParameters : AlgorithmParameters
+	{
+		public readonly double Ratio;
+
+		public PixelAveragingParameters(Bitmap original, Bitmap watermark, double ratio) : base(original, watermark)
+		{
+			Ratio = ratio;
+		}
+	}
+
 	public class PixelAveraging : Algorithm
 	{
 		public const string ALGORITHM_NAME = "PixelAveraging";
 
-		public const string RATIO_PARAM = "RATIO_PARAM";
+		private readonly PixelAveragingParameters parameters;
 
-		private readonly double ratio;
 
-		public PixelAveraging(Dictionary<string, dynamic> parameters) : base(parameters)
+		public PixelAveraging(PixelAveragingParameters parameters) : base()
 		{
-			this.ratio = parameters[RATIO_PARAM];
+			this.parameters = parameters;
 		}
 
-		public override AlgorithmResult Run(Bitmap original, Bitmap watermark)
+		public override AlgorithmResult Run()
 		{
-			var watermarked = Watermark(original, watermark);
-			var cleaned = CleanWatermark(watermarked, watermark);
-			var extracted = ExtractWatermark(watermarked, original);
+			var watermarked = Watermark(parameters.Original, parameters.Watermark);
+			var cleaned = CleanWatermark(watermarked, parameters.Watermark);
+			var extracted = ExtractWatermark(watermarked, parameters.Original);
 			return new AlgorithmResult(watermarked, cleaned, extracted);
 		}
 
@@ -32,9 +41,9 @@ namespace Algorithms
 				var originalPixel = sources[0].GetPixel(i, j);
 				var watermarkPixel = sources[1].GetPixel(i, j);
 
-				var r = (int)(originalPixel.R + (watermarkPixel.R * ratio)) / 2;
-				var g = (int)(originalPixel.G + (watermarkPixel.G * ratio)) / 2;
-				var b = (int)(originalPixel.B + (watermarkPixel.B * ratio)) / 2;
+				var r = (int)(originalPixel.R + (watermarkPixel.R * parameters.Ratio)) / 2;
+				var g = (int)(originalPixel.G + (watermarkPixel.G * parameters.Ratio)) / 2;
+				var b = (int)(originalPixel.B + (watermarkPixel.B * parameters.Ratio)) / 2;
 
 				return new PixelInfo(r, g, b);
 			}, original, watermark);
@@ -47,9 +56,9 @@ namespace Algorithms
 				var watermarkedImgPixel = sources[0].GetPixel(i, j);
 				var watermarkPixel = sources[1].GetPixel(i, j);
 
-				var r = (int)(watermarkedImgPixel.R * 2 - watermarkPixel.R * ratio);
-				var g = (int)(watermarkedImgPixel.G * 2 - watermarkPixel.G * ratio);
-				var b = (int)(watermarkedImgPixel.B * 2 - watermarkPixel.B * ratio);
+				var r = (int)(watermarkedImgPixel.R * 2 - watermarkPixel.R * parameters.Ratio);
+				var g = (int)(watermarkedImgPixel.G * 2 - watermarkPixel.G * parameters.Ratio);
+				var b = (int)(watermarkedImgPixel.B * 2 - watermarkPixel.B * parameters.Ratio);
 
 				r = r < 0 ? r + 1 : r;
 				g = g < 0 ? g + 1 : g;
@@ -66,9 +75,9 @@ namespace Algorithms
 				var watermarkedImgPixel = sources[0].GetPixel(i, j);
 				var originalPixel = sources[1].GetPixel(i, j);
 
-				var r = (int)((2 * watermarkedImgPixel.R - originalPixel.R) * (1 / ratio));
-				var g = (int)((2 * watermarkedImgPixel.G - originalPixel.G) * (1 / ratio));
-				var b = (int)((2 * watermarkedImgPixel.B - originalPixel.B) * (1 / ratio));
+				var r = (int)((2 * watermarkedImgPixel.R - originalPixel.R) * (1 / parameters.Ratio));
+				var g = (int)((2 * watermarkedImgPixel.G - originalPixel.G) * (1 / parameters.Ratio));
+				var b = (int)((2 * watermarkedImgPixel.B - originalPixel.B) * (1 / parameters.Ratio));
 
 				r = r < 0 ? 0 : r;
 				g = g < 0 ? 0 : g;

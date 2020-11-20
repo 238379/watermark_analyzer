@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Generators
 {
@@ -19,7 +20,7 @@ namespace Generators
 		public InternetImageGenerator(Dictionary<string, dynamic> generatorParameters) : base(generatorParameters)
 		{
 			logger = LoggerFactory.Create(GetType());
-			pullingQueue = new PullingQueue<Bitmap>(Get, LogError, 5, 3000);
+			pullingQueue = new PullingQueue<Bitmap>(() => Get(), LogError, 5, 3000);
 		}
 
 		public override Bitmap Generate()
@@ -27,9 +28,11 @@ namespace Generators
 			return pullingQueue.Pull();
 		}
 
-		private Bitmap Get()
+		private async Task<Bitmap> Get()
 		{
 			var sw = Stopwatch.StartNew();
+
+			await InternetTools.WaitForInternetConnection(TimeSpan.FromSeconds(1));
 
 			HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("https://loremflickr.com/800/800");
 			webRequest.Timeout = 5000;

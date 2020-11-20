@@ -8,7 +8,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private InternetImageGenerator generator;
 
-		public InternetImageGeneratorViewModel(Grid parametersGrid, TextBlock errorTextBlock, Image imageContainer) : base(parametersGrid, errorTextBlock, imageContainer)
+		public InternetImageGeneratorViewModel(MainWindow window, Image imageContainer) : base(window, imageContainer)
 		{
 		}
 
