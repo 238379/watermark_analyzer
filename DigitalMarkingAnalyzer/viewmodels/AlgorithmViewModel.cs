@@ -3,7 +3,6 @@ using Algorithms.common;
 using System;
 using System.Drawing;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace DigitalMarkingAnalyzer.viewmodels
@@ -16,6 +15,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			{
 				Lsb.ALGORITHM_NAME => new LsbViewModel(window),
 				PixelAveraging.ALGORITHM_NAME => new PixelAveragingViewModel(window),
+				Dwt.ALGORITHM_NAME => new DwtViewModel(window),
 				_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
 			};
 		}
