@@ -225,6 +225,26 @@ namespace Algorithms
 				int levCols = cols / lev;
 				int levRows = rows / lev;
 
+				col = new HaarColor[levRows];
+				for (int j = 0; j < levCols; j++)
+				{
+					for (int i = 0; i < col.Length; i++)
+					{
+						int x = j;
+						if (k == 1) x += 400;
+						col[i] = data[i, x];
+					}
+
+					IWT(col);
+
+					for (int i = 0; i < col.Length; i++)
+					{
+						int x = j;
+						if (k == 1) x += 400;
+						data[i, x] = col[i];
+					}
+				}
+
 				row = new HaarColor[levCols];
 				for (int i = 0; i < levRows; i++)
 				{
@@ -245,25 +265,6 @@ namespace Algorithms
 					}
 				}
 
-				col = new HaarColor[levRows];
-				for (int j = 0; j < levCols; j++)
-				{
-					for (int i = 0; i < col.Length; i++)
-					{
-						int x = j;
-						if (k == 1) x += 400;
-						col[i] = data[i, x];
-					}
-
-					IWT(col);
-
-					for (int i = 0; i < col.Length; i++)
-					{
-						int x = j;
-						if (k == 1) x += 400;
-						data[i, x] = col[i];
-					}
-				}
 			}
 		}
 	}
