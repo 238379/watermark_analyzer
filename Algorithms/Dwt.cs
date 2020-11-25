@@ -7,10 +7,12 @@ namespace Algorithms
 	public class DwtParameters : AlgorithmParameters
 	{
 		public readonly int Layers;
+		public readonly double Alpha;
 
-		public DwtParameters(Bitmap original, Bitmap watermark, int layers) : base(original, watermark)
+		public DwtParameters(Bitmap original, Bitmap watermark, int layers, double alpha) : base(original, watermark)
 		{
 			Layers = layers;
+			Alpha = alpha;
 		}
 	}
 	public class Dwt: Algorithm
@@ -31,10 +33,33 @@ namespace Algorithms
 
 		public override AlgorithmResult Run()
 		{
-			var watermarked = ProcessHaar(parameters.Original, false, parameters.Layers);
-			var cleaned = ProcessHaar(watermarked, true, parameters.Layers);
-			var extracted = watermarked;
-			return new AlgorithmResult(watermarked, cleaned, extracted);
+			var haared = ProcessHaar(parameters.Original, false, parameters.Layers);
+
+			var haaredWatermarked = BitmapOperations.Create((sources, i, j) =>
+			{
+				var layers = parameters.Layers;
+				var originalPixel = sources[0].GetPixel(i, j);
+				var watermarkPixel = sources[1].GetPixel(i, j);
+
+				//TODO watermark scaling
+				if (i>sources[0].Height * (2 * layers - 1) / (2 * layers ) && j<sources[0].Width/(2 * layers)) {
+					var alpha = parameters.Alpha;
+	
+					var r = (int)(originalPixel.R + (watermarkPixel.R * alpha)) % 255;
+					var g = (int)(originalPixel.G + (watermarkPixel.G * alpha)) % 255;
+					var b = (int)(originalPixel.B + (watermarkPixel.B * alpha)) % 255;
+
+					return new PixelInfo(r, g, b);
+				}
+
+				return originalPixel;
+				
+				
+			}, haared, parameters.Watermark);
+
+			var watermarked = ProcessHaar(haaredWatermarked, true, parameters.Layers);
+
+			return new AlgorithmResult(watermarked, haared, haaredWatermarked);
 		}
 
 		private void FWT(HaarColor[] data)
@@ -83,25 +108,40 @@ namespace Algorithms
 				for (int i = 0; i < levRows; i++)
 				{
 					for (int j = 0; j < row.Length; j++)
-						row[j] = data[i, j];
+					{
+						int x = j;
+						if (k == 1) x += levCols;
+						row[j] = data[i, x];
+					}
 
 					FWT(row);
 
 					for (int j = 0; j < row.Length; j++)
-						data[i, j] = row[j];
+					{
+						int x = j;
+						if (k == 1) x += levCols;
+						data[i, x] = row[j];
+					}
 				}
-
 
 				col = new HaarColor[levRows];
 				for (int j = 0; j < levCols; j++)
 				{
 					for (int i = 0; i < col.Length; i++)
-						col[i] = data[i, j];
+					{
+						int x = j;
+						if (k == 1) x += levCols;
+						col[i] = data[i, x];
+					}
 
 					FWT(col);
 
 					for (int i = 0; i < col.Length; i++)
-						data[i, j] = col[i];
+					{
+						int x = j;
+						if (k == 1) x += levCols;
+						data[i, x] = col[i];
+					}
 				}
 			}
 		}
@@ -185,28 +225,44 @@ namespace Algorithms
 				int levCols = cols / lev;
 				int levRows = rows / lev;
 
-				col = new HaarColor[levRows];
-				for (int j = 0; j < levCols; j++)
-				{
-					for (int i = 0; i < col.Length; i++)
-						col[i] = data[i, j];
-
-					IWT(col);
-
-					for (int i = 0; i < col.Length; i++)
-						data[i, j] = col[i];
-				}
-
 				row = new HaarColor[levCols];
 				for (int i = 0; i < levRows; i++)
 				{
 					for (int j = 0; j < row.Length; j++)
-						row[j] = data[i, j];
+					{
+						int x = j;
+						if (k == 1) x += 400;
+						row[j] = data[i, x];
+					}
 
 					IWT(row);
 
 					for (int j = 0; j < row.Length; j++)
-						data[i, j] = row[j];
+					{
+						int x = j;
+						if (k == 1) x += 400;
+						data[i, x] = row[j];
+					}
+				}
+
+				col = new HaarColor[levRows];
+				for (int j = 0; j < levCols; j++)
+				{
+					for (int i = 0; i < col.Length; i++)
+					{
+						int x = j;
+						if (k == 1) x += 400;
+						col[i] = data[i, x];
+					}
+
+					IWT(col);
+
+					for (int i = 0; i < col.Length; i++)
+					{
+						int x = j;
+						if (k == 1) x += 400;
+						data[i, x] = col[i];
+					}
 				}
 			}
 		}

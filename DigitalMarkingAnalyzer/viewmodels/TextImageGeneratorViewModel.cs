@@ -30,8 +30,8 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			return new Dictionary<string, dynamic>
 			{
 				{ TextImageGenerator.TEXT_PARAM, new Func<string>(() => LoremIpsumGenerator.LoremIpsum(2, 4, 1, 2, 10)) },
-				{ TextImageGenerator.WIDTH_PARAM, 800 },
-				{ TextImageGenerator.HEIGHT_PARAM, 800 }
+				{ TextImageGenerator.WIDTH_PARAM, 200 },
+				{ TextImageGenerator.HEIGHT_PARAM, 200 }
 			};
 		}
 	}
