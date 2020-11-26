@@ -16,10 +16,10 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		public override void SetUp()
 		{
-			AddLabel("Number of layers", 0, 0);
-			layersTextBox = AddTextBox("2", 1, 0);
-			AddLabel("Alpha", 0, 1);
-			alphaTextBox = AddTextBox("0.01", 1, 1);
+			AddParameterLabel("Number of layers", 0, 0);
+			layersTextBox = AddParameterTextBox("2", 1, 0);
+			AddParameterLabel("Alpha", 0, 1);
+			alphaTextBox = AddParameterTextBox("0.01", 1, 1);
 		}
 
 		protected override void OnSubmit()

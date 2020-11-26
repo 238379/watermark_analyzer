@@ -14,8 +14,8 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		public override void SetUp()
 		{
-			AddLabel("Bits for watermark", 0, 0);
-			bitsTextBox = AddTextBox("2", 1, 0);
+			AddParameterLabel("Bits for watermark", 0, 0);
+			bitsTextBox = AddParameterTextBox("2", 1, 0);
 		}
 
 		protected override void OnSubmit()

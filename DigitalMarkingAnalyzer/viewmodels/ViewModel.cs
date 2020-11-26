@@ -45,36 +45,5 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		}
 
 		protected abstract void OnSubmit();
-
-		protected Label AddLabel(string labelContent, int x, int y)
-		{
-			var label = new Label
-			{
-				Content = labelContent,
-				HorizontalContentAlignment = HorizontalAlignment.Left,
-				VerticalContentAlignment = VerticalAlignment.Center
-			};
-			AddAtPositionInGrid(label, x, y);
-			return label;
-		}
-
-		protected TextBox AddTextBox(string initContent, int x, int y)
-		{
-			var textBox = new TextBox
-			{
-				Text = initContent,
-				HorizontalContentAlignment = HorizontalAlignment.Right,
-				VerticalContentAlignment = VerticalAlignment.Center
-			};
-			AddAtPositionInGrid(textBox, x, y);
-			return textBox;
-		}
-
-		private void AddAtPositionInGrid(UIElement element, int x, int y)
-		{
-			window.ParametersGrid.Children.Add(element);
-			Grid.SetColumn(element, x);
-			Grid.SetRow(element, y);
-		}
 	}
 }

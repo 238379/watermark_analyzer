@@ -1,5 +1,6 @@
 ﻿using Algorithms.common;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Algorithms
@@ -15,6 +16,7 @@ namespace Algorithms
 			Alpha = alpha;
 		}
 	}
+
 	public class Dwt: Algorithm
 	{
 		public const string ALGORITHM_NAME = "DWT";
@@ -59,7 +61,7 @@ namespace Algorithms
 
 			var watermarked = ProcessHaar(haaredWatermarked, true, parameters.Layers);
 
-			return new AlgorithmResult(watermarked, haared, haaredWatermarked);
+			return new AlgorithmResult(("Watermarked", watermarked), ("DWT", haared), ("DWT + watermark", haaredWatermarked));
 		}
 
 		private void FWT(HaarColor[] data)

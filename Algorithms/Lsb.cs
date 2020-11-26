@@ -33,7 +33,7 @@ namespace Algorithms
 			var watermarked = Watermark(parameters.Original, parameters.Watermark);
 			var cleaned = CleanWatermark(watermarked);
 			var extracted = ExtractWatermark(watermarked);
-			return new AlgorithmResult(watermarked, cleaned, extracted);
+			return new AlgorithmResult(("Watermarked", watermarked), ("Cleaned", cleaned), ("Extracted watermark", extracted));
 		}
 
 		private Bitmap Watermark(Bitmap original, Bitmap watermark)

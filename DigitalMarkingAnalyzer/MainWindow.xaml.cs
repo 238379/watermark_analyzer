@@ -84,24 +84,6 @@ namespace DigitalMarkingAnalyzer
 			ResultTab.Visibility = Visibility.Hidden;
 		}
 
-		private void SaveWatermarkedButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked SaveWatermarkedButton.");
-			InterfaceTools.SaveImageToDrive(WatermarkedImage);
-		}
-
-		private void SaveCleanedButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked SaveCleanedButton.");
-			InterfaceTools.SaveImageToDrive(CleanedImage);
-		}
-
-		private void SaveExtractedWatermarkButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked SaveExtractedWatermarkButton.");
-			InterfaceTools.SaveImageToDrive(ExtractedWatermarkImage);
-		}
-
 		private void AlgorithmBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			string algorithm = (sender as ComboBox).SelectedItem.ToString();

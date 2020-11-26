@@ -17,8 +17,8 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		public override void SetUp()
 		{
-			AddLabel("Ratio", 0, 0);
-			ratioTextBox = AddTextBox("0.5", 1, 0);
+			AddParameterLabel("Ratio", 0, 0);
+			ratioTextBox = AddParameterTextBox("0.5", 1, 0);
 		}
 
 		protected override void OnSubmit()

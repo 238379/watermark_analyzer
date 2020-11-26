@@ -68,34 +68,20 @@
                         </Grid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Result" x:Name="ResultTab">
+                <TabItem Header="Result" x:Name="ResultTab" Height="20" VerticalAlignment="Bottom">
                     <ScrollViewer x:Name="Scroller" Background="#FF000128">
                         <Grid Background="#FFE5E5E5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1*"/>
-                            </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
+                                <RowDefinition/>
+                                <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Grid Background="#FFE5E5E5" Grid.Column="0" Grid.Row="0">
-                                <Label Content="Watermarked" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>
-                                <Button x:Name="SaveWatermarkedButton" Content="Save" HorizontalAlignment="Center" Margin="0,460,0,0" Height="30" Width="100" Click="SaveWatermarkedButton_Click"/>
-                                <Image x:Name="WatermarkedImage" HorizontalAlignment="Left" Height="400" Margin="5,50,0,0" VerticalAlignment="Top" Width="400" Source="/DigitalMarkingAnalyzer;component/Resources/t_corgi_tekst_dolny.jpg" Stretch="Fill"/>
+                            <Grid x:Name="AlgorithmResultGrid" Background="#FFE5E5E5" Grid.Row="0" Margin="5,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
                             </Grid>
-                            <Grid Background="#FFE5E5E5" Grid.Column="1" Grid.Row="0">
-                                <Label Content="Cleaned" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,10,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>
-                                <Button x:Name="SaveCleanedButton" Content="Save" HorizontalAlignment="Center" Margin="0,460,0,0" Height="30" Width="100" Click="SaveCleanedButton_Click"/>
-                                <Image x:Name="CleanedImage" HorizontalAlignment="Right" Height="400" Margin="0,50,5,0" VerticalAlignment="Top" Width="400" Source="/DigitalMarkingAnalyzer;component/Resources/r_corgi_tekst_dolny.jpg" Stretch="Fill"/>
-                            </Grid>
-                            <Grid Background="#FFE5E5E5" Grid.Column="0" Grid.Row="1">
-                                <Label Content="Extracted Watermark" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,10,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>
-                                <Button x:Name="SaveExtractedWatermarkButton" Content="Save" HorizontalAlignment="Center" Margin="0,460,0,0" Height="30" Width="100" Click="SaveExtractedWatermarkButton_Click"/>
-                                <Image x:Name="ExtractedWatermarkImage" HorizontalAlignment="Right" Height="400" Margin="5,50,10,0" VerticalAlignment="Top" Width="400" Source="/DigitalMarkingAnalyzer;component/Resources/w_tekst_dolny.png" Stretch="Fill"/>
-                            </Grid>
-                            <Button x:Name="Close" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Content="Close" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10,0,10" Height="50" Width="100" Click="CloseResultTabButton_Click"/>
+                            <Button x:Name="Close" Grid.Row="1" Grid.ColumnSpan="2" Content="Close" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10,0,10" Height="50" Width="100" Click="CloseResultTabButton_Click"/>
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
