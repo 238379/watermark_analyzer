@@ -1,7 +1,6 @@
 ﻿using Generators;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows.Controls;
 
 namespace DigitalMarkingAnalyzer.viewmodels
@@ -10,25 +9,25 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private TextImageGenerator generator;
 
-		public TextImageGeneratorViewModel(MainWindow window, UpdatableImage imageContainer) : base(window, imageContainer)
+		public TextImageGeneratorViewModel(GeneratorControls generatorControls, TextBlock errorMessageTextBlock) : base(generatorControls, errorMessageTextBlock)
 		{
 		}
 
 		protected override void OnSubmit()
 		{
 			var bitmap = generator.Generate();
-			imageContainer.SetSource(bitmap);
+			controls.ImageContainer.SetSource(bitmap);
 		}
 
 		public override void SetUp()
 		{
-			window.GenerateWatermarkButton.Click += GenerateWatermarkImage;
+			controls.GenerateButton.Click += GenerateWatermarkImage;
 			generator = new TextImageGenerator(MockParameters());
 		}
 
 		public override void Dispose()
 		{
-			window.GenerateWatermarkButton.Click -= GenerateWatermarkImage;
+			controls.GenerateButton.Click -= GenerateWatermarkImage;
 			generator = null;
 		}
 

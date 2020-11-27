@@ -12,37 +12,59 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private const int RESULT_VIEW_COLUMNS = 2;
 
-		public static AlgorithmViewModel Create(string algorithmName, MainWindow window)
+		private readonly AlgorithmControls controls;
+
+		public static AlgorithmViewModel Create(string algorithmName, AlgorithmControls algorithmControls, TextBlock errorMessageTextBlock)
 		{
 			return algorithmName switch
 			{
-				Lsb.ALGORITHM_NAME => new LsbViewModel(window),
-				PixelAveraging.ALGORITHM_NAME => new PixelAveragingViewModel(window),
-				Dwt.ALGORITHM_NAME => new DwtViewModel(window),
+				Lsb.ALGORITHM_NAME => new LsbViewModel(algorithmControls, errorMessageTextBlock),
+				PixelAveraging.ALGORITHM_NAME => new PixelAveragingViewModel(algorithmControls, errorMessageTextBlock),
+				Dwt.ALGORITHM_NAME => new DwtViewModel(algorithmControls, errorMessageTextBlock),
 				_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
 			};
 		}
 
-		public AlgorithmViewModel(MainWindow window) : base(window)
+		public AlgorithmViewModel(AlgorithmControls algorithmControls, TextBlock errorMessageTextBlock) : base(errorMessageTextBlock)
 		{
+			this.controls = algorithmControls;
 		}
 
 		public override void Dispose()
 		{
-			window.ParametersGrid.Children.RemoveRange(0, window.ParametersGrid.Children.Count);
+			controls.ParametersGrid.Children.Clear();
 		}
+
+		protected override void OnSubmit()
+		{
+			switch(controls.AlgorithmMode)
+			{
+				case AlgorithmMode.AddWatermark:
+					ProcessAdding();
+					break;
+				case AlgorithmMode.RemoveWatermark:
+					ProcessRemoving();
+					break;
+				default:
+					throw new InvalidOperationException($"Unknown algorithm mode {controls.AlgorithmMode}.");
+			}
+		}
+
+		protected abstract void ProcessAdding();
+
+		protected abstract void ProcessRemoving();
 
 		protected (Bitmap, Bitmap) ReadInputBitmaps()
 		{
-			var originalAsBitmapImage = (BitmapImage)window.OriginalImage.Source;
-			var watermarkAsBitmapImage = (BitmapImage)window.WatermarkImage.Source;
+			var originalAsBitmapImage = (BitmapImage)controls.OriginalImage.Source;
+			var watermarkAsBitmapImage = (BitmapImage)controls.WatermarkImage.Source;
 
 			return (originalAsBitmapImage.ToBitmap(), watermarkAsBitmapImage.ToBitmap());
 		}
 
 		protected void ShowAlgorithmOutput(AlgorithmResult result)
 		{
-			window.AlgorithmResultGrid.Children.Clear();
+			controls.ResultGrid.Children.Clear();
 
 			result.ForEach((i, element) =>
 			{
@@ -59,13 +81,13 @@ namespace DigitalMarkingAnalyzer.viewmodels
 					{
 						Height = GridLength.Auto
 					};
-					window.AlgorithmResultGrid.RowDefinitions.Add(rowDefinition);
+					controls.ResultGrid.RowDefinitions.Add(rowDefinition);
 				}
 			});
 
-			window.ResultTab.Visibility = Visibility.Visible;
-			window.Tabs.SelectedIndex = 1;
-			window.ResultScroller.ScrollToVerticalOffset(0);
+			controls.ResultTab.Visibility = Visibility.Visible;
+			controls.TabControl.SelectedIndex = controls.ResultTabIndex;
+			controls.ResultScrollViewer.ScrollToVerticalOffset(0);
 		}
 
 		protected Label AddParameterLabel(string labelContent, int x, int y)
@@ -94,14 +116,14 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		private void AddAtPositionInParametersGrid(UIElement element, int x, int y)
 		{
-			window.ParametersGrid.Children.Add(element);
+			controls.ParametersGrid.Children.Add(element);
 			Grid.SetColumn(element, x);
 			Grid.SetRow(element, y);
 		}
 
 		private void AddAtPositionInResultGrid(UIElement element, int x, int y)
 		{
-			window.AlgorithmResultGrid.Children.Add(element);
+			controls.ResultGrid.Children.Add(element);
 			Grid.SetColumn(element, x);
 			Grid.SetRow(element, y);
 		}

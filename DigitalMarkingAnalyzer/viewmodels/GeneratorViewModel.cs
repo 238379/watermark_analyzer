@@ -8,11 +8,11 @@ namespace DigitalMarkingAnalyzer.viewmodels
 {
 	public abstract class GeneratorViewModel : ViewModel
 	{
-		protected UpdatableImage imageContainer;
+		protected GeneratorControls controls;
 
-		public GeneratorViewModel(MainWindow window, UpdatableImage imageContainer) : base(window)
+		public GeneratorViewModel(GeneratorControls generatorControls, TextBlock errorMessageTextBlock) : base(errorMessageTextBlock)
 		{
-			this.imageContainer = imageContainer;
+			this.controls = generatorControls;
 		}
 	}
 }

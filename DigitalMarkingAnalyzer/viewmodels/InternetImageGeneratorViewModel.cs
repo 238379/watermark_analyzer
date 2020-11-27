@@ -8,25 +8,25 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private InternetImageGenerator generator;
 
-		public InternetImageGeneratorViewModel(MainWindow window, UpdatableImage imageContainer) : base(window, imageContainer)
+		public InternetImageGeneratorViewModel(GeneratorControls generatorControls, TextBlock errorMessageTextBlock) : base(generatorControls, errorMessageTextBlock)
 		{
 		}
 
 		protected override void OnSubmit()
 		{
 			var bitmap = generator.Generate();
-			imageContainer.SetSource(bitmap);
+			controls.ImageContainer.SetSource(bitmap);
 		}
 
 		public override void SetUp()
 		{
-			window.GenerateOriginalButton.Click += GenerateOriginalImage;
+			controls.GenerateButton.Click += GenerateOriginalImage;
 			generator = new InternetImageGenerator(MockParameters());
 		}
 
 		public override void Dispose()
 		{
-			window.GenerateOriginalButton.Click -= GenerateOriginalImage;
+			controls.GenerateButton.Click -= GenerateOriginalImage;
 			generator = null;
 		}
 

@@ -33,7 +33,7 @@ namespace Algorithms
 			this.parameters = parameters;
 		}
 
-		public override AlgorithmResult Run()
+		public override AlgorithmResult AddWatermark()
 		{
 			var haared = ProcessHaar(parameters.Original, false, parameters.Layers);
 
@@ -62,6 +62,11 @@ namespace Algorithms
 			var watermarked = ProcessHaar(haaredWatermarked, true, parameters.Layers);
 
 			return new AlgorithmResult( ("DWT", haared), ("Watermarked", watermarked), ("DWT + watermark", haaredWatermarked));
+		}
+
+		public override AlgorithmResult RemoveWatermark()
+		{
+			throw new NotImplementedException();
 		}
 
 		private void FWT(HaarColor[] data)

@@ -1,7 +1,5 @@
 ﻿using Algorithms;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.Windows.Controls;
 
@@ -11,7 +9,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private TextBox ratioTextBox;
 
-		public PixelAveragingViewModel(MainWindow window) : base(window)
+		public PixelAveragingViewModel(AlgorithmControls algorithmControls, TextBlock errorMessageTextBlock) : base(algorithmControls, errorMessageTextBlock)
 		{
 		}
 
@@ -21,12 +19,17 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			ratioTextBox = AddParameterTextBox("0.5", 1, 0);
 		}
 
-		protected override void OnSubmit()
+		protected override void ProcessAdding()
 		{
 			var p = ReadParameters();
 			var algorithm = new PixelAveraging(p);
-			var result = algorithm.Run();
+			var result = algorithm.AddWatermark();
 			ShowAlgorithmOutput(result);
+		}
+
+		protected override void ProcessRemoving()
+		{
+			throw new NotImplementedException();
 		}
 
 		private PixelAveragingParameters ReadParameters()

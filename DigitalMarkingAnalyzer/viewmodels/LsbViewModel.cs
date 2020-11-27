@@ -8,7 +8,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private TextBox bitsTextBox;
 
-		public LsbViewModel(MainWindow window) : base(window)
+		public LsbViewModel(AlgorithmControls algorithmControls, TextBlock errorMessageTextBlock) : base(algorithmControls, errorMessageTextBlock)
 		{
 		}
 
@@ -18,12 +18,17 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			bitsTextBox = AddParameterTextBox("2", 1, 0);
 		}
 
-		protected override void OnSubmit()
+		protected override void ProcessAdding()
 		{
 			var p = ReadParameters();
 			var algorithm = new Lsb(p);
-			var result = algorithm.Run();
+			var result = algorithm.AddWatermark();
 			ShowAlgorithmOutput(result);
+		}
+
+		protected override void ProcessRemoving()
+		{
+			throw new NotImplementedException();
 		}
 
 		private LsbParameters ReadParameters()

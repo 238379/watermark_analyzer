@@ -1,4 +1,5 @@
 ﻿using Algorithms.common;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -26,12 +27,17 @@ namespace Algorithms
 			this.parameters = parameters;
 		}
 
-		public override AlgorithmResult Run()
+		public override AlgorithmResult AddWatermark()
 		{
 			var watermarked = Watermark(parameters.Original, parameters.Watermark);
 			var cleaned = CleanWatermark(watermarked, parameters.Watermark);
 			var extracted = ExtractWatermark(watermarked, parameters.Original);
 			return new AlgorithmResult(("Watermarked", watermarked), ("Cleaned", cleaned), ("Extracted watermark", extracted));
+		}
+
+		public override AlgorithmResult RemoveWatermark()
+		{
+			throw new NotImplementedException();
 		}
 
 		private Bitmap Watermark(Bitmap original, Bitmap watermark)

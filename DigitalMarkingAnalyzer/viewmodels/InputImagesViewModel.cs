@@ -15,20 +15,29 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		private ImageSource defaultOriginalSource;
 		private ImageSource defaultWatermarkSource;
+		private ImageSource defaultWatermarkedSource;
 
 		private readonly DropoutStack<ImageSource> originalBitmaps;
 		private readonly DropoutStack<ImageSource> watermarkBitmaps;
+		private readonly DropoutStack<ImageSource> watermarkedBitmaps;
+
+		private readonly MainWindow window;
 
 		private readonly Image originalImage;
 		private readonly Image watermarkImage;
+		private readonly Image watermarkedImage;
 
-		public InputImagesViewModel(MainWindow window, Image originalImage, Image watermarkImage) : base(window)
+		// TODO REFACTOR
+		public InputImagesViewModel(MainWindow window, Image originalImage, Image watermarkImage, Image watermarkedImage, TextBlock errorMessageTextBlock) : base(errorMessageTextBlock)
 		{
+			this.window = window;
 			originalBitmaps = new DropoutStack<ImageSource>(IMAGES_MEMORY);
 			watermarkBitmaps = new DropoutStack<ImageSource>(IMAGES_MEMORY);
+			watermarkedBitmaps = new DropoutStack<ImageSource>(IMAGES_MEMORY);
 
 			this.originalImage = originalImage;
 			this.watermarkImage = watermarkImage;
+			this.watermarkedImage = watermarkedImage;
 		}
 
 		public override void Dispose()
@@ -50,6 +59,8 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		{
 			window.OriginalImage.SetSource(new Uri("/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg", UriKind.RelativeOrAbsolute));
 			window.WatermarkImage.SetSource(new Uri("/DigitalMarkingAnalyzer;component/Resources/w_tekst_dolny.png", UriKind.RelativeOrAbsolute));
+			window.WatermarkedImage.SetSource(new Uri("/DigitalMarkingAnalyzer;component/Resources/t_corgi_tekst_dolny.jpg", UriKind.RelativeOrAbsolute));
+
 			defaultOriginalSource = window.OriginalImage.Source;
 			defaultWatermarkSource = window.WatermarkImage.Source;
 

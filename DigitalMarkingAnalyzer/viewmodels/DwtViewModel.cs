@@ -10,7 +10,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		private TextBox layersTextBox;
 		private TextBox alphaTextBox;
 
-		public DwtViewModel(MainWindow window) : base(window)
+		public DwtViewModel(AlgorithmControls algorithmControls, TextBlock errorMessageTextBlock) : base(algorithmControls, errorMessageTextBlock)
 		{
 		}
 
@@ -22,12 +22,17 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			alphaTextBox = AddParameterTextBox("0.01", 1, 1);
 		}
 
-		protected override void OnSubmit()
+		protected override void ProcessAdding()
 		{
 			var p = ReadParameters();
 			var algorithm = new Dwt(p);
-			var result = algorithm.Run();
+			var result = algorithm.AddWatermark();
 			ShowAlgorithmOutput(result);
+		}
+
+		protected override void ProcessRemoving()
+		{
+			throw new NotImplementedException();
 		}
 
 		private DwtParameters ReadParameters()

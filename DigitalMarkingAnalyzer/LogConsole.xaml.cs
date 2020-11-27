@@ -24,5 +24,10 @@ namespace DigitalMarkingAnalyzer
             LoggerFactory.SetConsoleLoggerWriteAction(_ => { });
             base.OnClosing(e);
         }
+
+        private void ClearConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+            OutputBlock.Text = "";
+        }
     }
 }

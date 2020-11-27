@@ -6,6 +6,13 @@
 		{
 		}
 
-		public abstract AlgorithmResult Run();
+		public abstract AlgorithmResult AddWatermark();
+		public abstract AlgorithmResult RemoveWatermark();
+	}
+
+	public enum AlgorithmMode
+	{
+		AddWatermark,
+		RemoveWatermark
 	}
 }
