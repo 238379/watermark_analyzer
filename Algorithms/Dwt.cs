@@ -61,7 +61,7 @@ namespace Algorithms
 
 			var watermarked = ProcessHaar(haaredWatermarked, true, parameters.Layers);
 
-			return new AlgorithmResult(("Watermarked", watermarked), ("DWT", haared), ("DWT + watermark", haaredWatermarked));
+			return new AlgorithmResult( ("DWT", haared), ("Watermarked", watermarked), ("DWT + watermark", haaredWatermarked));
 		}
 
 		private void FWT(HaarColor[] data)
