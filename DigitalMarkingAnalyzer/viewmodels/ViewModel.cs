@@ -39,10 +39,23 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			logger.LogInfo($"Processing time: {sw.ElapsedMilliseconds} ms");
 		}
 
-		public virtual void Dispose()
+		protected void Do(Action action)
 		{
-			window.ParametersGrid.Children.RemoveRange(0, window.ParametersGrid.Children.Count);
+			try
+			{
+				window.ErrorMessage.Visibility = Visibility.Hidden;
+				action();
+			}
+			catch (Exception ex)
+			{
+				logger.LogError(ex.Message);
+				logger.LogDebug(ex.StackTrace);
+				window.ErrorMessage.Text = ex.Message;
+				window.ErrorMessage.Visibility = Visibility.Visible;
+			}
 		}
+
+		public abstract void Dispose();
 
 		protected abstract void OnSubmit();
 	}

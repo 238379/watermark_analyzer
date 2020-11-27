@@ -27,6 +27,11 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		{
 		}
 
+		public override void Dispose()
+		{
+			window.ParametersGrid.Children.RemoveRange(0, window.ParametersGrid.Children.Count);
+		}
+
 		protected (Bitmap, Bitmap) ReadInputBitmaps()
 		{
 			var originalAsBitmapImage = (BitmapImage)window.OriginalImage.Source;
@@ -60,6 +65,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 			window.ResultTab.Visibility = Visibility.Visible;
 			window.Tabs.SelectedIndex = 1;
+			window.ResultScroller.ScrollToVerticalOffset(0);
 		}
 
 		protected Label AddParameterLabel(string labelContent, int x, int y)

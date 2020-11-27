@@ -8,19 +8,31 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private InternetImageGenerator generator;
 
-		public InternetImageGeneratorViewModel(MainWindow window, Image imageContainer) : base(window, imageContainer)
+		public InternetImageGeneratorViewModel(MainWindow window, UpdatableImage imageContainer) : base(window, imageContainer)
 		{
 		}
 
 		protected override void OnSubmit()
 		{
 			var bitmap = generator.Generate();
-			InterfaceTools.SetImageFromBitmap(imageContainer, bitmap);
+			imageContainer.SetSource(bitmap);
 		}
 
 		public override void SetUp()
 		{
+			window.GenerateOriginalButton.Click += GenerateOriginalImage;
 			generator = new InternetImageGenerator(MockParameters());
+		}
+
+		public override void Dispose()
+		{
+			window.GenerateOriginalButton.Click -= GenerateOriginalImage;
+			generator = null;
+		}
+
+		private void GenerateOriginalImage(object sender, System.Windows.RoutedEventArgs e)
+		{
+			Submit();
 		}
 
 		private Dictionary<string, dynamic> MockParameters()

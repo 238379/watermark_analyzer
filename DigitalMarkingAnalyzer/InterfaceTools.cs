@@ -26,13 +26,27 @@ namespace DigitalMarkingAnalyzer
 			var path = GetFilePathFromDialog();
 			if (path != null)
 			{
-				imageContainer.Source = new BitmapImage(new Uri(path, UriKind.Absolute));
+				SetImageFromUri(imageContainer, new Uri(path, UriKind.Absolute));
+			}
+		}
+
+		public static void SetImageFromDrive(UpdatableImage imageContainer)
+		{
+			var path = GetFilePathFromDialog();
+			if (path != null)
+			{
+				imageContainer.SetSource(new Uri(path, UriKind.Absolute));
 			}
 		}
 
 		public static void SetImageFromBitmap(System.Windows.Controls.Image imageContainer, Bitmap bitmap)
 		{
-			imageContainer.Source = BitmapToImageSource(bitmap);
+			imageContainer.SetCurrentValue(System.Windows.Controls.Image.SourceProperty, BitmapToImageSource(bitmap));
+		}
+
+		public static void SetImageFromUri(System.Windows.Controls.Image imageContainer, Uri uri)
+		{
+			imageContainer.SetCurrentValue(System.Windows.Controls.Image.SourceProperty, new BitmapImage(uri));
 		}
 
 		public static void SaveImageToDrive(System.Windows.Controls.Image image)

@@ -8,9 +8,9 @@ namespace DigitalMarkingAnalyzer.viewmodels
 {
 	public abstract class GeneratorViewModel : ViewModel
 	{
-		protected Image imageContainer;
+		protected UpdatableImage imageContainer;
 
-		public GeneratorViewModel(MainWindow window, Image imageContainer) : base(window)
+		public GeneratorViewModel(MainWindow window, UpdatableImage imageContainer) : base(window)
 		{
 			this.imageContainer = imageContainer;
 		}

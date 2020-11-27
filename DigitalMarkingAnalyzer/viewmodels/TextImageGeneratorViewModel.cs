@@ -10,19 +10,31 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private TextImageGenerator generator;
 
-		public TextImageGeneratorViewModel(MainWindow window, Image imageContainer) : base(window, imageContainer)
+		public TextImageGeneratorViewModel(MainWindow window, UpdatableImage imageContainer) : base(window, imageContainer)
 		{
 		}
 
 		protected override void OnSubmit()
 		{
 			var bitmap = generator.Generate();
-			InterfaceTools.SetImageFromBitmap(imageContainer, bitmap);
+			imageContainer.SetSource(bitmap);
 		}
 
 		public override void SetUp()
 		{
+			window.GenerateWatermarkButton.Click += GenerateWatermarkImage;
 			generator = new TextImageGenerator(MockParameters());
+		}
+
+		public override void Dispose()
+		{
+			window.GenerateWatermarkButton.Click -= GenerateWatermarkImage;
+			generator = null;
+		}
+
+		private void GenerateWatermarkImage(object sender, System.Windows.RoutedEventArgs e)
+		{
+			Submit();
 		}
 
 		private Dictionary<string, dynamic> MockParameters()

@@ -3,6 +3,7 @@ using LoggerUtils;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace DigitalMarkingAnalyzer
@@ -12,7 +13,12 @@ namespace DigitalMarkingAnalyzer
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		public UpdatableImage OriginalImage { get; }
+		public UpdatableImage WatermarkImage { get; }
+
 		private readonly Logger logger;
+
+		private readonly InputImagesViewModel inputImagesViewModel;
 
 		private readonly InternetImageGeneratorViewModel internetImageGeneratorViewModel;
 		private readonly TextImageGeneratorViewModel textImageGeneratorViewModel;
@@ -25,10 +31,13 @@ namespace DigitalMarkingAnalyzer
 			InitializeComponent();
 			ResultTab.Visibility = Visibility.Hidden;
 
-			OriginalImage.Source = new BitmapImage(new Uri("/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg", System.UriKind.RelativeOrAbsolute));
-			WatermarkImage.Source = new BitmapImage(new Uri("/DigitalMarkingAnalyzer;component/Resources/w_tekst_dolny.png", System.UriKind.RelativeOrAbsolute));
-
 			StartLogConsole();
+
+			OriginalImage = new UpdatableImage(OriginalImageControl);
+			WatermarkImage = new UpdatableImage(WatermarkImageControl);
+
+			inputImagesViewModel = new InputImagesViewModel(this, OriginalImageControl, WatermarkImageControl);
+			inputImagesViewModel.SetUp();
 
 			internetImageGeneratorViewModel = new InternetImageGeneratorViewModel(this, OriginalImage);
 			internetImageGeneratorViewModel.SetUp();
@@ -45,30 +54,6 @@ namespace DigitalMarkingAnalyzer
 				Left = Left + 0,
 				Top = Top + 0
 			}.Show();
-		}
-
-		private void BrowseOriginalButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked BrowseOriginalButton.");
-			InterfaceTools.SetImageFromDrive(OriginalImage);
-		}
-
-		private void BrowseWatermarkButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked BrowseWatermarkButton.");
-			InterfaceTools.SetImageFromDrive(WatermarkImage);
-		}
-
-		private void GenerateOriginalButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked GenerateOriginalButton.");
-			internetImageGeneratorViewModel.Submit();
-		}		
-
-		private void GenerateWatermarkButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked GenerateWatermarkButton.");
-			textImageGeneratorViewModel.Submit();
 		}
 
 		private void ProcessButton_Click(object sender, RoutedEventArgs e)
