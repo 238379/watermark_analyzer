@@ -11,21 +11,30 @@ namespace Algorithms
 
 		public const string BITS_PARAM = "BITS_PARAM";
 
-		private readonly int bitsForWatermark;
+		private readonly int key = 0;
 		private readonly double alpha;
+		private int[] v;
 		private readonly Random random;
+		private ComplexImage originalImage;
+		private ComplexImage complexImage;
+		private ComplexImage complexWatermark;
 
 		public Dft(Dictionary<string, dynamic> parameters) : base(parameters)
 		{
-			this.bitsForWatermark = parameters[BITS_PARAM];
+			this.key = parameters[BITS_PARAM];
 			this.alpha = 0.1;
-			this.random = new Random();
+			this.random = new Random(key);
 		}
 
 		public Bitmap Watermark(Bitmap original, Bitmap watermark)
 		{
-			ComplexImage complexImage = ComplexImage.FromBitmap(original);
-            complexImage.ForwardFourierTransform();
+			complexImage = ComplexImage.FromBitmap(original);
+			complexWatermark = ComplexImage.FromBitmap(watermark, original.Width);
+			originalImage = new ComplexImage(complexImage);
+
+			complexImage.ForwardFourierTransform();
+			complexWatermark.ForwardFourierTransform();
+			EmbedWatermark();
             complexImage.BackwardFourierTransform();
             var watermarkedBitmap = complexImage.ToBitmap();
 
@@ -34,61 +43,73 @@ namespace Algorithms
 
 		public Bitmap CleanWatermark(Bitmap watermarked)
 		{
-			var newBitmap = new Bitmap(watermarked.Width, watermarked.Height);
-
-			watermarked.RunOnEveryPixel((i, j) =>
+			ComplexImage complexWatermarked = ComplexImage.FromBitmap(watermarked);
+			complexWatermarked.ForwardFourierTransform();
+			v = new int[complexWatermarked.Width];
+			double[] vAlpha = new double[complexWatermarked.Width];
+			for (int i = 0; i < complexWatermarked.Width; i++)
 			{
-				var pixel = watermarked.GetPixel(i, j);
+				v[i] = random.Next(0, 2);
+				vAlpha[i] = v[i] * alpha;
+			}
 
-				// TODO better method instead of random bit on last position
-				var r = pixel.R - pixel.R % 2 + CreateRandomBit();
-				var g = pixel.G - pixel.G % 2 + CreateRandomBit();
-				var b = pixel.B - pixel.B % 2 + CreateRandomBit();
-
-				newBitmap.SetPixel(i, j, Color.FromArgb(r, g, b));
-			});
-
-			return newBitmap;
-		}
-
-		private Bitmap PreprocessToSimplifiedWatermark(Bitmap watermark)
-		{
-			var divider = (byte)(Math.Ceiling(255 / Math.Pow(2, bitsForWatermark)) + 0.5);
-
-			return BitmapOperations.Create((sources, i, j) =>
-			{
-				var watermarkPixel = sources[0].GetPixel(i, j);
-
-				byte r = (byte)(watermarkPixel.R / divider);
-				byte g = (byte)(watermarkPixel.G / divider);
-				byte b = (byte)(watermarkPixel.B / divider);
-
-				return new PixelInfo(r, g, b);
-			}, watermark);
+			for (int y = 0; y < complexWatermarked.Height; y++)
+				for (int x = 0; x < complexWatermarked.Width; x++)
+				{
+					double imageReal = complexWatermarked.Data[y, x].Real;
+					double imageImaginary = complexWatermarked.Data[y, x].Imaginary;
+					complexWatermarked.Data[y, x] = new System.Numerics.Complex(imageReal - vAlpha[x] * imageReal, imageImaginary - vAlpha[x] * imageImaginary);
+				}
+			complexWatermarked.BackwardFourierTransform();
+			return complexWatermarked.ToBitmap();
 		}
 
 		public Bitmap ExtractWatermark(Bitmap watermarked)
 		{
-			return BitmapOperations.Create((sources, i, j) =>
+			ComplexImage complexWatermarked = ComplexImage.FromBitmap(watermarked);
+			complexWatermarked.ForwardFourierTransform();
+			v = new int[complexWatermarked.Width];
+			double[] vAlpha = new double[complexWatermarked.Width];
+			for (int i = 0; i < complexWatermarked.Width; i++)
 			{
-				var watermarkedImgPixel = sources[0].GetPixel(i, j);
+				v[i] = random.Next(0, 2);
+				vAlpha[i] = v[i] * alpha;
+			}
 
-				var divider = (int)Math.Pow(2, bitsForWatermark);
-				var multiplier = 255 / (divider - 1);
-				byte r = (byte)(watermarkedImgPixel.R % divider * multiplier);
-				byte g = (byte)(watermarkedImgPixel.G % divider * multiplier);
-				byte b = (byte)(watermarkedImgPixel.B % divider * multiplier);
-
-				return new PixelInfo(r, g, b);
-			}, watermarked);
+			for (int y = 0; y < complexWatermarked.Height; y++)
+				for (int x = 0; x < complexWatermarked.Width; x++)
+				{
+					double imageReal = complexWatermarked.Data[y, x].Real;
+					double imageImaginary = complexWatermarked.Data[y, x].Imaginary;
+					complexWatermarked.Data[y, x] = new System.Numerics.Complex(vAlpha[x] * imageReal - imageReal, vAlpha[x] * imageImaginary - imageImaginary);
+				}
+			complexWatermarked.BackwardFourierTransform();
+			return complexWatermarked.ToBitmap();
 		}
 
-		private byte CreateRandomBit()
+
+		public void EmbedWatermark()
 		{
-			return (byte)random.Next(0, 2);
+			v = new int[complexImage.Width];
+			double[] vAlpha = new double[complexImage.Width];
+			for (int i = 0; i < complexImage.Width; i++)
+            {
+				v[i] = random.Next(0, 2);
+				vAlpha[i] = v[i] * alpha;
+			}
+				
+			for (int y = 0; y < complexImage.Height; y++)
+				for (int x = 0; x < complexImage.Width; x++)
+				{
+					double imageReal = complexImage.Data[y, x].Real;
+					double imageImaginary = complexImage.Data[y, x].Imaginary;
+					double watermarkReal = complexWatermark.Data[y, x].Real;
+					double watermarkImaginary = complexWatermark.Data[y, x].Imaginary;
+					complexImage.Data[y, x] = new System.Numerics.Complex(imageReal + vAlpha[x] * watermarkReal, imageImaginary + vAlpha[x] * watermarkImaginary);
+				}
 		}
 
-        public override AlgorithmResult Run(Bitmap original, Bitmap watermark)
+		public override AlgorithmResult Run(Bitmap original, Bitmap watermark)
         {
 			var watermarked = Watermark(original, watermark);
 			var cleaned = CleanWatermark(watermarked);

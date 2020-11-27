@@ -23,7 +23,7 @@ namespace Algorithms
 
             bmp.RunOnEveryPixel((i, j) =>
             {
-                byte[] YCbCr = YCbCrFromRGB(bmp.GetPixel(i, j).R, bmp.GetPixel(i, j).G, bmp.GetPixel(i, j).B);
+                byte[] YCbCr = RGB2YCbCr(bmp.GetPixel(i, j).R, bmp.GetPixel(i, j).G, bmp.GetPixel(i, j).B);
                 arrayycbcr[i, j, 0] = YCbCr[0];
                 arrayycbcr[i, j, 1] = YCbCr[1];
                 arrayycbcr[i, j, 2] = YCbCr[2];
@@ -39,29 +39,20 @@ namespace Algorithms
             });
         }
 
-        public static Color ColorFromYCbCr(int y, int cb, int cr)
+        public static Color ColorFromYCbCr(int Y, int Cb, int Cr)
         {
-            double Y = y;
-            double Cb = cb;
-            double Cr = cr;
-
-            int R = (int)(Y + 1.40200 * (Cr - 0x80));
-            int G = (int)(Y - 0.34414 * (Cb - 0x80) - 0.71414 * (Cr - 0x80));
-            int B = (int)(Y + 1.77200 * (Cb - 0x80));
-
-            R = Math.Max(0, Math.Min(255, R));
-            G = Math.Max(0, Math.Min(255, G));
-            B = Math.Max(0, Math.Min(255, B));
+            int R = (int)Math.Max(0, Math.Min(255, (float)(Y + 1.403 * (Cr - 128))));
+            int G = (int)Math.Max(0, Math.Min(255, (float)(Y - 0.344 * (Cb - 128) - 0.714 * (Cr - 128))));
+            int B = (int)Math.Max(0, Math.Min(255, (float)(Y + 1.773 * (Cb - 128))));
 
             return Color.FromArgb(R, G, B);
         }
 
-        private static byte[] YCbCrFromRGB(int R, int G, int B)
+        private static byte[] RGB2YCbCr(int R, int G, int B)
         {
-            var Y = (byte)((0.257 * R) + (0.504 * G) + (0.098 * B) + 16);
-            var Cb = (byte)(-(0.148 * R) - (0.291 * G) + (0.439 * B) + 128);
-            var Cr = (byte)((0.439 * R) - (0.368 * G) - (0.071 * B) + 128);
-
+            var Y = (byte)((0.299 * R) + (0.587 * G) + (0.114 * B));
+            var Cb = (byte)(-(0.169 * R) - (0.331 * G) + (0.5 * B) + 128);
+            var Cr = (byte)((0.5 * R) - (0.419 * G) - (0.081 * B) + 128);
             return new byte[3] { Y, Cb, Cr };
         }
     }

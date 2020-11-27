@@ -13,8 +13,8 @@ namespace Algorithms
         public int OriginalWidth { get; }
         public int OriginalHeight { get; }
         public bool FourierTransformed { get; private set; } = false;
-        public Complex[,] Data { get; }
-        public byte[,,] YCbCr { get; set; }
+        public Complex[,] Data { get; set; }
+        public byte[,,] YCbCr { get; private set; }
 
         protected ComplexImage(int width, int height, int originalWidth, int originalHeight)
         {
@@ -24,6 +24,26 @@ namespace Algorithms
             OriginalHeight = originalHeight;
             Data = new Complex[height, width];
             FourierTransformed = false;
+        }
+
+        public ComplexImage(ComplexImage complexImage)
+        {
+            Width = complexImage.Width;
+            Height = complexImage.Height;
+            OriginalWidth = complexImage.OriginalWidth;
+            OriginalHeight = complexImage.OriginalHeight;
+            Data = new Complex[Height, Width];
+            for (int y = 0; y < Height; y++)
+                for (int x = 0; x < Width; x++)
+                    Data[y, x] = new Complex(complexImage.Data[y, x].Real, complexImage.Data[y, x].Imaginary);
+            YCbCr = new byte[Height, Width, 3];
+            for (int y = 0; y < Height; y++)
+                for (int x = 0; x < Width; x++)
+                {
+                    YCbCr[y, x, 0] = complexImage.YCbCr[y, x, 0];
+                    YCbCr[y, x, 0] = complexImage.YCbCr[y, x, 1];
+                    YCbCr[y, x, 0] = complexImage.YCbCr[y, x, 2];
+                }
         }
 
         public object Clone()
@@ -44,24 +64,20 @@ namespace Algorithms
             return dstImage;
         }
 
-        public static ComplexImage FromBitmap(Bitmap image)
+        public static ComplexImage FromBitmap(Bitmap image, int newSize = 0)
         {
-            var newSize = Math.Max(image.Width, image.Height);
+            if (newSize == 0)
+                newSize = Math.Max(image.Width, image.Height);
             newSize = (int)Math.Pow(2, Math.Ceiling(Math.Log2(newSize)));
             ComplexImage complexImage = new ComplexImage(newSize, newSize, image.Width, image.Height);
             var newImage = new Bitmap(image, newSize, newSize);
-            var imageToTransform = new Bitmap(newSize, newSize);
             complexImage.YCbCr = BitmapExtensions.Rgb2Ycbcr(newImage);
-            imageToTransform.RunOnEveryPixel((i, j) =>
-            {
-                imageToTransform.SetPixel(i, j, Color.FromArgb(complexImage.YCbCr[i, j, 0], complexImage.YCbCr[i, j, 0], complexImage.YCbCr[i, j, 0]));
-            });
 
             Complex[,] data = complexImage.Data;
 
-            imageToTransform.RunOnEveryPixel((i, j) =>
+            newImage.RunOnEveryPixel((i, j) =>
             {
-                data[i, j] = new Complex(newImage.GetPixel(i, j).R / 255.0, data[i, j].Imaginary);
+                data[i, j] = new Complex(complexImage.YCbCr[i,j,0] / 255.0, data[i, j].Imaginary);
             });
 
             return complexImage;
@@ -129,6 +145,6 @@ namespace Algorithms
                     }
                 }
             }
-        }
+        }        
     }
 }
