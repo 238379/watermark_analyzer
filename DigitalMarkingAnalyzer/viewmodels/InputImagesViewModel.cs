@@ -44,6 +44,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		{
 			window.BrowseOriginalButton.Click -= SetOriginalImageFromDrive;
 			window.BrowseWatermarkButton.Click -= SetWatermarkImageFromDrive;
+			window.BrowseWatermarkedButton.Click -= SetWatermarkedImageFromDrive;
 
 			window.OriginalImage.SourceChanged -= RegisterOriginalImageSourceUpdated;
 			window.WatermarkImage.SourceChanged -= RegisterWatermarkImageSourceUpdated;
@@ -61,6 +62,10 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			window.WatermarkImage.SetSource(new Uri("/DigitalMarkingAnalyzer;component/Resources/w_tekst_dolny.png", UriKind.RelativeOrAbsolute));
 			window.WatermarkedImage.SetSource(new Uri("/DigitalMarkingAnalyzer;component/Resources/t_corgi_tekst_dolny.jpg", UriKind.RelativeOrAbsolute));
 
+			InterfaceTools.RegisterOpenImageWindowOnClick(window, originalImage);
+			InterfaceTools.RegisterOpenImageWindowOnClick(window, watermarkImage);
+			InterfaceTools.RegisterOpenImageWindowOnClick(window, watermarkedImage);
+
 			defaultOriginalSource = window.OriginalImage.Source;
 			defaultWatermarkSource = window.WatermarkImage.Source;
 
@@ -69,6 +74,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 			window.BrowseOriginalButton.Click += SetOriginalImageFromDrive;
 			window.BrowseWatermarkButton.Click += SetWatermarkImageFromDrive;
+			window.BrowseWatermarkedButton.Click += SetWatermarkedImageFromDrive;
 
 			window.UndoOriginalButton.Click += RevertOriginalImage;
 			window.UndoWatermarkButton.Click += RevertWatermarkImage;
@@ -83,7 +89,6 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			SetToDefaultWatermarkVisibility();
 		}
 
-
 		protected override void OnSubmit()
 		{
 			throw new NotImplementedException();
@@ -97,6 +102,11 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		private void SetWatermarkImageFromDrive(object sender, RoutedEventArgs e)
 		{
 			Do(() => InterfaceTools.SetImageFromDrive(window.WatermarkImage));
+		}
+
+		private void SetWatermarkedImageFromDrive(object sender, RoutedEventArgs e)
+		{
+			Do(() => InterfaceTools.SetImageFromDrive(window.WatermarkedImage));
 		}
 
 		private void RegisterOriginalImageSourceUpdated(object source, ImageSourceChangedEventArgs args)

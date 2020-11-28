@@ -9,7 +9,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private TextBox ratioTextBox;
 
-		public PixelAveragingViewModel(AlgorithmControls algorithmControls, TextBlock errorMessageTextBlock) : base(algorithmControls, errorMessageTextBlock)
+		public PixelAveragingViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
 		{
 		}
 

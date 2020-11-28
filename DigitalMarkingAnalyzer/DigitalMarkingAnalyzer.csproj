@@ -38,4 +38,10 @@
     </Resource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="ImageWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 </Project>

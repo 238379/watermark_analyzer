@@ -7,13 +7,15 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private readonly ComboBox algorithmBox;
 		private readonly AlgorithmControls controls;
+		private readonly MainWindow mainWindow;
 
 		private AlgorithmViewModel algorithmViewModel;
 
-		public AlgorithmSelectionViewModel(ComboBox algorithmBox, AlgorithmControls algorithmControls, TextBlock errorMessageTextBlock) : base(errorMessageTextBlock)
+		public AlgorithmSelectionViewModel(ComboBox algorithmBox, AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(errorMessageTextBlock)
 		{
 			this.algorithmBox = algorithmBox;
 			this.controls = algorithmControls;
+			this.mainWindow = mainWindow;
 		}
 
 		public override void Dispose()
@@ -47,7 +49,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 			algorithmViewModel?.Dispose();
 
-			algorithmViewModel = AlgorithmViewModel.Create(algorithm, controls, errorMessageTextBlock);
+			algorithmViewModel = AlgorithmViewModel.Create(algorithm, controls, mainWindow, errorMessageTextBlock);
 			algorithmViewModel.SetUp();
 
 			if (controls.ProcessButton.Visibility == Visibility.Hidden)

@@ -13,21 +13,23 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		private const int RESULT_VIEW_COLUMNS = 2;
 
 		private readonly AlgorithmControls controls;
+		private readonly MainWindow mainWindow;
 
-		public static AlgorithmViewModel Create(string algorithmName, AlgorithmControls algorithmControls, TextBlock errorMessageTextBlock)
+		public static AlgorithmViewModel Create(string algorithmName, AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock)
 		{
 			return algorithmName switch
 			{
-				Lsb.ALGORITHM_NAME => new LsbViewModel(algorithmControls, errorMessageTextBlock),
-				PixelAveraging.ALGORITHM_NAME => new PixelAveragingViewModel(algorithmControls, errorMessageTextBlock),
-				Dwt.ALGORITHM_NAME => new DwtViewModel(algorithmControls, errorMessageTextBlock),
+				Lsb.ALGORITHM_NAME => new LsbViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+				PixelAveraging.ALGORITHM_NAME => new PixelAveragingViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+				Dwt.ALGORITHM_NAME => new DwtViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 				_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
 			};
 		}
 
-		public AlgorithmViewModel(AlgorithmControls algorithmControls, TextBlock errorMessageTextBlock) : base(errorMessageTextBlock)
+		public AlgorithmViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(errorMessageTextBlock)
 		{
 			this.controls = algorithmControls;
+			this.mainWindow = mainWindow;
 		}
 
 		public override void Dispose()
@@ -83,6 +85,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 				}
 
 				var view = new AlgorithmResultElementView(element.Label, element.Image);
+				InterfaceTools.RegisterOpenImageWindowOnClick(mainWindow, view.Image);
 				AddAtPositionInResultGrid(view.Grid, column, row);
 			});
 

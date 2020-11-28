@@ -10,7 +10,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		private TextBox layersTextBox;
 		private TextBox alphaTextBox;
 
-		public DwtViewModel(AlgorithmControls algorithmControls, TextBlock errorMessageTextBlock) : base(algorithmControls, errorMessageTextBlock)
+		public DwtViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
 		{
 		}
 

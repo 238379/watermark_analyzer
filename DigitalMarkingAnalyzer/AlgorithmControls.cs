@@ -1,5 +1,4 @@
 ﻿using Algorithms.common;
-using System;
 using System.Windows.Controls;
 
 namespace DigitalMarkingAnalyzer

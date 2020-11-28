@@ -8,7 +8,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private TextBox bitsTextBox;
 
-		public LsbViewModel(AlgorithmControls algorithmControls, TextBlock errorMessageTextBlock) : base(algorithmControls, errorMessageTextBlock)
+		public LsbViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
 		{
 		}
 

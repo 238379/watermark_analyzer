@@ -61,10 +61,10 @@ namespace DigitalMarkingAnalyzer
 			inputImagesViewModel = new InputImagesViewModel(this, OriginalImageControl, WatermarkImageControl, WatermarkedImageControl, AddingErrorMessage);// TODO
 			inputImagesViewModel.SetUp();
 
-			addingAlgorithmSelectionViewModel = new AlgorithmSelectionViewModel(AddingAlgorithmBox, addingWatermarkAlgorithmControls, AddingErrorMessage);
+			addingAlgorithmSelectionViewModel = new AlgorithmSelectionViewModel(AddingAlgorithmBox, addingWatermarkAlgorithmControls, this, AddingErrorMessage);
 			addingAlgorithmSelectionViewModel.SetUp();
 
-			removingAlgorithmSelectionViewModel = new AlgorithmSelectionViewModel(RemovingAlgorithmBox, removingWatermarkAlgorithmControls, RemovingErrorMessage);
+			removingAlgorithmSelectionViewModel = new AlgorithmSelectionViewModel(RemovingAlgorithmBox, removingWatermarkAlgorithmControls, this, RemovingErrorMessage);
 			removingAlgorithmSelectionViewModel.SetUp();
 
 			originalGeneratorViewModel = new InternetImageGeneratorViewModel(new GeneratorControls(GenerateOriginalButton, OriginalImage), AddingErrorMessage);
