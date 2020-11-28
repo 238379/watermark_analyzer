@@ -8,7 +8,7 @@ namespace Algorithms
 	{
 		public readonly int BitsForWatermark;
 
-		public LsbParameters(Bitmap original, Bitmap watermark, int bitsForWatermark) : base(original, watermark)
+		public LsbParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, int bitsForWatermark) : base(original, watermark, watermarked)
 		{
 			BitsForWatermark = bitsForWatermark;
 		}
@@ -38,7 +38,9 @@ namespace Algorithms
 
 		public override AlgorithmResult RemoveWatermark()
 		{
-			throw new NotImplementedException();
+			var cleaned = CleanWatermark(parameters.Watermarked);
+			var extracted = ExtractWatermark(parameters.Watermarked);
+			return new AlgorithmResult(("Cleaned", cleaned), ("Extracted watermark", extracted));
 		}
 
 		private Bitmap Watermark(Bitmap original, Bitmap watermark)

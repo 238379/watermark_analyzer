@@ -34,11 +34,11 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		private PixelAveragingParameters ReadParameters()
 		{
-			var (original, watermark) = ReadInputBitmaps();
+			var (original, watermark, watermarked) = ReadInputBitmaps();
 
 			if (double.TryParse(ratioTextBox.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out var ratio) && ratio >= 0 && ratio <= 1)
 			{
-				return new PixelAveragingParameters(original, watermark, ratio);
+				return new PixelAveragingParameters(original, watermark, watermarked, ratio);
 			}
 			else
 			{

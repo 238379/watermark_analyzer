@@ -28,16 +28,19 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		protected override void ProcessRemoving()
 		{
-			throw new NotImplementedException();
+			var p = ReadParameters();
+			var algorithm = new Lsb(p);
+			var result = algorithm.RemoveWatermark();
+			ShowAlgorithmOutput(result);
 		}
 
 		private LsbParameters ReadParameters()
 		{
-			var (original, watermark) = ReadInputBitmaps();
+			var (original, watermark, watermarked) = ReadInputBitmaps();
 
 			if (int.TryParse(bitsTextBox.Text, out var bitsForWatermark) && bitsForWatermark >= 1 && bitsForWatermark <= 8)
 			{
-				return new LsbParameters(original, watermark, bitsForWatermark);
+				return new LsbParameters(original, watermark, watermarked, bitsForWatermark);
 			}
 			else
 			{

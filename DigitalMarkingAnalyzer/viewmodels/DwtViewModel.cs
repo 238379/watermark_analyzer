@@ -37,12 +37,12 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		private DwtParameters ReadParameters()
 		{
-			var (original, watermark) = ReadInputBitmaps();
+			var (original, watermark, watermarked) = ReadInputBitmaps();
 
 			if (int.TryParse(layersTextBox.Text, out var layers) && layers >= 1 && layers <= 2)
 			{
 				if (double.TryParse(alphaTextBox.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out var alpha) && alpha >= 0 && alpha <= 1)
-					return new DwtParameters(original, watermark, layers, alpha);
+					return new DwtParameters(original, watermark, watermarked, layers, alpha);
 				throw new ArgumentException($"Invalid alpha value. It should be between [0; 1] but it is: {alphaTextBox.Text}");
 			}
 			else

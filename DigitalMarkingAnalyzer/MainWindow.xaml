@@ -71,8 +71,8 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="Adding Result" x:Name="AddingResultTab" Height="20" VerticalAlignment="Bottom">
-                    <ScrollViewer x:Name="AddingResultScrollViewer" Background="#FF000128">
-                        <Grid Background="#FFE5E5E5">
+                    <ScrollViewer x:Name="AddingResultScrollViewer" Background="#FF000128" VerticalScrollBarVisibility="Visible">
+                        <Grid Background="#FFE5E5E5" ScrollViewer.CanContentScroll="True">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
@@ -83,7 +83,7 @@
                                     <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
                             </Grid>
-                            <Button x:Name="CloseAddingResult" Grid.Row="1" Grid.ColumnSpan="2" Content="Close" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10,0,10" Height="50" Width="100" Click="CloseAddingResultTabButton_Click"/>
+                            <Button x:Name="CloseAddingResult" Grid.Row="1" Content="Close" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10,0,10" Height="50" Width="100" Click="CloseAddingResultTabButton_Click"/>
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
@@ -135,8 +135,8 @@
                 </TabItem>
                 <TabItem Header="Removing Result" x:Name="RemovingResultTab">
                     <Grid Background="#FFE5E5E5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <ScrollViewer x:Name="RemovingResultScrollViewer" Background="#FF000128">
-                            <Grid Background="#FFE5E5E5">
+                        <ScrollViewer x:Name="RemovingResultScrollViewer" Background="#FF000128" VerticalScrollBarVisibility="Visible">
+                            <Grid Background="#FFE5E5E5" ScrollViewer.CanContentScroll="True">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition/>
@@ -147,7 +147,7 @@
                                         <ColumnDefinition Width="1*"/>
                                     </Grid.ColumnDefinitions>
                                 </Grid>
-                                <Button x:Name="CloseRemovingResult" Grid.Row="1" Grid.ColumnSpan="2" Content="Close" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10,0,10" Height="50" Width="100" Click="CloseRemovingResultTabButton_Click"/>
+                                <Button x:Name="CloseRemovingResult" Grid.Row="1" Content="Close" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10,0,10" Height="50" Width="100" Click="CloseRemovingResultTabButton_Click"/>
                             </Grid>
                         </ScrollViewer>
                     </Grid>

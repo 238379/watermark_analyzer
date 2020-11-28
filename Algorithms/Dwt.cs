@@ -10,7 +10,7 @@ namespace Algorithms
 		public readonly int Layers;
 		public readonly double Alpha;
 
-		public DwtParameters(Bitmap original, Bitmap watermark, int layers, double alpha) : base(original, watermark)
+		public DwtParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, int layers, double alpha) : base(original, watermark, watermarked)
 		{
 			Layers = layers;
 			Alpha = alpha;
@@ -61,7 +61,7 @@ namespace Algorithms
 
 			var watermarked = ProcessHaar(haaredWatermarked, true, parameters.Layers);
 
-			return new AlgorithmResult( ("DWT", haared), ("Watermarked", watermarked), ("DWT + watermark", haaredWatermarked));
+			return new AlgorithmResult( ("DWT", haared), ("DWT + watermark", haaredWatermarked), ("Watermarked", watermarked));
 		}
 
 		public override AlgorithmResult RemoveWatermark()

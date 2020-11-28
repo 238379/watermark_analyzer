@@ -54,26 +54,24 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		protected abstract void ProcessRemoving();
 
-		protected (Bitmap, Bitmap) ReadInputBitmaps()
+		protected (Bitmap, Bitmap, Bitmap) ReadInputBitmaps()
 		{
 			var originalAsBitmapImage = (BitmapImage)controls.OriginalImage.Source;
 			var watermarkAsBitmapImage = (BitmapImage)controls.WatermarkImage.Source;
+			var watermarkedAsBitmapImage = (BitmapImage)controls.WatermarkedImage.Source;
 
-			return (originalAsBitmapImage.ToBitmap(), watermarkAsBitmapImage.ToBitmap());
+			return (originalAsBitmapImage.ToBitmap(), watermarkAsBitmapImage.ToBitmap(), watermarkedAsBitmapImage.ToBitmap());
 		}
 
 		protected void ShowAlgorithmOutput(AlgorithmResult result)
 		{
 			controls.ResultGrid.Children.Clear();
+			controls.ResultGrid.RowDefinitions.Clear();
 
 			result.ForEach((i, element) =>
 			{
 				int row = i / RESULT_VIEW_COLUMNS;
 				int column = i % RESULT_VIEW_COLUMNS;
-
-				var view = new AlgorithmResultElementView(element.Label, element.Image);
-
-				AddAtPositionInResultGrid(view.Grid, row, column);
 
 				if (column == 0) // it's a new row! :)
 				{
@@ -83,6 +81,9 @@ namespace DigitalMarkingAnalyzer.viewmodels
 					};
 					controls.ResultGrid.RowDefinitions.Add(rowDefinition);
 				}
+
+				var view = new AlgorithmResultElementView(element.Label, element.Image);
+				AddAtPositionInResultGrid(view.Grid, column, row);
 			});
 
 			controls.ResultTab.Visibility = Visibility.Visible;
