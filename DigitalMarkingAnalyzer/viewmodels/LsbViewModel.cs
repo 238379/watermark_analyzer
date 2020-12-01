@@ -1,7 +1,5 @@
 ﻿using Algorithms;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Controls;
 
 namespace DigitalMarkingAnalyzer.viewmodels
@@ -10,22 +8,39 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private TextBox bitsTextBox;
 
-		public LsbViewModel(Grid grid) : base(grid)
+		public LsbViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
 		{
-
 		}
 
-		public override void PrepareControlls()
+		public override void SetUp()
 		{
-			AddLabel("Bits for watermark", 0, 0);
-			bitsTextBox = AddTextBox("2", 1, 0);
+			AddParameterLabel("Bits for watermark", 0, 0);
+			bitsTextBox = AddParameterTextBox("2", 1, 0);
 		}
 
-		public override Dictionary<string, dynamic> ReadParameters()
+		protected override void ProcessAdding()
 		{
+			var p = ReadParameters();
+			var algorithm = new Lsb(p);
+			var result = algorithm.AddWatermark();
+			ShowAlgorithmOutput(result);
+		}
+
+		protected override void ProcessRemoving()
+		{
+			var p = ReadParameters();
+			var algorithm = new Lsb(p);
+			var result = algorithm.RemoveWatermark();
+			ShowAlgorithmOutput(result);
+		}
+
+		private LsbParameters ReadParameters()
+		{
+			var (original, watermark, watermarked) = ReadInputBitmaps();
+
 			if (int.TryParse(bitsTextBox.Text, out var bitsForWatermark) && bitsForWatermark >= 1 && bitsForWatermark <= 8)
 			{
-				return new Dictionary<string, dynamic> { { Lsb.BITS_PARAM, bitsForWatermark } };
+				return new LsbParameters(original, watermark, watermarked, bitsForWatermark);
 			}
 			else
 			{

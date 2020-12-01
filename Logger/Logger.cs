@@ -16,25 +16,25 @@ namespace LoggerUtils
 			consoleOutput = new ConsoleOutput(consoleLoggerConfiguration);
 		}
 
-		public void LogDebug(string log)
+		public void LogDebug(object log)
 		{
 			Log(log, Severity.Debug);
 		}
 
-		public void LogInfo(string log)
+		public void LogInfo(object log)
 		{
 			Log(log, Severity.Info);
 		}
 
-		public void LogError(string log)
+		public void LogError(object log)
 		{
 			Log(log, Severity.Error);
 		}
 
-		private void Log(string log, Severity severity)
+		private void Log(object log, Severity severity)
 		{
-			fileOutput.Log(log, severity, type);
-			consoleOutput.Log(log, severity, type);
+			fileOutput.Log(log.ToString(), severity, type);
+			consoleOutput.Log(log.ToString(), severity, type);
 		}
 	}
 }

@@ -16,13 +16,18 @@ namespace DigitalMarkingAnalyzer
             InitializeComponent();
             mainWindow.Closed += (_, __) => Close();
 
-            LoggerFactory.SetConsoleLoggerWriteAction(log => OutputBlock.Text += log);
+            LoggerFactory.SetConsoleLoggerWriteAction(log => Dispatcher.Invoke(() => OutputBlock.Text += log));
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
             LoggerFactory.SetConsoleLoggerWriteAction(_ => { });
             base.OnClosing(e);
+        }
+
+        private void ClearConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+            OutputBlock.Text = "";
         }
     }
 }

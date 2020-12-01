@@ -6,12 +6,12 @@ namespace Generators
 {
 	public class LoremIpsumGenerator
 	{
-        public static string LoremIpsum(int minWords, int maxWords, int minSentences, int maxSentences, int numParagraphs)
-        {
-            var words = new[]{"lorem", "ipsum", "dolor", "sit", "amet", "consectetuer",
+        private static readonly string [] words = new[] {"lorem", "ipsum", "dolor", "sit", "amet", "consectetuer",
                 "adipiscing", "elit", "sed", "diam", "nonummy", "nibh", "euismod",
                 "tincidunt", "ut", "laoreet", "dolore", "magna", "aliquam", "erat"};
 
+        public static string LoremIpsum(int minWords, int maxWords, int minSentences, int maxSentences, int numParagraphs)
+        {
             var rand = new Random();
             int numSentences = rand.Next(maxSentences - minSentences)
                 + minSentences + 1;

@@ -5,48 +5,54 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:System="clr-namespace:System;assembly=System.Runtime" x:Class="DigitalMarkingAnalyzer.MainWindow"
         mc:Ignorable="d"
-        Title="Watermark Analyzer" Height="700" Width="850">
+        Title="Watermark Analyzer" Height="700" Width="850"
+        ResizeMode="NoResize">
     <Grid>
         <Grid>
             <TabControl x:Name="Tabs">
-                <TabItem Header="Main" x:Name="MainTab">
+                <TabItem Header="Adding" x:Name="AddingWatermarkTab">
                     <Grid Background="#FFE5E5E5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid Background="#FFE5E5E5" Width="425" Height="500" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Grid Background="#FFE5E5E5" Width="420" Height="500" HorizontalAlignment="Left" VerticalAlignment="Top">
                             <Label Content="Original" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>
-                            <Grid x:Name="OriginalButtonsGrid" Background="#FFE5E5E5" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="300" Height="50">
+                            <Grid x:Name="OriginalButtonsGrid" Background="#FFE5E5E5" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="400" Height="50">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <Button x:Name="BrowseOriginalButton" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="100" Click="BrowseOriginalButton_Click"/>
-                                <Button x:Name="GenerateOriginalButton" Content="Generate" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="100" Click="GenerateOriginalButton_Click"/>
+                                <Button x:Name="GenerateOriginalButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="80"/>
+                                <Button x:Name="BrowseOriginalButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="100"/>
+                                <Button x:Name="UndoOriginalButton" Content="⎌" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,30,0"/>
+                                <Button x:Name="ToDefaultOriginalButton" Content="D" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30"/>
                             </Grid>
-                            <Image x:Name="OriginalImage" HorizontalAlignment="Left" Height="400" Margin="10,50,0,0" VerticalAlignment="Top" Width="400" Stretch="Fill"/>
+                            <Image x:Name="OriginalImageControl" x:FieldModifier="private" HorizontalAlignment="Left" Height="400" Margin="10,50,0,0" VerticalAlignment="Top" Width="400" Stretch="Fill"/>
                         </Grid>
-                        <Grid Background="#FFE5E5E5" Width="425" Height="500" HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <Grid Background="#FFE5E5E5" Width="420" Height="500" HorizontalAlignment="Right" VerticalAlignment="Top">
                             <Label Content="Watermark" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>
-                            <Grid x:Name="WatermarkButtonsGrid" Background="#FFE5E5E5" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="300" Height="50">
+                            <Grid x:Name="WatermarkButtonsGrid" Background="#FFE5E5E5" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="400" Height="50">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <Button x:Name="BrowseWatermarkButton" Content="Browse" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="100" Click="BrowseWatermarkButton_Click"/>
-                                <Button x:Name="GenerateWatermarkButton" Content="Generate" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="100" Click="GenerateWatermarkButton_Click"/>
+                                <Button x:Name="GenerateWatermarkButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="80"/>
+                                <Button x:Name="BrowseWatermarkButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="100"/>
+                                <Button x:Name="UndoWatermarkButton" Content="⎌" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,30,0"/>
+                                <Button x:Name="ToDefaultWatermarkButton" Content="D" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30"/>
                             </Grid>
-                            <Image x:Name="WatermarkImage" HorizontalAlignment="Right" Height="400" Margin="0,50,10,0" VerticalAlignment="Top" Width="400" Stretch="Fill"/>
+                            <Image x:Name="WatermarkImageControl" x:FieldModifier="protected" HorizontalAlignment="Right" Height="400" Margin="0,50,10,0" VerticalAlignment="Top" Width="400" Stretch="Fill"/>
                         </Grid>
-                        <Grid Background="#FFE5E5E5" Height="100" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                        <Grid Background="#FFE5E5E5" Height="130" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                             <Label Content="Algorithm" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,10,0" VerticalAlignment="Top" Height="40" Width="120" FontSize="16"/>
-                            <ComboBox x:Name="AlgorithmBox" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Width="120" IsEditable="False" SelectionChanged="AlgorithmBox_SelectionChanged">
+                            <ComboBox x:Name="AddingAlgorithmBox" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="120" IsEditable="False">
                                 <System:String>LSB</System:String>
                                 <System:String>PixelAveraging</System:String>
+                                <System:String>DWT</System:String>
                                 <System:String>DFT</System:String>
                             </ComboBox>
-                            <Grid x:Name="ParametersGrid" Background="#FFE5E5E5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="150,0,0,0" Width="300" Height="100">
+                            <Grid x:Name="AddingParametersGrid" x:FieldModifier="private" Background="#FFE5E5E5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="150,0,0,0" Width="300" Height="100">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*"/>
                                     <ColumnDefinition Width="1*"/>
@@ -57,46 +63,96 @@
                                     <RowDefinition Height="1*"/>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <!--Label Grid.Row="0" Grid.Column="0" Content="Bits for watermark" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top" Height="30" Width="120" FontSize="12"/>
-                                <TextBox x:Name="BitsForWatermarkTextBox" Grid.Row="0" Grid.Column="1" Text="2" TextAlignment="Right" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top" Height="30" Width="50" FontSize="12"/>!-->
                             </Grid>
                             <Label Foreground="Red" HorizontalAlignment="Right" HorizontalContentAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top" Height="40" MaxWidth="300" FontSize="12" FontStyle="Italic">
-                                <TextBlock Name="ErrorMessage" Visibility="Hidden" Text="ERROR XAXAXAXAXAXAXAXAXAXAXAXAXAXA" TextWrapping = "Wrap" TextAlignment="Right" VerticalAlignment="Top" />
+                                <TextBlock Name="AddingErrorMessage" x:FieldModifier="private" Visibility="Hidden" Text="ERROR XAXAXAXAXAXAXAXAXAXAXAXAXAXA" TextWrapping = "Wrap" TextAlignment="Right" VerticalAlignment="Top" />
                             </Label>
-                            <Button x:Name="Process" Content="Process" Visibility="Hidden" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="50" Width="100" Click="ProcessButton_Click"/>
+                            <Button x:Name="AddingProcess" x:FieldModifier="private" Content="Process" Visibility="Hidden" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="50" Width="100"/>
                         </Grid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Result" x:Name="ResultTab">
-                    <ScrollViewer x:Name="Scroller" Background="#FF000128">
-                        <Grid Background="#FFE5E5E5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1*"/>
-                            </Grid.ColumnDefinitions>
+                <TabItem Header="Adding Result" x:Name="AddingResultTab" Height="20" VerticalAlignment="Bottom">
+                    <ScrollViewer x:Name="AddingResultScrollViewer" Background="#FF000128" VerticalScrollBarVisibility="Visible">
+                        <Grid Background="#FFE5E5E5" ScrollViewer.CanContentScroll="True">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
+                                <RowDefinition/>
+                                <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Grid Background="#FFE5E5E5" Grid.Column="0" Grid.Row="0">
-                                <Label Content="Watermarked" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>
-                                <Button x:Name="SaveWatermarkedButton" Content="Save" HorizontalAlignment="Center" Margin="0,460,0,0" Height="30" Width="100" Click="SaveWatermarkedButton_Click"/>
-                                <Image x:Name="WatermarkedImage" HorizontalAlignment="Left" Height="400" Margin="10,50,0,0" VerticalAlignment="Top" Width="400" Source="/DigitalMarkingAnalyzer;component/Resources/t_corgi_tekst_dolny.jpg" Stretch="Fill"/>
+                            <Grid x:Name="AddingResultGrid" Background="#FFE5E5E5" Grid.Row="0" Margin="5,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
                             </Grid>
-                            <Grid Background="#FFE5E5E5" Grid.Column="1" Grid.Row="0">
-                                <Label Content="Cleaned" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,10,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>
-                                <Button x:Name="SaveCleanedButton" Content="Save" HorizontalAlignment="Center" Margin="0,460,0,0" Height="30" Width="100" Click="SaveCleanedButton_Click"/>
-                                <Image x:Name="CleanedImage" HorizontalAlignment="Right" Height="400" Margin="0,50,10,0" VerticalAlignment="Top" Width="400" Source="/DigitalMarkingAnalyzer;component/Resources/r_corgi_tekst_dolny.jpg" Stretch="Fill"/>
-                            </Grid>
-                            <Grid Background="#FFE5E5E5" Grid.Column="0" Grid.Row="1">
-                                <Label Content="Extracted Watermark" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,10,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>
-                                <Button x:Name="SaveExtractedWatermarkButton" Content="Save" HorizontalAlignment="Center" Margin="0,460,0,0" Height="30" Width="100" Click="SaveExtractedWatermarkButton_Click"/>
-                                <Image x:Name="ExtractedWatermarkImage" HorizontalAlignment="Right" Height="400" Margin="0,50,10,0" VerticalAlignment="Top" Width="400" Source="/DigitalMarkingAnalyzer;component/Resources/w_tekst_dolny.png" Stretch="Fill"/>
-                            </Grid>
-                            <Button x:Name="Close" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Content="Close" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10,0,10" Height="50" Width="100" Click="CloseResultTabButton_Click"/>
+                            <Button x:Name="CloseAddingResult" Grid.Row="1" Content="Close" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10,0,10" Height="50" Width="100" Click="CloseAddingResultTabButton_Click"/>
                         </Grid>
                     </ScrollViewer>
+                </TabItem>
+                <TabItem Header="Removing" x:Name="RemovingWatermarkTab">
+                    <Grid Background="#FFE5E5E5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid Background="#FFE5E5E5" Width="420" Height="500" HorizontalAlignment="Left" VerticalAlignment="Top">
+                            <Label Content="Watermarked" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>
+                            <Grid x:Name="WatermarkedButtonsGrid" Background="#FFE5E5E5" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="400" Height="50">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Button x:Name="GenerateWatermarkedButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="80"/>
+                                <Button x:Name="BrowseWatermarkedButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="100"/>
+                                <Button x:Name="UndoWatermarkedButton" Content="⎌" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,30,0"/>
+                                <Button x:Name="ToDefaultWatermarkedButton" Content="D" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30"/>
+                            </Grid>
+                            <Image x:Name="WatermarkedImageControl" x:FieldModifier="protected" HorizontalAlignment="Left" Height="400" Margin="10,50,0,0" VerticalAlignment="Top" Width="400" Stretch="Fill"/>
+                        </Grid>
+                        <Grid Background="#FFE5E5E5" Width="420" Height="500" HorizontalAlignment="Right" VerticalAlignment="Top">
+                        </Grid>
+                        <Grid Background="#FFE5E5E5" Height="130" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                            <Label Content="Algorithm" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,10,0" VerticalAlignment="Top" Height="40" Width="120" FontSize="16"/>
+                            <ComboBox x:Name="RemovingAlgorithmBox" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="120" IsEditable="False">
+                                <System:String>LSB</System:String>
+                                <System:String>PixelAveraging</System:String>
+                                <System:String>DWT</System:String>
+                                <System:String>DFT</System:String>
+                            </ComboBox>
+                            <Grid x:Name="RemovingParametersGrid" x:FieldModifier="private" Background="#FFE5E5E5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="150,0,0,0" Width="300" Height="100">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                            </Grid>
+                            <Label Foreground="Red" HorizontalAlignment="Right" HorizontalContentAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top" Height="40" MaxWidth="300" FontSize="12" FontStyle="Italic">
+                                <TextBlock Name="RemovingErrorMessage" x:FieldModifier="private" Visibility="Hidden" Text="ERROR XAXAXAXAXAXAXAXAXAXAXAXAXAXA" TextWrapping = "Wrap" TextAlignment="Right" VerticalAlignment="Top" />
+                            </Label>
+                            <Button x:Name="RemovingProcess" Content="Process" x:FieldModifier="private" Visibility="Hidden" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Height="50" Width="100"/>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Removing Result" x:Name="RemovingResultTab">
+                    <Grid Background="#FFE5E5E5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <ScrollViewer x:Name="RemovingResultScrollViewer" Background="#FF000128" VerticalScrollBarVisibility="Visible">
+                            <Grid Background="#FFE5E5E5" ScrollViewer.CanContentScroll="True">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid x:Name="RemovingResultGrid" Background="#FFE5E5E5" Grid.Row="0" Margin="5,0,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                                <Button x:Name="CloseRemovingResult" Grid.Row="1" Content="Close" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10,0,10" Height="50" Width="100" Click="CloseRemovingResultTabButton_Click"/>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
                 </TabItem>
             </TabControl>
         </Grid>

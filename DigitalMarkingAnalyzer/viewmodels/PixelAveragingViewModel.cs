@@ -1,6 +1,5 @@
 ﻿using Algorithms;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Controls;
 
@@ -10,21 +9,36 @@ namespace DigitalMarkingAnalyzer.viewmodels
 	{
 		private TextBox ratioTextBox;
 
-		public PixelAveragingViewModel(Grid grid) : base(grid)
+		public PixelAveragingViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
 		{
 		}
 
-		public override void PrepareControlls()
+		public override void SetUp()
 		{
-			AddLabel("Ratio", 0, 0);
-			ratioTextBox = AddTextBox("0.5", 1, 0);
+			AddParameterLabel("Ratio", 0, 0);
+			ratioTextBox = AddParameterTextBox("0.5", 1, 0);
 		}
 
-		public override Dictionary<string, dynamic> ReadParameters()
+		protected override void ProcessAdding()
 		{
+			var p = ReadParameters();
+			var algorithm = new PixelAveraging(p);
+			var result = algorithm.AddWatermark();
+			ShowAlgorithmOutput(result);
+		}
+
+		protected override void ProcessRemoving()
+		{
+			throw new NotImplementedException();
+		}
+
+		private PixelAveragingParameters ReadParameters()
+		{
+			var (original, watermark, watermarked) = ReadInputBitmaps();
+
 			if (double.TryParse(ratioTextBox.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out var ratio) && ratio >= 0 && ratio <= 1)
 			{
-				return new Dictionary<string, dynamic> { { PixelAveraging.RATIO_PARAM, ratio } };
+				return new PixelAveragingParameters(original, watermark, watermarked, ratio);
 			}
 			else
 			{

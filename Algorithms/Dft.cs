@@ -5,40 +5,32 @@ using System.Drawing;
 
 namespace Algorithms
 {
+	public class DftParameters : AlgorithmParameters
+	{
+		public readonly int Key;
+		public readonly double Alpha;
+
+		public DftParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, int key, double alpha) : base(original, watermark, watermarked)
+		{
+			Key = key;
+			Alpha = alpha;
+		}
+	}
+
 	public class Dft : Algorithm
 	{
 		public const string ALGORITHM_NAME = "DFT";
 
-		public const string BITS_PARAM = "BITS_PARAM";
+		private readonly DftParameters parameters;
 
-		private readonly int key = 0;
-		private readonly double alpha;
 		private int[] v;
-		private readonly Random random;
-		private ComplexImage originalImage;
+		private Random random;
 		private ComplexImage complexImage;
 		private ComplexImage complexWatermark;
 
-		public Dft(Dictionary<string, dynamic> parameters) : base(parameters)
+		public Dft(DftParameters parameters) : base()
 		{
-			this.key = parameters[BITS_PARAM];
-			this.alpha = 0.1;
-			this.random = new Random(key);
-		}
-
-		public Bitmap Watermark(Bitmap original, Bitmap watermark)
-		{
-			complexImage = ComplexImage.FromBitmap(original);
-			complexWatermark = ComplexImage.FromBitmap(watermark, original.Width);
-			originalImage = new ComplexImage(complexImage);
-
-			complexImage.ForwardFourierTransform();
-			complexWatermark.ForwardFourierTransform();
-			EmbedWatermark();
-            complexImage.BackwardFourierTransform();
-            var watermarkedBitmap = complexImage.ToBitmap();
-
-            return watermarkedBitmap;
+			this.parameters = parameters;
 		}
 
 		public Bitmap CleanWatermark(Bitmap watermarked)
@@ -47,10 +39,11 @@ namespace Algorithms
 			complexWatermarked.ForwardFourierTransform();
 			v = new int[complexWatermarked.Width];
 			double[] vAlpha = new double[complexWatermarked.Width];
+			random = new Random(parameters.Key);
 			for (int i = 0; i < complexWatermarked.Width; i++)
 			{
 				v[i] = random.Next(0, 2);
-				vAlpha[i] = v[i] * alpha;
+				vAlpha[i] = v[i] * parameters.Alpha;
 			}
 
 			for (int y = 0; y < complexWatermarked.Height; y++)
@@ -70,10 +63,11 @@ namespace Algorithms
 			complexWatermarked.ForwardFourierTransform();
 			v = new int[complexWatermarked.Width];
 			double[] vAlpha = new double[complexWatermarked.Width];
+			random = new Random(parameters.Key);
 			for (int i = 0; i < complexWatermarked.Width; i++)
 			{
 				v[i] = random.Next(0, 2);
-				vAlpha[i] = v[i] * alpha;
+				vAlpha[i] = v[i] * parameters.Alpha;
 			}
 
 			for (int y = 0; y < complexWatermarked.Height; y++)
@@ -92,10 +86,11 @@ namespace Algorithms
 		{
 			v = new int[complexImage.Width];
 			double[] vAlpha = new double[complexImage.Width];
+			random = new Random(parameters.Key);
 			for (int i = 0; i < complexImage.Width; i++)
             {
 				v[i] = random.Next(0, 2);
-				vAlpha[i] = v[i] * alpha;
+				vAlpha[i] = v[i] * parameters.Alpha;
 			}
 				
 			for (int y = 0; y < complexImage.Height; y++)
@@ -109,12 +104,26 @@ namespace Algorithms
 				}
 		}
 
-		public override AlgorithmResult Run(Bitmap original, Bitmap watermark)
+        public override AlgorithmResult AddWatermark()
         {
-			var watermarked = Watermark(original, watermark);
-			var cleaned = CleanWatermark(watermarked);
-			var extracted = ExtractWatermark(watermarked);
-			return new AlgorithmResult(watermarked, cleaned, extracted);
+			complexImage = ComplexImage.FromBitmap(parameters.Original);
+			complexWatermark = ComplexImage.FromBitmap(parameters.Watermark, parameters.Original.Width);
+
+			complexImage.ForwardFourierTransform();
+			var fourierDomain = complexImage.ToBitmap();
+
+			complexWatermark.ForwardFourierTransform();
+			EmbedWatermark();
+			var fourierDomainWatermarked = complexImage.ToBitmap();
+
+			complexImage.BackwardFourierTransform();
+			var watermarked = complexImage.ToBitmap();
+			return new AlgorithmResult(("Fourier domain (DFT)", fourierDomain), ("DFT + watermark", fourierDomainWatermarked), ("Watermarked", watermarked));
 		}
+
+        public override AlgorithmResult RemoveWatermark()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

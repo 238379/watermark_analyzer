@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using LoggerUtils;
+using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -8,51 +8,53 @@ namespace DigitalMarkingAnalyzer.viewmodels
 {
 	public abstract class ViewModel : IDisposable
 	{
-		protected readonly Grid Grid;
+		protected readonly TextBlock errorMessageTextBlock;
+		protected readonly Logger logger;
 
-		public ViewModel(Grid grid)
+		public ViewModel(TextBlock errorMessageTextBlock)
 		{
-			Grid = grid;
+			this.errorMessageTextBlock = errorMessageTextBlock;
+			logger = LoggerFactory.Create(GetType());
 		}
 
-		public abstract void PrepareControlls();
+		public abstract void SetUp();
 
-		public abstract Dictionary<string, dynamic> ReadParameters();
-
-		public virtual void Dispose()
+		public void Submit()
 		{
-			Grid.Children.RemoveRange(0, Grid.Children.Count);
-		}
-
-		protected Label AddLabel(string labelContent, int x, int y)
-		{
-			var label = new Label
+			var sw = Stopwatch.StartNew();
+			try
 			{
-				Content = labelContent,
-				HorizontalContentAlignment = HorizontalAlignment.Left,
-				VerticalContentAlignment = VerticalAlignment.Center
-			};
-			AddAtPositionInGrid(label, x, y);
-			return label;
-		}
-
-		protected TextBox AddTextBox(string initContent, int x, int y)
-		{
-			var textBox = new TextBox
+				errorMessageTextBlock.Visibility = Visibility.Hidden;
+				OnSubmit();
+			}
+			catch (Exception ex)
 			{
-				Text = initContent,
-				HorizontalContentAlignment = HorizontalAlignment.Right,
-				VerticalContentAlignment = VerticalAlignment.Center
-			};
-			AddAtPositionInGrid(textBox, x, y);
-			return textBox;
+				logger.LogError(ex.Message);
+				logger.LogDebug(ex.StackTrace);
+				errorMessageTextBlock.Text = ex.Message;
+				errorMessageTextBlock.Visibility = Visibility.Visible;
+			}
+			logger.LogInfo($"Processing time: {sw.ElapsedMilliseconds} ms");
 		}
 
-		private void AddAtPositionInGrid(UIElement element, int x, int y)
+		protected void Do(Action action)
 		{
-			Grid.Children.Add(element);
-			Grid.SetColumn(element, x);
-			Grid.SetRow(element, y);
+			try
+			{
+				errorMessageTextBlock.Visibility = Visibility.Hidden;
+				action();
+			}
+			catch (Exception ex)
+			{
+				logger.LogError(ex.Message);
+				logger.LogDebug(ex.StackTrace);
+				errorMessageTextBlock.Text = ex.Message;
+				errorMessageTextBlock.Visibility = Visibility.Visible;
+			}
 		}
+
+		public abstract void Dispose();
+
+		protected abstract void OnSubmit();
 	}
 }

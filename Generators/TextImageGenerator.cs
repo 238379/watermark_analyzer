@@ -27,7 +27,7 @@ namespace Generators
             generatorParameters.TryGetValue(TEXT_COLOR_PARAM, out var textColor);
             generatorParameters.TryGetValue(BACKGROUND_COLOR_PARAM, out var backgroundColor);
 
-            return DrawText(generatorParameters[TEXT_PARAM], new Size(generatorParameters[WIDTH_PARAM], generatorParameters[HEIGHT_PARAM]), font, textColor, backgroundColor);
+            return DrawText(generatorParameters[TEXT_PARAM](), new Size(generatorParameters[WIDTH_PARAM], generatorParameters[HEIGHT_PARAM]), font, textColor, backgroundColor);
 		}
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Generators
         /// <param name="backColorOptional">Background color, defaults to white</param>
         /// <param name="minSizeOptional">Minimum image size, defaults the size required to display the text</param>
         /// <returns>The image containing the text, which should be disposed after use</returns>
-        public Bitmap DrawText(string text, Size targetSize, Font fontOptional = null, Color? textColorOptional = null, Color? backColorOptional = null)
+        private Bitmap DrawText(string text, Size targetSize, Font fontOptional = null, Color? textColorOptional = null, Color? backColorOptional = null)
         {
             Font font = new Font("Arial", GetMaximumFontSizeFitInRectangle(text, new Font("Arial", 1), targetSize, false, 3));
             if (fontOptional != null)

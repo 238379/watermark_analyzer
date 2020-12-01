@@ -1,16 +1,6 @@
-﻿using Algorithms;
-using Algorithms.common;
-using DigitalMarkingAnalyzer.viewmodels;
-using Generators;
+﻿using DigitalMarkingAnalyzer.viewmodels;
 using LoggerUtils;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Net;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 
 namespace DigitalMarkingAnalyzer
 {
@@ -19,19 +9,72 @@ namespace DigitalMarkingAnalyzer
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private Logger logger;
-		private AlgorithmViewModel algorithmViewModel;
+		private const int ADDING_TAB_INDEX = 0;
+		private const int ADDING_RESULT_TAB_INDEX = 1;
+		private const int REMOVING_TAB_INDEX = 2;
+		private const int REMOVING_RESULT_TAB_INDEX = 3;
+
+		#region Public Adding
+		public UpdatableImage OriginalImage { get; }
+		public UpdatableImage WatermarkImage { get; }
+		#endregion
+
+		#region Public Removing
+		public UpdatableImage WatermarkedImage { get; }
+		#endregion
+
+		#region Private Adding
+		private readonly AlgorithmControls addingWatermarkAlgorithmControls;
+		private readonly AlgorithmSelectionViewModel addingAlgorithmSelectionViewModel;
+		private readonly InternetImageGeneratorViewModel originalGeneratorViewModel;
+		private readonly TextImageGeneratorViewModel watermarkGeneratorViewModel;
+		#endregion
+
+		#region Private Removing
+		private readonly AlgorithmControls removingWatermarkAlgorithmControls;
+		private readonly AlgorithmSelectionViewModel removingAlgorithmSelectionViewModel;
+		private readonly InternetImageGeneratorViewModel watermarkedGeneratorViewModel;
+		#endregion
+
+		private readonly InputImagesViewModel inputImagesViewModel; // TODO
+		private readonly Logger logger;
 
 		public MainWindow()
 		{
 			logger = LoggerFactory.Create(GetType());
 			InitializeComponent();
-			ResultTab.Visibility = Visibility.Hidden;
-
-			OriginalImage.Source = new BitmapImage(new Uri("/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg", System.UriKind.RelativeOrAbsolute));
-			WatermarkImage.Source = new BitmapImage(new Uri("/DigitalMarkingAnalyzer;component/Resources/w_tekst_dolny.png", System.UriKind.RelativeOrAbsolute));
+			AddingResultTab.Visibility = Visibility.Collapsed;
+			RemovingResultTab.Visibility = Visibility.Collapsed;
 
 			StartLogConsole();
+
+			OriginalImage = new UpdatableImage(OriginalImageControl);
+			WatermarkImage = new UpdatableImage(WatermarkImageControl);
+			WatermarkedImage = new UpdatableImage(WatermarkedImageControl);
+
+			addingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.AddWatermark, AddingParametersGrid, AddingProcess, OriginalImageControl, WatermarkImageControl, WatermarkedImageControl,
+				Tabs, AddingResultTab, ADDING_RESULT_TAB_INDEX, AddingResultGrid, AddingResultScrollViewer, CloseAddingResult);
+
+			removingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.RemoveWatermark, RemovingParametersGrid, RemovingProcess, OriginalImageControl, WatermarkImageControl, WatermarkedImageControl,
+				Tabs, RemovingResultTab, REMOVING_RESULT_TAB_INDEX, RemovingResultGrid, RemovingResultScrollViewer, CloseRemovingResult);
+
+			inputImagesViewModel = new InputImagesViewModel(this, OriginalImageControl, WatermarkImageControl, WatermarkedImageControl, AddingErrorMessage);// TODO
+			inputImagesViewModel.SetUp();
+
+			addingAlgorithmSelectionViewModel = new AlgorithmSelectionViewModel(AddingAlgorithmBox, addingWatermarkAlgorithmControls, this, AddingErrorMessage);
+			addingAlgorithmSelectionViewModel.SetUp();
+
+			removingAlgorithmSelectionViewModel = new AlgorithmSelectionViewModel(RemovingAlgorithmBox, removingWatermarkAlgorithmControls, this, RemovingErrorMessage);
+			removingAlgorithmSelectionViewModel.SetUp();
+
+			originalGeneratorViewModel = new InternetImageGeneratorViewModel(new GeneratorControls(GenerateOriginalButton, OriginalImage), AddingErrorMessage);
+			originalGeneratorViewModel.SetUp();
+
+			watermarkGeneratorViewModel = new TextImageGeneratorViewModel(new GeneratorControls(GenerateWatermarkButton, WatermarkImage), AddingErrorMessage);
+			watermarkGeneratorViewModel.SetUp();
+
+			watermarkedGeneratorViewModel = new InternetImageGeneratorViewModel(new GeneratorControls(GenerateWatermarkedButton, WatermarkedImage), RemovingErrorMessage);
+			watermarkedGeneratorViewModel.SetUp();
 
 			logger.LogDebug("Created MainWindow");
 		}
@@ -40,138 +83,23 @@ namespace DigitalMarkingAnalyzer
 		{
 			new LogConsole(this)
 			{
-				Left = Left + 0,
-				Top = Top + 0
+				Left = Left,
+				Top = Top
 			}.Show();
 		}
 
-		private void BrowseOriginalButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked BrowseOriginalButton.");
-			InterfaceTools.SetImageFromDrive(OriginalImage);
-		}
-
-		private void BrowseWatermarkButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked BrowseWatermarkButton.");
-			InterfaceTools.SetImageFromDrive(WatermarkImage);
-		}
-
-		private void GenerateOriginalButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked GenerateOriginalButton.");
-			var sw = Stopwatch.StartNew();
-
-			var generator = new InternetImageGenerator(null);
-			var bitmap = generator.Generate();
-
-			InterfaceTools.SetImageFromBitmap(OriginalImage, bitmap);
-
-			logger.LogDebug($"Generated image in {sw.ElapsedMilliseconds}ms.");
-		}		
-
-		private void GenerateWatermarkButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked GenerateWatermarkButton.");
-			var sw = Stopwatch.StartNew();
-
-			var vm = new GeneratorViewModel(null);
-			var parameters = vm.ReadParameters();
-			var generator = new TextImageGenerator(parameters);
-			var bitmap = generator.Generate();
-			InterfaceTools.SetImageFromBitmap(WatermarkImage, bitmap);
-
-			logger.LogDebug($"Generated image in {sw.ElapsedMilliseconds}ms.");
-		}
-
-		private void ProcessButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked ProcessButton.");
-
-			var sw = Stopwatch.StartNew();
-
-			try
-			{
-				ErrorMessage.Visibility = Visibility.Hidden;
-
-				var parameters = algorithmViewModel.ReadParameters();
-				var selectedAlgorithm = AlgorithmBox.SelectedItem.ToString();
-				Algorithm algorithm = Algorithm.Create(selectedAlgorithm, parameters);
-
-				var (originalAsBitmap, watermarkAsBitmap) = ReadInputBitmaps();
-
-				var results = algorithm.Run(originalAsBitmap, watermarkAsBitmap);
-				ShowAlgorithmOutput(results);
-			}
-			catch (Exception ex)
-			{
-				logger.LogError(ex.Message);
-				logger.LogDebug(ex.StackTrace);
-				ErrorMessage.Text = ex.Message;
-				ErrorMessage.Visibility = Visibility.Visible;
-			}
-
-			logger.LogInfo($"Processing time: {sw.ElapsedMilliseconds} ms");
-		}
-
-		private (Bitmap, Bitmap) ReadInputBitmaps()
-		{
-			var originalAsBitmapImage = (BitmapImage)OriginalImage.Source;
-			var watermarkAsBitmapImage = (BitmapImage)WatermarkImage.Source;
-
-			return (originalAsBitmapImage.ToBitmap(), watermarkAsBitmapImage.ToBitmap());
-		}
-
-		private void ShowAlgorithmOutput(AlgorithmResult result)
-		{
-			WatermarkedImage.Source = InterfaceTools.BitmapToImageSource(result.Watermarked);
-			CleanedImage.Source = InterfaceTools.BitmapToImageSource(result.Cleaned);
-			ExtractedWatermarkImage.Source = InterfaceTools.BitmapToImageSource(result.ExtractedWatermark);
-
-			ResultTab.Visibility = Visibility.Visible;
-			Tabs.SelectedIndex = 1;
-		}
-
-		private void CloseResultTabButton_Click(object sender, RoutedEventArgs e)
+		private void CloseAddingResultTabButton_Click(object sender, RoutedEventArgs e)
 		{
 			logger.LogDebug("Clicked CloseResultTabButton.");
 			Tabs.SelectedIndex = 0;
-			ResultTab.Visibility = Visibility.Hidden;
+			AddingResultTab.Visibility = Visibility.Collapsed;
 		}
 
-		private void SaveWatermarkedButton_Click(object sender, RoutedEventArgs e)
+		private void CloseRemovingResultTabButton_Click(object sender, RoutedEventArgs e)
 		{
-			logger.LogDebug("Clicked SaveWatermarkedButton.");
-			InterfaceTools.SaveImageToDrive(WatermarkedImage);
-		}
-
-		private void SaveCleanedButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked SaveCleanedButton.");
-			InterfaceTools.SaveImageToDrive(CleanedImage);
-		}
-
-		private void SaveExtractedWatermarkButton_Click(object sender, RoutedEventArgs e)
-		{
-			logger.LogDebug("Clicked SaveExtractedWatermarkButton.");
-			InterfaceTools.SaveImageToDrive(ExtractedWatermarkImage);
-		}
-
-		private void AlgorithmBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			string algorithm = (sender as ComboBox).SelectedItem.ToString();
-			logger.LogDebug($"Selected algorithm: {algorithm}.");
-
-			algorithmViewModel?.Dispose();
-
-			algorithmViewModel = AlgorithmViewModel.Create(algorithm, ParametersGrid);
-			algorithmViewModel.PrepareControlls();
-
-			if(Process.Visibility == Visibility.Hidden)
-			{
-				Process.Visibility = Visibility.Visible;
-			}
+			logger.LogDebug("Clicked CloseRemovingResultTabButton.");
+			Tabs.SelectedIndex = 2;
+			RemovingResultTab.Visibility = Visibility.Collapsed;
 		}
 	}
 }
-
