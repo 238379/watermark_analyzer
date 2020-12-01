@@ -23,7 +23,7 @@ namespace Algorithms
         public static void FFT(Complex[] data, Direction direction)
         {
             int n = data.Length;
-            int m = Tools.Log2(n);
+            int m = (int)Math.Log2(n);
 
             ReorderData(data);
 
@@ -67,8 +67,8 @@ namespace Algorithms
             int n = data.GetLength(1);
 
             if (
-                (!Tools.IsPowerOf2(k)) ||
-                (!Tools.IsPowerOf2(n)) ||
+                (!IsPowerOf2(k)) ||
+                (!IsPowerOf2(n)) ||
                 (k < minLength) || (k > maxLength) ||
                 (n < minLength) || (n > maxLength)
                 )
@@ -106,7 +106,7 @@ namespace Algorithms
 
             if (reversedBits[numberOfBits - 1] == null)
             {
-                int n = Tools.Pow2(numberOfBits);
+                int n = (int)Math.Pow(2, numberOfBits);
                 int[] rBits = new int[n];
 
                 for (int i = 0; i < n; i++)
@@ -154,14 +154,20 @@ namespace Algorithms
             return complexRotation[numberOfBits - 1, directionIndex];
         }
 
+        private static bool IsPowerOf2(int x)
+        {
+            double sqrt = Math.Sqrt(x);
+            return sqrt == (int)sqrt;
+        }
+
         private static void ReorderData(Complex[] data)
         {
             int len = data.Length;
 
-            if ((len < minLength) || (len > maxLength) || (!Tools.IsPowerOf2(len)))
+            if ((len < minLength) || (len > maxLength) || (!IsPowerOf2(len)))
                 throw new ArgumentException("Incorrect data length.");
 
-            int[] rBits = GetReversedBits(Tools.Log2(len));
+            int[] rBits = GetReversedBits((int)Math.Log2(len));
 
             for (int i = 0; i < len; i++)
             {
