@@ -8,22 +8,15 @@ namespace Algorithms.common
 	public class BitmapOperations
 	{
 		// TODO what if they are not the same size?
-		public static Bitmap Create(Func<EffectiveBitmap[], int, int, PixelInfo> creator, params Bitmap[] sources)
+		// TODO obsolete
+		public static EffectiveBitmap Create(Func<EffectiveBitmap[], int, int, PixelInfo> creator, params EffectiveBitmap[] sources)
 		{
-			var effectiveBitmaps = TransformToEffectiveBitmaps(sources);
-
 			var source = sources[0];
 			var buffer = new byte[source.Width * source.Height * source.GetDepth()];
 
-			Process(effectiveBitmaps, buffer, source.Width, source.Height, source.GetDepth(), creator);
+			Process(sources, buffer, source.Width, source.Height, source.GetDepth(), creator);
 
-			var resultBitmap = new Bitmap(source.Width, source.Height, source.PixelFormat);
-
-			var resultData = resultBitmap.LockAllBitsReadWrite();
-			Marshal.Copy(buffer, 0, resultData.Scan0, buffer.Length);
-			resultBitmap.UnlockBits(resultData);
-
-			return resultBitmap;
+			return new EffectiveBitmap(source.Width, source.Height, source.Depth, buffer);
 		}
 
 		private static void Process(EffectiveBitmap[] sources, byte[] buffer, int width, int height, int depth,

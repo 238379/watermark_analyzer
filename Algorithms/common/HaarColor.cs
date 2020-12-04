@@ -18,6 +18,13 @@ namespace Algorithms.common
 			this.b = ToDouble(color.B);
 		}
 
+		public HaarColor(PixelInfo color)
+		{
+			this.r = ToDouble(color.R);
+			this.g = ToDouble(color.G);
+			this.b = ToDouble(color.B);
+		}
+
 		public HaarColor(double r, double g, double b)
 		{
 			this.r = r;
@@ -42,5 +49,9 @@ namespace Algorithms.common
 			return Color.FromArgb(ToHex(r),ToHex(g), ToHex(b));
 		}
 
+		public PixelInfo GetPixelInfo()
+		{
+			return new PixelInfo(Color.FromArgb(ToHex(r), ToHex(g), ToHex(b)));
+		}
 	}
 }

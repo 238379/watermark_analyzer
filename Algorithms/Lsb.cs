@@ -1,6 +1,7 @@
 ﻿using Algorithms.common;
 using System;
 using System.Drawing;
+using System.Threading.Tasks;
 
 namespace Algorithms
 {
@@ -28,29 +29,29 @@ namespace Algorithms
 			this.parameters = parameters;
 		}
 
-		public override AlgorithmResult AddWatermark()
+		public override Task<AlgorithmResult> AddWatermark()
 		{
 			var watermarked = Watermark(parameters.Original, parameters.Watermark);
 			var cleaned = CleanWatermark(watermarked);
 			var extracted = ExtractWatermark(watermarked);
-			return new AlgorithmResult(("Watermarked", watermarked), ("Cleaned", cleaned), ("Extracted watermark", extracted));
+			return Task.FromResult(new AlgorithmResult(("Watermarked", watermarked), ("Cleaned", cleaned), ("Extracted watermark", extracted)));
 		}
 
-		public override AlgorithmResult RemoveWatermark()
+		public override Task<AlgorithmResult> RemoveWatermark()
 		{
 			var cleaned = CleanWatermark(parameters.Watermarked);
 			var extracted = ExtractWatermark(parameters.Watermarked);
-			return new AlgorithmResult(("Cleaned", cleaned), ("Extracted watermark", extracted));
+			return Task.FromResult(new AlgorithmResult(("Cleaned", cleaned), ("Extracted watermark", extracted)));
 		}
 
-		private Bitmap Watermark(Bitmap original, Bitmap watermark)
+		private EffectiveBitmap Watermark(EffectiveBitmap original, EffectiveBitmap watermark)
 		{
 			var simplifiedWatermark = PreprocessToSimplifiedWatermark(watermark);
 
-			return BitmapOperations.Create((sources, i, j) =>
+			return EffectiveBitmap.Create(original.Width, original.Height, original.Depth, (i, j) =>
 			{
-				var originalPixel = sources[0].GetPixel(i, j);
-				var watermarkPixel = sources[1].GetPixel(i, j);
+				var originalPixel = original.GetPixel(i, j);
+				var watermarkPixel = simplifiedWatermark.GetPixel(i, j);
 
 				var divider = (int)Math.Pow(2, parameters.BitsForWatermark);
 				var r = (byte)(Math.Clamp(originalPixel.R - originalPixel.R % divider + watermarkPixel.R, 0, 255));
@@ -58,10 +59,10 @@ namespace Algorithms
 				var b = (byte)(Math.Clamp(originalPixel.B - originalPixel.B % divider + watermarkPixel.B, 0, 255));
 
 				return new PixelInfo(r, g, b);
-			}, original, simplifiedWatermark);
+			});
 		}
 
-		private Bitmap CleanWatermark(Bitmap watermarked)
+		private EffectiveBitmap CleanWatermark(EffectiveBitmap watermarked)
 		{
 			return BitmapOperations.Create((sources, i, j) =>
 			{
@@ -77,7 +78,7 @@ namespace Algorithms
 			}, watermarked);
 		}
 
-		private Bitmap ExtractWatermark(Bitmap watermarked)
+		private EffectiveBitmap ExtractWatermark(EffectiveBitmap watermarked)
 		{
 			return BitmapOperations.Create((sources, i, j) =>
 			{
@@ -93,7 +94,7 @@ namespace Algorithms
 			}, watermarked);
 		}
 
-		private Bitmap PreprocessToSimplifiedWatermark(Bitmap watermark)
+		private EffectiveBitmap PreprocessToSimplifiedWatermark(EffectiveBitmap watermark)
 		{
 			var divider = (byte)(Math.Ceiling(255 / Math.Pow(2, parameters.BitsForWatermark)) + 0.5);
 

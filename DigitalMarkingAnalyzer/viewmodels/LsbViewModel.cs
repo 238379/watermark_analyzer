@@ -22,7 +22,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		{
 			var p = ReadParameters();
 			var algorithm = new Lsb(p);
-			var result = algorithm.AddWatermark();
+			var result = algorithm.AddWatermark().GetAwaiter().GetResult();
 			ShowAlgorithmOutput(result);
 		}
 
@@ -30,7 +30,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		{
 			var p = ReadParameters();
 			var algorithm = new Lsb(p);
-			var result = algorithm.RemoveWatermark();
+			var result = algorithm.RemoveWatermark().GetAwaiter().GetResult();
 			ShowAlgorithmOutput(result);
 		}
 

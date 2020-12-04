@@ -1,6 +1,7 @@
 ﻿using Algorithms.common;
 using System;
 using System.Drawing;
+using System.Threading.Tasks;
 
 namespace Algorithms
 {
@@ -32,7 +33,7 @@ namespace Algorithms
 			this.parameters = parameters;
 		}
 
-		public override AlgorithmResult AddWatermark()
+		public override Task<AlgorithmResult> AddWatermark()
 		{
 			var haared = ProcessHaar(parameters.Original, false, parameters.Layers);
 
@@ -60,10 +61,10 @@ namespace Algorithms
 
 			var watermarked = ProcessHaar(haaredWatermarked, true, parameters.Layers);
 
-			return new AlgorithmResult( ("DWT", haared), ("DWT + watermark", haaredWatermarked), ("Watermarked", watermarked));
+			return Task.FromResult(new AlgorithmResult(("DWT", haared), ("DWT + watermark", haaredWatermarked), ("Watermarked", watermarked)));
 		}
 
-		public override AlgorithmResult RemoveWatermark()
+		public override Task<AlgorithmResult> RemoveWatermark()
 		{
 			throw new NotImplementedException();
 		}
@@ -152,7 +153,7 @@ namespace Algorithms
 			}
 		}
 
-		public Bitmap ProcessHaar(Bitmap image, Boolean isRevert, int layers)
+		public EffectiveBitmap ProcessHaar(EffectiveBitmap image, bool isRevert, int layers)
 		{
 			var haarColors = new HaarColor[image.Height, image.Width];
 
@@ -160,7 +161,7 @@ namespace Algorithms
 			{
 				for (int j = 0; j < image.Width; j++)
 				{
-					var color = image.GetPixel(j, i);
+					var color = image.GetPixel(i, j);
 					var haarColor = new HaarColor(color);
 					haarColors[i, j] = haarColor;
 				}
@@ -175,15 +176,11 @@ namespace Algorithms
 				IWT(haarColors, layers);
 			}
 
-			var haarBitmap = new Bitmap(image.Width, image.Height);
-			for (int i = 0; i < haarBitmap.Height; i++)
+			var haarBitmap = EffectiveBitmap.Create(image.Width, image.Height, image.Depth, (i, j) =>
 			{
-				for (int j = 0; j < haarBitmap.Width; j++)
-				{
-					var haarColor = haarColors[i, j];
-					haarBitmap.SetPixel(j, i, haarColor.GetColor());
-				}
-			}
+				var haarColor = haarColors[i, j];
+				return haarColor.GetPixelInfo();
+			});
 
 			return haarBitmap;
 		}
