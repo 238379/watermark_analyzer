@@ -23,6 +23,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 				PixelAveraging.ALGORITHM_NAME => new PixelAveragingViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 				Dwt.ALGORITHM_NAME => new DwtViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 				Dft.ALGORITHM_NAME => new DftViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+				Dct.ALGORITHM_NAME => new DctViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 				_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
 			};
 		}
