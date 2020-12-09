@@ -35,24 +35,38 @@ namespace AlgorithmTest
 			// Act
 			var results = algorithm.AddWatermark();
 
-			//var watermarked = results[0];
+			var watermarked = results[0];
 
 			// Assert
-			//watermarked.Label.Should().Be("Watermarked");
+			watermarked.Label.Should().Be("Watermarked");
 
-			//AssertBitmapsAreEqual(watermarked.Image, new Color[2, 2] {
-			//	{ Color.FromArgb(255, 0, 0), Color.FromArgb(1, 254, 0) },
-			//	{ Color.FromArgb(0, 0, 2), Color.FromArgb(0, 0, 3) }});
+			AssertBitmapsAreEqual(watermarked.Image, new Color[2, 2] {
+				{ Color.FromArgb(177, 9, 16), Color.FromArgb(32, 127, 31) },
+				{ Color.FromArgb(0, 0, 1), Color.FromArgb(33, 187, 65) }});
+		}
 
-			Assert.Fail("Remove if test is implemented.");
+		[Test]
+		public void BasicRemovingTest()
+		{
+			// Act
+			var results = algorithm.AddWatermark();
+
+			var watermarked = results[1];
+
+			// Assert
+			watermarked.Label.Should().Be("Cleaned");
+
+			AssertBitmapsAreEqual(watermarked.Image, new Color[2, 2] {
+				{ Color.FromArgb(254, 3, 30), Color.FromArgb(0, 254, 0) },
+				{ Color.FromArgb(0, 0, 1), Color.FromArgb(33, 249, 2) }});
 		}
 
 		private Bitmap CreateOriginal()
 		{
 			var bmp = new Bitmap(WIDTH, HEIGHT);
 
-			bmp.SetPixel(0, 0, Color.FromArgb(255, 0, 0)); bmp.SetPixel(0, 1, Color.FromArgb(0, 254, 0));
-			bmp.SetPixel(1, 0, Color.FromArgb(0, 0, 3)); bmp.SetPixel(1, 1, Color.FromArgb(0, 0, 3));
+			bmp.SetPixel(0, 0, Color.FromArgb(255, 4, 30)); bmp.SetPixel(0, 1, Color.FromArgb(0, 254, 0));
+			bmp.SetPixel(1, 0, Color.FromArgb(0, 0, 3)); bmp.SetPixel(1, 1, Color.FromArgb(34, 250, 3));
 
 			return bmp;
 		}
@@ -61,8 +75,8 @@ namespace AlgorithmTest
 		{
 			var bmp = new Bitmap(WIDTH, HEIGHT);
 
-			bmp.SetPixel(0, 0, Color.FromArgb(200, 0, 0)); bmp.SetPixel(0, 1, Color.FromArgb(128, 0, 127));
-			bmp.SetPixel(1, 0, Color.FromArgb(1, 1, 1)); bmp.SetPixel(1, 1, Color.FromArgb(0, 0, 255));
+			bmp.SetPixel(0, 0, Color.FromArgb(200, 30, 4)); bmp.SetPixel(0, 1, Color.FromArgb(128, 0, 127));
+			bmp.SetPixel(1, 0, Color.FromArgb(1, 1, 1)); bmp.SetPixel(1, 1, Color.FromArgb(65, 250, 255));
 
 			return bmp;
 		}
