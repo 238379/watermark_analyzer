@@ -27,9 +27,9 @@ namespace AlgorithmTest
 		[SetUp]
 		public void Setup()
 		{
-			Console.WriteLine(new System.IO.FileInfo(myResourcesPath + "c_corgi.jpg").FullName);
-			originalBitmap = new Bitmap(myResourcesPath + "c_corgi.jpg");
-			watermarkBitmap = new Bitmap(myResourcesPath + "w_tekst_dolny.png");
+			Console.WriteLine(new System.IO.FileInfo(resourcesPath + "c_corgi.jpg").FullName);
+			originalBitmap = new Bitmap(resourcesPath + "c_corgi.jpg");
+			watermarkBitmap = new Bitmap(resourcesPath + "w_tekst_dolny.png");
 			expectedWatermarkedBitmap = new Bitmap(myResourcesPath + "corgi_dolny_watermarked.png");
 			expectedDwtBitmap = new Bitmap(myResourcesPath + "corgi_dolny_dwt.png");
 			expectedDwtPlusWatermarkBitmap = new Bitmap(myResourcesPath + "corgi_dolny_dwt_plus_watermark.png");

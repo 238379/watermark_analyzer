@@ -1,6 +1,7 @@
 ﻿using Algorithms;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
 using System.Drawing;
 
 namespace AlgorithmTest
@@ -8,22 +9,30 @@ namespace AlgorithmTest
 	[TestFixture]
 	public class DftTests : AlgorithmTests
 	{
-		private const int WIDTH = 2;
-		private const int HEIGHT = 2;
-
 		private Bitmap originalBitmap;
 		private Bitmap watermarkBitmap;
+		private Bitmap expectedDftBitmap;
+		private Bitmap expectedDftWatermarkedBitmap;
+		private Bitmap expectedWatermarkedBitmap;
+
 		private int key;
 		private double alpha;
 
 		private DftParameters parameters;
 		private Dft algorithm;
 
+		private static readonly String myResourcesPath = resourcesPath + "/Dft/";
+
 		[SetUp]
 		public void Setup()
 		{
-			originalBitmap = CreateOriginal();
-			watermarkBitmap = CreateWatermark();
+			originalBitmap = new Bitmap(resourcesPath + "c_corgi.jpg");
+			watermarkBitmap = new Bitmap(resourcesPath + "w_tekst_dolny.png");
+
+			expectedDftBitmap = new Bitmap(myResourcesPath + "original_fourier_test.png");
+			expectedDftWatermarkedBitmap = new Bitmap(myResourcesPath + "fourier_watermarked_test.png");
+			expectedWatermarkedBitmap = new Bitmap(myResourcesPath + "dft_watermarked_test.png");
+
 			key = 10;
 			alpha = 0.01;
 			parameters = new DftParameters(originalBitmap, watermarkBitmap, null, key, alpha);
@@ -32,41 +41,45 @@ namespace AlgorithmTest
 		}
 
 		[Test]
-		public void BasicAddingTest()
+		public void WatermarkingTest()
 		{
 			// Act
 			var results = algorithm.AddWatermark();
 
-			//var watermarked = results[0];
+			var watermarked = results[2];
 
 			// Assert
-			//watermarked.Label.Should().Be("Watermarked");
+			watermarked.Label.Should().Be("Watermarked");
 
-			//AssertBitmapsAreEqual(watermarked.Image, new Color[2, 2] {
-			//	{ Color.FromArgb(255, 0, 0), Color.FromArgb(1, 254, 0) },
-			//	{ Color.FromArgb(0, 0, 2), Color.FromArgb(0, 0, 3) }});
-
-			Assert.Fail("Remove if test is implemented.");
+			Assert.True(CompareBitmaps(watermarked.Image, expectedWatermarkedBitmap));
 		}
 
-		private Bitmap CreateOriginal()
+		[Test]
+		public void DftPlusWatermarkTest()
 		{
-			var bmp = new Bitmap(WIDTH, HEIGHT);
+			// Act
+			var results = algorithm.AddWatermark();
 
-			bmp.SetPixel(0, 0, Color.FromArgb(255, 0, 0)); bmp.SetPixel(0, 1, Color.FromArgb(0, 254, 0));
-			bmp.SetPixel(1, 0, Color.FromArgb(0, 0, 3)); bmp.SetPixel(1, 1, Color.FromArgb(0, 0, 3));
+			var fourierWatermarked = results[1];
 
-			return bmp;
+			// Assert
+			fourierWatermarked.Label.Should().Be("DFT + watermark");
+
+			Assert.True(CompareBitmaps(fourierWatermarked.Image, expectedDftWatermarkedBitmap));
 		}
 
-		private Bitmap CreateWatermark()
+		[Test]
+		public void DftTest()
 		{
-			var bmp = new Bitmap(WIDTH, HEIGHT);
+			// Act
+			var results = algorithm.AddWatermark();
 
-			bmp.SetPixel(0, 0, Color.FromArgb(200, 0, 0)); bmp.SetPixel(0, 1, Color.FromArgb(128, 0, 127));
-			bmp.SetPixel(1, 0, Color.FromArgb(1, 1, 1)); bmp.SetPixel(1, 1, Color.FromArgb(0, 0, 255));
+			var originalFourier = results[0];
 
-			return bmp;
+			// Assert
+			originalFourier.Label.Should().Be("Fourier domain (DFT)");
+
+			Assert.True(CompareBitmaps(originalFourier.Image, expectedDftBitmap));
 		}
 	}
 }
