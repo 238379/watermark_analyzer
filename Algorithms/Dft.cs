@@ -121,7 +121,11 @@ namespace Algorithms
 
 			complexImage.BackwardFourierTransform();
 			var watermarked = complexImage.ToEffectiveBitmap();
-			return Task.FromResult(new AlgorithmResult(("Fourier domain (DFT)", fourierDomain), ("DFT + watermark", fourierDomainWatermarked), ("Watermarked", watermarked)));
+			return Task.FromResult(new AlgorithmResult(
+				("Fourier domain (DFT)", fourierDomain.ToBitmap(parameters.Original.Size)),
+				("DFT + watermark", fourierDomainWatermarked.ToBitmap(parameters.Original.Size)),
+				("Watermarked", watermarked.ToBitmap(parameters.Original.Size))
+				));
 		}
 
         public override Task<AlgorithmResult> RemoveWatermark()

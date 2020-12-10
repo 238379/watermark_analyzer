@@ -10,9 +10,9 @@ namespace Algorithms.common
 
 		public AlgorithmParameters(Bitmap original, Bitmap watermark, Bitmap watermarked)
 		{
-			Original = original.TransformToEffectiveBitmap();
-			Watermark = watermark.Resize(original.Width, original.Height).TransformToEffectiveBitmap();  // TODO better method
-			Watermarked = watermarked.TransformToEffectiveBitmap();
+			Original = original?.TransformToEffectiveBitmap();
+			Watermark = watermark?.Resize(original.Width, original.Height)?.TransformToEffectiveBitmap();  // TODO better method
+			Watermarked = watermarked?.TransformToEffectiveBitmap();
 		}
 
 		public AlgorithmParameters(Bitmap watermarked)

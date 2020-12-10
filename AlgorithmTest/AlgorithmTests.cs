@@ -3,14 +3,15 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace AlgorithmTest
 {
 	public class AlgorithmTests
 	{
-        public static readonly String runningPath = AppDomain.CurrentDomain.BaseDirectory;
-        public static readonly String resourcesPath = Path.GetFullPath(Path.Combine(runningPath, @"..\..\..\", @"Resources\"));
+        public static readonly string runningPath = AppDomain.CurrentDomain.BaseDirectory;
+        public static readonly string resourcesPath = Path.GetFullPath(Path.Combine(runningPath, @"..\..\..\", @"Resources\"));
 
         protected void AssertBitmapsAreEqual(Bitmap bitmap1, Color[,] bitmap2)
 		{
@@ -28,7 +29,7 @@ namespace AlgorithmTest
         {
             if (bmp1 == null || bmp2 == null)
                 return false;
-            if (object.Equals(bmp1, bmp2))
+            if (Equals(bmp1, bmp2))
                 return true;
             if (!bmp1.Size.Equals(bmp2.Size) || !bmp1.PixelFormat.Equals(bmp2.PixelFormat))
                 return false;
@@ -47,9 +48,11 @@ namespace AlgorithmTest
 
             for (int n = 0; n <= bytes - 1; n++)
             {
-                if (b1bytes[n] != b2bytes[n])
+                var diff = Math.Abs(b1bytes[n] - b2bytes[n]);
+                if (diff > 32)
                 {
                     result = false;
+                    Console.WriteLine($"{b1bytes[n]} vs {b2bytes[n]}");
                     break;
                 }
             }

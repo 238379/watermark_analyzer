@@ -14,6 +14,8 @@ namespace Algorithms.common
 		public readonly int Height;
 		public readonly int Depth;
 
+		public Size Size => new Size(Width, Height);
+
 		private readonly byte[] buffer;
 
 		public EffectiveBitmap(int width, int height, int depth, byte[] buffer)
@@ -64,6 +66,11 @@ namespace Algorithms.common
 			resultBitmap.UnlockBits(resultData);
 
 			return resultBitmap;
+		}
+
+		public Bitmap ToBitmap(Size size)
+		{
+			return ToBitmap().Resize(size);
 		}
 
 		public void RunOnEveryPixel(Action<int, int> action)

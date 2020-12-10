@@ -2,6 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System.Drawing;
+using System.Threading.Tasks;
 
 namespace AlgorithmTest
 {
@@ -30,10 +31,10 @@ namespace AlgorithmTest
 		}
 
 		[Test]
-		public void BasicAddingTest()
+		public async Task BasicAddingTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark();
 
 			var watermarked = results[0];
 
@@ -46,10 +47,10 @@ namespace AlgorithmTest
 		}
 
 		[Test]
-		public void BasicRemovingTest()
+		public async Task BasicRemovingTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark();
 
 			var watermarked = results[1];
 
