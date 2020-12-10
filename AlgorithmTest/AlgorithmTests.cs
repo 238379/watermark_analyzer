@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using Algorithms.common;
+using FluentAssertions;
+using NUnit.Framework;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -60,7 +62,25 @@ namespace AlgorithmTest
             bmp1.UnlockBits(bitmapData1);
             bmp2.UnlockBits(bitmapData2);
 
+            if(!result)
+            {
+                var savePath = Path.Combine(TestContext.CurrentContext.TestDirectory, TestContext.CurrentContext.Test.Name + ".png");
+                Console.WriteLine($"Difference will be saved to: {savePath}");
+                File.Delete(savePath);
+                CalculateDifference(bmp1, bmp2).Save(savePath);
+            }
             return result;
+        }
+
+        protected Bitmap CalculateDifference(Bitmap bmp1, Bitmap bmp2)
+        {
+            if (bmp1 == null || bmp2 == null || Equals(bmp1, bmp2) || !bmp1.Size.Equals(bmp2.Size) || !bmp1.PixelFormat.Equals(bmp2.PixelFormat))
+                throw new InvalidOperationException("Can't calculate.");
+
+            return BitmapOperations.Create((sources, i, j) =>
+            {
+                return sources[0].GetPixel(i, j) - sources[1].GetPixel(i, j);
+            }, bmp1.TransformToEffectiveBitmap(), bmp2.TransformToEffectiveBitmap()).ToBitmap();
         }
     }
 }

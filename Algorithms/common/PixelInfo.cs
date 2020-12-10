@@ -50,6 +50,8 @@ namespace Algorithms.common
 			A = (byte)a;
 		}
 
+		public static PixelInfo operator -(PixelInfo a, PixelInfo b) => new PixelInfo(255 - Math.Abs(a.R - b.R), 255 - Math.Abs(a.G - b.G), 255 - Math.Abs(a.B - b.B));
+
 		public static PixelInfo FromYCbCr(int y, int cb, int cr)
 		{
 			double Y = y;
