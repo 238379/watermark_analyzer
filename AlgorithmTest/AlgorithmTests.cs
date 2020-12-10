@@ -49,7 +49,7 @@ namespace AlgorithmTest
             for (int n = 0; n <= bytes - 1; n++)
             {
                 var diff = Math.Abs(b1bytes[n] - b2bytes[n]);
-                if (diff > 32)
+                if (diff > 7)
                 {
                     result = false;
                     Console.WriteLine($"{b1bytes[n]} vs {b2bytes[n]}");
