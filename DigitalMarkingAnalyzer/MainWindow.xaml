@@ -23,8 +23,8 @@
                                 </Grid.RowDefinitions>
                                 <Button x:Name="GenerateOriginalButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="80"/>
                                 <Button x:Name="BrowseOriginalButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="100"/>
-                                <Button x:Name="UndoOriginalButton" Content="⎌" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,30,0"/>
-                                <Button x:Name="ToDefaultOriginalButton" Content="D" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30"/>
+                                <Button x:Name="UndoOriginalButton" Content="⎌" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="336,0,0,0"/>
+                                <Button x:Name="ToDefaultOriginalButton" Content="D" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="368,0,0,0"/>
                             </Grid>
                             <Image x:Name="OriginalImageControl" x:FieldModifier="private" HorizontalAlignment="Left" Height="400" Margin="10,50,0,0" VerticalAlignment="Top" Width="400" Stretch="Fill"/>
                         </Grid>
@@ -39,8 +39,8 @@
                                 </Grid.RowDefinitions>
                                 <Button x:Name="GenerateWatermarkButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="80"/>
                                 <Button x:Name="BrowseWatermarkButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="100"/>
-                                <Button x:Name="UndoWatermarkButton" Content="⎌" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,30,0"/>
-                                <Button x:Name="ToDefaultWatermarkButton" Content="D" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30"/>
+                                <Button x:Name="UndoWatermarkButton" Content="⎌" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="336,0,0,0"/>
+                                <Button x:Name="ToDefaultWatermarkButton" Content="D" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="368,0,0,0"/>
                             </Grid>
                             <Image x:Name="WatermarkImageControl" x:FieldModifier="protected" HorizontalAlignment="Right" Height="400" Margin="0,50,10,0" VerticalAlignment="Top" Width="400" Stretch="Fill"/>
                         </Grid>
@@ -89,7 +89,7 @@
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
-                <TabItem Header="Removing" x:Name="RemovingWatermarkTab">
+                <TabItem Header="Removing" x:Name="RemovingWatermarkTab" Visibility="Collapsed">
                     <Grid Background="#FFE5E5E5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid Background="#FFE5E5E5" Width="420" Height="500" HorizontalAlignment="Left" VerticalAlignment="Top">
                             <Label Content="Watermarked" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>
