@@ -103,7 +103,7 @@ namespace Algorithms.common
             });
         }
 
-        private static Color ColorFromYCbCr(int y, int cb, int cr)
+        public static Color ColorFromYCbCr(int y, int cb, int cr)
         {
             double Y = y;
             double Cb = cb;
@@ -120,7 +120,7 @@ namespace Algorithms.common
             return Color.FromArgb(R, G, B);
         }
 
-        private static byte[] YCbCrFromRGB(int R, int G, int B)
+        public static byte[] YCbCrFromRGB(int R, int G, int B)
         {
             var Y = (byte)((0.257 * R) + (0.504 * G) + (0.098 * B) + 16);
             var Cb = (byte)(-(0.148 * R) - (0.291 * G) + (0.439 * B) + 128);
