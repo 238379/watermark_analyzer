@@ -21,22 +21,22 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 
 		protected override Task ProcessAdding()
 		{
-			return Task.Run(() =>
+			return Task.Run(async () =>
 			{
 				var p = ReadParameters();
 				var algorithm = new Lsb(p);
-				var result = algorithm.AddWatermark().GetAwaiter().GetResult();
+				var result = await algorithm.AddWatermark();
 				ShowAlgorithmOutput(result);
 			});
 		}
 
 		protected override Task ProcessRemoving()
 		{
-			return Task.Run(() =>
+			return Task.Run(async () =>
 			{
 				var p = ReadParameters();
 				var algorithm = new Lsb(p);
-				var result = algorithm.RemoveWatermark().GetAwaiter().GetResult();
+				var result = await algorithm.RemoveWatermark();
 				ShowAlgorithmOutput(result);
 			});
 		}

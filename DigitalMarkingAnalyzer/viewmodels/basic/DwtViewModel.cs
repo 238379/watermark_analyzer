@@ -25,11 +25,11 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 
 		protected override Task ProcessAdding()
 		{
-			return Task.Run(() =>
+			return Task.Run(async () =>
 			{
 				var p = ReadParameters();
 				var algorithm = new Dwt(p);
-				var result = algorithm.AddWatermark().GetAwaiter().GetResult();
+				var result = await algorithm.AddWatermark();
 				ShowAlgorithmOutput(result);
 			});
 		}

@@ -43,16 +43,37 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			controls.ParametersGrid.Children.Clear();
 		}
 
-		protected override Task OnSubmit()
+		protected override async Task OnSubmit()
 		{
-			switch(controls.AlgorithmMode)
+			var sourceTabIndex = controls.TabControl.SelectedIndex;
+
+			controls.ResultGrid.Children.Clear();
+			controls.ResultGrid.RowDefinitions.Clear();
+
+			controls.ResultTab.Visibility = Visibility.Visible;
+			controls.TabControl.SelectedIndex = controls.ResultTabIndex;
+			controls.ResultScrollViewer.ScrollToVerticalOffset(0);
+			try
 			{
-				case AlgorithmMode.AddWatermark:
-					return ProcessAdding();
-				case AlgorithmMode.RemoveWatermark:
-					return ProcessRemoving();
-				default:
-					throw new InvalidOperationException($"Unknown algorithm mode {controls.AlgorithmMode}.");
+				switch(controls.AlgorithmMode)
+				{
+					case AlgorithmMode.AddWatermark:
+						await ProcessAdding();
+						break;
+					case AlgorithmMode.RemoveWatermark:
+						await ProcessRemoving();
+						break;
+					default:
+						throw new InvalidOperationException($"Unknown algorithm mode {controls.AlgorithmMode}.");
+				};
+			}
+			catch
+			{
+				dispatcher.Invoke(() =>
+				{
+					controls.TabControl.SelectedIndex = sourceTabIndex;
+				});
+				throw;
 			}
 		}
 
@@ -101,10 +122,6 @@ namespace DigitalMarkingAnalyzer.viewmodels
 					InterfaceTools.RegisterOpenImageWindowOnClick(mainWindow, view.Image);
 					AddAtPositionInResultGrid(view.Grid, column, row);
 				});
-
-				controls.ResultTab.Visibility = Visibility.Visible;
-				controls.TabControl.SelectedIndex = controls.ResultTabIndex;
-				controls.ResultScrollViewer.ScrollToVerticalOffset(0);
 			});
 		}
 

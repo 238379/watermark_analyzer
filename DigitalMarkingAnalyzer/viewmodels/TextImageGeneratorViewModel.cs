@@ -35,7 +35,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		private void GenerateWatermarkImage(object sender, System.Windows.RoutedEventArgs e)
 		{
-			Submit();
+			Submit().GetAwaiter().GetResult();
 		}
 
 		private Dictionary<string, dynamic> MockParameters()
