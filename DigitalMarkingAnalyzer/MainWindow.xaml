@@ -88,7 +88,7 @@
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
-                <TabItem Header="Removing" x:Name="RemovingWatermarkTab" Visibility="Collapsed">
+                <TabItem Header="Removing" x:Name="RemovingWatermarkTab">
                     <Grid Background="#FFE5E5E5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid Background="#FFE5E5E5" Width="420" Height="500" HorizontalAlignment="Left" VerticalAlignment="Top">
                             <Label Content="Watermarked" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>

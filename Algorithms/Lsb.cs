@@ -9,7 +9,7 @@ namespace Algorithms
 	{
 		public readonly int BitsForWatermark;
 
-		public LsbParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, int bitsForWatermark) : base(original, watermark, watermarked)
+		public LsbParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int bitsForWatermark) : base(original, watermark, watermarked)
 		{
 			BitsForWatermark = bitsForWatermark;
 		}

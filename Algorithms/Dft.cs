@@ -11,7 +11,7 @@ namespace Algorithms
 		public readonly int Key;
 		public readonly double Alpha;
 
-		public DftParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, int key, double alpha) : base(original, watermark, watermarked)
+		public DftParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int key, double alpha) : base(original, watermark, watermarked)
 		{
 			Key = key;
 			Alpha = alpha;

@@ -1,6 +1,7 @@
 ﻿using LoggerUtils;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -19,13 +20,13 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		public abstract void SetUp();
 
-		public void Submit()
+		public async Task Submit()
 		{
 			var sw = Stopwatch.StartNew();
 			try
 			{
 				errorMessageTextBlock.Visibility = Visibility.Hidden;
-				OnSubmit();
+				await OnSubmit();
 			}
 			catch (Exception ex)
 			{
@@ -55,6 +56,6 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		public abstract void Dispose();
 
-		protected abstract void OnSubmit();
+		protected abstract Task OnSubmit();
 	}
 }

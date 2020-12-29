@@ -1,4 +1,5 @@
 ﻿using Algorithms;
+using Algorithms.common;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Drawing;
@@ -25,7 +26,7 @@ namespace AlgorithmTest
 			originalBitmap = CreateOriginal();
 			watermarkBitmap = CreateWatermark();
 			ratio = 0.5;
-			parameters = new PixelAveragingParameters(originalBitmap, watermarkBitmap, null, ratio);
+			parameters = new PixelAveragingParameters(originalBitmap.TransformToEffectiveBitmap(), watermarkBitmap.TransformToEffectiveBitmap(), null, ratio);
 
 			algorithm = new PixelAveraging(parameters);
 		}

@@ -1,15 +1,19 @@
 ﻿using Algorithms;
 using Algorithms.common;
+using DigitalMarkingAnalyzer.viewmodels.basic;
 using System;
-using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace DigitalMarkingAnalyzer.viewmodels
 {
 	public abstract class AlgorithmViewModel : ViewModel
 	{
+		protected readonly Dispatcher dispatcher;
+
 		private const int RESULT_VIEW_COLUMNS = 2;
 
 		private readonly AlgorithmControls controls;
@@ -31,6 +35,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		{
 			this.controls = algorithmControls;
 			this.mainWindow = mainWindow;
+			this.dispatcher = mainWindow.Dispatcher;
 		}
 
 		public override void Dispose()
@@ -38,61 +43,69 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			controls.ParametersGrid.Children.Clear();
 		}
 
-		protected override void OnSubmit()
+		protected override Task OnSubmit()
 		{
 			switch(controls.AlgorithmMode)
 			{
 				case AlgorithmMode.AddWatermark:
-					ProcessAdding();
-					break;
+					return ProcessAdding();
 				case AlgorithmMode.RemoveWatermark:
-					ProcessRemoving();
-					break;
+					return ProcessRemoving();
 				default:
 					throw new InvalidOperationException($"Unknown algorithm mode {controls.AlgorithmMode}.");
 			}
 		}
 
-		protected abstract void ProcessAdding();
+		protected abstract Task ProcessAdding();
 
-		protected abstract void ProcessRemoving();
+		protected abstract Task ProcessRemoving();
 
-		protected (Bitmap, Bitmap, Bitmap) ReadInputBitmaps()
+		protected (EffectiveBitmap, EffectiveBitmap, EffectiveBitmap) ReadInputBitmaps()
 		{
-			var originalAsBitmapImage = (BitmapImage)controls.OriginalImage.Source;
-			var watermarkAsBitmapImage = (BitmapImage)controls.WatermarkImage.Source;
-			var watermarkedAsBitmapImage = (BitmapImage)controls.WatermarkedImage.Source;
+			EffectiveBitmap originalAsBitmapImage = null;
+			EffectiveBitmap watermarkAsBitmapImage = null;
+			EffectiveBitmap watermarkedAsBitmapImage = null;
 
-			return (originalAsBitmapImage.ToBitmap(), watermarkAsBitmapImage.ToBitmap(), watermarkedAsBitmapImage.ToBitmap());
+			dispatcher.Invoke(() =>
+			{
+				originalAsBitmapImage = ((BitmapImage)controls.OriginalImage.Source).ToBitmap().TransformToEffectiveBitmap();
+				watermarkAsBitmapImage = ((BitmapImage)controls.WatermarkImage.Source).ToBitmap().Resize(originalAsBitmapImage.Width, originalAsBitmapImage.Height).TransformToEffectiveBitmap();
+				watermarkedAsBitmapImage = ((BitmapImage)controls.WatermarkedImage.Source).ToBitmap().TransformToEffectiveBitmap();
+			});
+
+			return (originalAsBitmapImage, watermarkAsBitmapImage, watermarkedAsBitmapImage);
 		}
 
 		protected void ShowAlgorithmOutput(AlgorithmResult result)
 		{
-			controls.ResultGrid.Children.Clear();
-			controls.ResultGrid.RowDefinitions.Clear();
-
-			result.ForEach((i, element) =>
+			dispatcher.Invoke(() =>
 			{
-				int row = i / RESULT_VIEW_COLUMNS;
-				int column = i % RESULT_VIEW_COLUMNS;
+				controls.ResultGrid.Children.Clear();
+				controls.ResultGrid.RowDefinitions.Clear();
 
-				if (column == 0) // it's a new row! :)
+				result.ForEach((i, element) =>
 				{
-					var rowDefinition = new RowDefinition
+					int row = i / RESULT_VIEW_COLUMNS;
+					int column = i % RESULT_VIEW_COLUMNS;
+
+					if (column == 0) // it's a new row! :)
 					{
-						Height = GridLength.Auto
-					};
-					controls.ResultGrid.RowDefinitions.Add(rowDefinition);
-				}
+						var rowDefinition = new RowDefinition
+						{
+							Height = GridLength.Auto
+						};
+						controls.ResultGrid.RowDefinitions.Add(rowDefinition);
+					}
 
-				var view = new AlgorithmResultElementView(element.Label, element.Image);
-				InterfaceTools.RegisterOpenImageWindowOnClick(mainWindow, view.Image);
-				AddAtPositionInResultGrid(view.Grid, column, row);
+					var view = new AlgorithmResultElementView(element.Label, element.Image);
+					InterfaceTools.RegisterOpenImageWindowOnClick(mainWindow, view.Image);
+					AddAtPositionInResultGrid(view.Grid, column, row);
+				});
+
+				controls.ResultTab.Visibility = Visibility.Visible;
+				controls.TabControl.SelectedIndex = controls.ResultTabIndex;
+				controls.ResultScrollViewer.ScrollToVerticalOffset(0);
 			});
-
-			controls.ResultTab.Visibility = Visibility.Visible;
-			controls.TabControl.SelectedIndex = controls.ResultTabIndex;
-			controls.ResultScrollViewer.ScrollToVerticalOffset(0);
 		}
 
 		protected Label AddParameterLabel(string labelContent, int x, int y)

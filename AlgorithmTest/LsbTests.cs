@@ -1,4 +1,5 @@
 using Algorithms;
+using Algorithms.common;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Drawing;
@@ -25,7 +26,7 @@ namespace AlgorithmTest
 			originalBitmap = CreateOriginal();
 			watermarkBitmap = CreateWatermark();
 			bitsForWatermark = 1;
-			parameters = new LsbParameters(originalBitmap, watermarkBitmap, null, bitsForWatermark);
+			parameters = new LsbParameters(originalBitmap.TransformToEffectiveBitmap(), watermarkBitmap.TransformToEffectiveBitmap(), null, bitsForWatermark);
 
 			algorithm = new Lsb(parameters);
 		}

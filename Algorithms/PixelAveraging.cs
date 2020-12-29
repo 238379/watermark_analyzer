@@ -10,7 +10,7 @@ namespace Algorithms
 	{
 		public readonly double Ratio;
 
-		public PixelAveragingParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, double ratio) : base(original, watermark, watermarked)
+		public PixelAveragingParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, double ratio) : base(original, watermark, watermarked)
 		{
 			Ratio = ratio;
 		}

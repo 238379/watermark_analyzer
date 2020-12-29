@@ -1,5 +1,6 @@
 ﻿using Common;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -89,7 +90,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			SetToDefaultWatermarkVisibility();
 		}
 
-		protected override void OnSubmit()
+		protected override Task OnSubmit()
 		{
 			throw new NotImplementedException();
 		}

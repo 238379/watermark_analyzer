@@ -1,6 +1,7 @@
 ﻿using Generators;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace DigitalMarkingAnalyzer.viewmodels
@@ -13,10 +14,11 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		{
 		}
 
-		protected override void OnSubmit()
+		protected override Task OnSubmit()
 		{
 			var bitmap = generator.Generate();
 			controls.ImageContainer.SetSource(bitmap);
+			return Task.FromResult(0);
 		}
 
 		public override void SetUp()

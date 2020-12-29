@@ -10,7 +10,7 @@ namespace Algorithms
 		public readonly int Layers;
 		public readonly double Alpha;
 
-		public DwtParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, int layers, double alpha) : base(original, watermark, watermarked)
+		public DwtParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int layers, double alpha) : base(original, watermark, watermarked)
 		{
 			Layers = layers;
 			Alpha = alpha;

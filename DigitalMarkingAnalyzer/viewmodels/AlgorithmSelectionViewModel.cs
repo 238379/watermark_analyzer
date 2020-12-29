@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace DigitalMarkingAnalyzer.viewmodels
@@ -37,9 +38,9 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			Submit();
 		}
 
-		protected override void OnSubmit()
+		protected override Task OnSubmit()
 		{
-			algorithmViewModel?.Submit();
+			return algorithmViewModel?.Submit();
 		}
 
 		private void ChangeSelectedAlgorithm(object sender, SelectionChangedEventArgs e)

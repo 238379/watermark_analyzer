@@ -1,4 +1,5 @@
 ﻿using Algorithms;
+using Algorithms.common;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
@@ -36,7 +37,7 @@ namespace AlgorithmTest
 
 			key = 10;
 			alpha = 0.01;
-			parameters = new DftParameters(originalBitmap, watermarkBitmap, null, key, alpha);
+			parameters = new DftParameters(originalBitmap.TransformToEffectiveBitmap(), watermarkBitmap.TransformToEffectiveBitmap(), null, key, alpha);
 
 			algorithm = new Dft(parameters);
 		}
