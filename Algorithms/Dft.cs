@@ -110,7 +110,7 @@ namespace Algorithms
         public override Task<AlgorithmResult> AddWatermark()
         {
 			complexImage = ComplexImage.FromBitmap(parameters.Original);
-			complexWatermark = ComplexImage.FromBitmap(parameters.Watermark, parameters.Original.Width);
+			complexWatermark = ComplexImage.FromBitmap(parameters.Watermark, complexImage.Width);
 
 			complexImage.ForwardFourierTransform();
 			var fourierDomain = complexImage.ToEffectiveBitmap();

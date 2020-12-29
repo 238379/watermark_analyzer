@@ -163,7 +163,7 @@ namespace Algorithms
 				{
 					var color = image.GetPixel(i, j);
 					var haarColor = new HaarColor(color);
-					haarColors[i, j] = haarColor;
+					haarColors[j, i] = haarColor;
 				}
 			}
 
@@ -178,7 +178,7 @@ namespace Algorithms
 
 			var haarBitmap = EffectiveBitmap.Create(image.Width, image.Height, image.Depth, (i, j) =>
 			{
-				var haarColor = haarColors[i, j];
+				var haarColor = haarColors[j, i];
 				return haarColor.GetPixelInfo();
 			});
 

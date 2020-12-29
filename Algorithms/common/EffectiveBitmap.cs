@@ -122,11 +122,12 @@ namespace Algorithms.common
 
 		public byte[,,] Rgb2Ycbcr()
 		{
-			byte[,,] arrayycbcr = new byte[Height, Width, 3];
+			byte[,,] arrayycbcr = new byte[Width, Height, 3];
 
 			RunOnEveryPixel((i, j) =>
 			{
-				byte[] YCbCr = YCbCrFromRGB(GetPixel(i, j).R, GetPixel(i, j).G, GetPixel(i, j).B);
+				var pixel = GetPixel(i, j);
+				byte[] YCbCr = YCbCrFromRGB(pixel.R, pixel.G, pixel.B);
 				arrayycbcr[i, j, 0] = YCbCr[0];
 				arrayycbcr[i, j, 1] = YCbCr[1];
 				arrayycbcr[i, j, 2] = YCbCr[2];
