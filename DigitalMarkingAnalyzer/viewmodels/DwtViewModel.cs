@@ -26,7 +26,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		{
 			var p = ReadParameters();
 			var algorithm = new Dwt(p);
-			var result = algorithm.AddWatermark();
+			var result = algorithm.AddWatermark().GetAwaiter().GetResult();
 			ShowAlgorithmOutput(result);
 		}
 

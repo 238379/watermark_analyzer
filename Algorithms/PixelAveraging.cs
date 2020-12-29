@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading.Tasks;
 
 namespace Algorithms
 {
@@ -27,20 +28,20 @@ namespace Algorithms
 			this.parameters = parameters;
 		}
 
-		public override AlgorithmResult AddWatermark()
+		public override Task<AlgorithmResult> AddWatermark()
 		{
 			var watermarked = Watermark(parameters.Original, parameters.Watermark);
 			var cleaned = CleanWatermark(watermarked, parameters.Watermark);
 			var extracted = ExtractWatermark(watermarked, parameters.Original);
-			return new AlgorithmResult(("Watermarked", watermarked), ("Cleaned", cleaned), ("Extracted watermark", extracted));
+			return Task.FromResult(new AlgorithmResult(("Watermarked", watermarked), ("Cleaned", cleaned), ("Extracted watermark", extracted)));
 		}
 
-		public override AlgorithmResult RemoveWatermark()
+		public override Task<AlgorithmResult> RemoveWatermark()
 		{
 			throw new NotImplementedException();
 		}
 
-		private Bitmap Watermark(Bitmap original, Bitmap watermark)
+		private EffectiveBitmap Watermark(EffectiveBitmap original, EffectiveBitmap watermark)
 		{
 			return BitmapOperations.Create((sources, i, j) =>
 			{
@@ -55,7 +56,7 @@ namespace Algorithms
 			}, original, watermark);
 		}
 
-		private Bitmap CleanWatermark(Bitmap imgWatermarked, Bitmap watermark)
+		private EffectiveBitmap CleanWatermark(EffectiveBitmap imgWatermarked, EffectiveBitmap watermark)
 		{
 			return BitmapOperations.Create((sources, i, j) =>
 			{
@@ -74,7 +75,7 @@ namespace Algorithms
 			}, imgWatermarked, watermark);
 		}
 
-		private Bitmap ExtractWatermark(Bitmap imgWatermarked, Bitmap original)
+		private EffectiveBitmap ExtractWatermark(EffectiveBitmap imgWatermarked, EffectiveBitmap original)
 		{
 			return BitmapOperations.Create((sources, i, j) =>
 			{

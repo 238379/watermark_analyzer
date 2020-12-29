@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Drawing;
+using System.Threading.Tasks;
 
 namespace AlgorithmTest
 {
@@ -21,12 +22,12 @@ namespace AlgorithmTest
 		private DftParameters parameters;
 		private Dft algorithm;
 
-		private static readonly String myResourcesPath = resourcesPath + "/Dft/";
+		private static readonly string myResourcesPath = resourcesPath + "/Dft/";
 
 		[SetUp]
 		public void Setup()
 		{
-			originalBitmap = new Bitmap(resourcesPath + "c_corgi.jpg");
+			originalBitmap = new Bitmap(resourcesPath + "c_corgi.png");
 			watermarkBitmap = new Bitmap(resourcesPath + "w_tekst_dolny.png");
 
 			expectedDftBitmap = new Bitmap(myResourcesPath + "original_fourier_test.png");
@@ -41,10 +42,10 @@ namespace AlgorithmTest
 		}
 
 		[Test]
-		public void WatermarkingTest()
+		public async Task WatermarkingTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark();
 
 			var watermarked = results[2];
 
@@ -55,10 +56,10 @@ namespace AlgorithmTest
 		}
 
 		[Test]
-		public void DftPlusWatermarkTest()
+		public async Task DftPlusWatermarkTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark();
 
 			var fourierWatermarked = results[1];
 
@@ -69,10 +70,10 @@ namespace AlgorithmTest
 		}
 
 		[Test]
-		public void DftTest()
+		public async Task DftTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark();
 
 			var originalFourier = results[0];
 

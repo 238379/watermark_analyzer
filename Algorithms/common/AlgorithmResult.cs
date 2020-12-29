@@ -31,6 +31,11 @@ namespace Algorithms.common
 			this.results = new List<AlgorithmResultElement>(results.Select(x => new AlgorithmResultElement(x.Item1, x.Item2)));
 		}
 
+		public AlgorithmResult(params (string, EffectiveBitmap)[] results)
+		{
+			this.results = new List<AlgorithmResultElement>(results.Select(x => new AlgorithmResultElement(x.Item1, x.Item2.ToBitmap())));
+		}
+
 		public AlgorithmResultElement Get(int index)
 		{
 			return results[index];

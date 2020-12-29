@@ -14,7 +14,20 @@ namespace Algorithms
         public int OriginalHeight { get; }
         public bool FourierTransformed { get; private set; } = false;
         public Complex[,] Data { get; set; }
-        public byte[,,] YCbCr { get; private set; }
+        public byte[,,] YCbCr
+        {
+            get => _YCbCr;
+            set
+            {
+                if (value.GetLength(0) != Width || value.GetLength(1) != Height)
+                {
+                    throw new ArgumentException($"Can't set YCbCr {value.GetLength(0)}x{value.GetLength(1)}. Should be {Width}x{Height}.");
+                }
+                _YCbCr = value;
+            }
+        }
+        private byte[,,] _YCbCr;
+
 
         protected ComplexImage(int width, int height, int originalWidth, int originalHeight)
         {
@@ -33,17 +46,23 @@ namespace Algorithms
             OriginalWidth = complexImage.OriginalWidth;
             OriginalHeight = complexImage.OriginalHeight;
             Data = new Complex[Height, Width];
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
-                    Data[y, x] = new Complex(complexImage.Data[y, x].Real, complexImage.Data[y, x].Imaginary);
-            YCbCr = new byte[Height, Width, 3];
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
+            for (int y = 0; y < Width; y++)
+            {
+                for (int x = 0; x < Height; x++)
+                {
+                    Data[x, y] = new Complex(complexImage.Data[x, y].Real, complexImage.Data[x, y].Imaginary);
+                }
+            }
+            YCbCr = new byte[Width, Height, 3];
+            for (int y = 0; y < Width; y++)
+            {
+                for (int x = 0; x < Height; x++)
                 {
                     YCbCr[y, x, 0] = complexImage.YCbCr[y, x, 0];
-                    YCbCr[y, x, 0] = complexImage.YCbCr[y, x, 1];
-                    YCbCr[y, x, 0] = complexImage.YCbCr[y, x, 2];
+                    YCbCr[y, x, 1] = complexImage.YCbCr[y, x, 1];
+                    YCbCr[y, x, 2] = complexImage.YCbCr[y, x, 2];
                 }
+            }
         }
 
         public object Clone()
@@ -64,47 +83,45 @@ namespace Algorithms
             return dstImage;
         }
 
-        public static ComplexImage FromBitmap(Bitmap image, int newSize = 0)
+        public static ComplexImage FromBitmap(EffectiveBitmap image, int newSize = 0)
         {
             if (newSize == 0)
                 newSize = Math.Max(image.Width, image.Height);
             newSize = (int)Math.Pow(2, Math.Ceiling(Math.Log2(newSize)));
-            ComplexImage complexImage = new ComplexImage(newSize, newSize, image.Width, image.Height);
-            var newImage = new Bitmap(image, newSize, newSize);
-            complexImage.YCbCr = BitmapExtensions.Rgb2Ycbcr(newImage);
+            var resizedImage = image.Resize(newSize, newSize);
+            ComplexImage complexImage = new ComplexImage(newSize, newSize, image.Width, image.Height)
+            {
+                YCbCr = resizedImage.Rgb2Ycbcr()
+            };
 
             Complex[,] data = complexImage.Data;
 
-            newImage.RunOnEveryPixel((i, j) =>
+            resizedImage.RunOnEveryPixel((i, j) =>
             {
-                data[i, j] = new Complex(complexImage.YCbCr[i,j,0] / 255.0, data[i, j].Imaginary);
+                data[j, i] = new Complex(complexImage.YCbCr[i, j, 0] / 255.0, data[j, i].Imaginary);
             });
 
             return complexImage;
         }
 
-        public Bitmap ToBitmap()
+        public EffectiveBitmap ToEffectiveBitmap()
         {
-            Bitmap dstImage = new Bitmap(Width, Height);
+            double scale = FourierTransformed ? Math.Sqrt(Width * Height) : 1;
 
-            dstImage.Ycbcr2Rgb(YCbCr);
-            double scale = (FourierTransformed) ? Math.Sqrt(Width * Height) : 1;
-
-            dstImage.RunOnEveryPixel((i, j) =>
+            // todo depth
+            return EffectiveBitmap.Create(Width, Height, 4, (i, j) =>
             {
-                var value = (byte)Math.Max(0, System.Math.Min(255, Data[i, j].Magnitude * scale * 255));
+                var value = (byte)Math.Max(0, Math.Min(255, Data[j, i].Magnitude * scale * 255));
                 if (FourierTransformed)
                 {
-                    dstImage.SetPixel(i, j, Color.FromArgb(value, value, value));
+                    return new PixelInfo(value, value, value);
                 }
                 else
                 {
                     YCbCr[i, j, 0] = value;
-                    dstImage.SetPixel(i, j, BitmapExtensions.ColorFromYCbCr(YCbCr[i, j, 0], YCbCr[i, j, 1], YCbCr[i, j, 2]));
+                    return PixelInfo.FromYCbCr(YCbCr[i, j, 0], YCbCr[i, j, 1], YCbCr[i, j, 2]);
                 }
             });
-
-            return new Bitmap(dstImage, OriginalWidth, OriginalHeight);
         }
 
         public void ForwardFourierTransform()
