@@ -1,6 +1,7 @@
 ﻿using Algorithms;
 using System;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
@@ -23,18 +24,19 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 			alphaTextBox = AddParameterTextBox("0.01", 1, 1);
 		}
 
-		protected override Task ProcessAdding()
+		protected override Task ProcessAdding(CancellationToken ct)
 		{
 			return Task.Run(async () =>
 			{
+				ct.ThrowIfCancellationRequested();
 				var p = ReadParameters();
-				var algorithm = new Dwt(p);
-				var result = await algorithm.AddWatermark();
+				ct.ThrowIfCancellationRequested();
+				var result = await new Dwt(p).AddWatermark(ct);
 				ShowAlgorithmOutput(result);
 			});
 		}
 
-		protected override Task ProcessRemoving()
+		protected override Task ProcessRemoving(CancellationToken ct)
 		{
 			throw new NotImplementedException();
 		}

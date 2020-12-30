@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AlgorithmTest
@@ -46,7 +47,7 @@ namespace AlgorithmTest
 		public async Task WatermarkingTest()
 		{
 			// Act
-			var results = await algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None);
 
 			var watermarked = results[2];
 
@@ -60,7 +61,7 @@ namespace AlgorithmTest
 		public async Task DftPlusWatermarkTest()
 		{
 			// Act
-			var results = await algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None);
 
 			var fourierWatermarked = results[1];
 
@@ -74,7 +75,7 @@ namespace AlgorithmTest
 		public async Task DftTest()
 		{
 			// Act
-			var results = await algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None);
 
 			var originalFourier = results[0];
 

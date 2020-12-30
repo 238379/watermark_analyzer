@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AlgorithmTest
@@ -46,7 +47,7 @@ namespace AlgorithmTest
 		public async Task WatermarkingTest()
 		{
 			// Act
-			var results = await algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None);
 
 			var watermarked = results[2];
 
@@ -60,7 +61,7 @@ namespace AlgorithmTest
 		public async Task DwtTest()
 		{
 			// Act
-			var results = await algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None);
 
 			var haared = results[0];
 
@@ -74,7 +75,7 @@ namespace AlgorithmTest
 		public async Task DwtPlusWatermarkTest()
 		{
 			// Act
-			var results = await algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None);
 
 			var haaredPlusWatermark = results[1];
 

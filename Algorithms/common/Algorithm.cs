@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Algorithms.common
 {
@@ -8,8 +9,8 @@ namespace Algorithms.common
 		{
 		}
 
-		public abstract Task<AlgorithmResult> AddWatermark();
-		public abstract Task<AlgorithmResult> RemoveWatermark();
+		public abstract Task<AlgorithmResult> AddWatermark(CancellationToken ct);
+		public abstract Task<AlgorithmResult> RemoveWatermark(CancellationToken ct);
 	}
 
 	public enum AlgorithmMode

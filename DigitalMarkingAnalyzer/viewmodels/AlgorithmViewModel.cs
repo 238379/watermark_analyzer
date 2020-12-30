@@ -2,6 +2,7 @@
 using Algorithms.common;
 using DigitalMarkingAnalyzer.viewmodels.basic;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +19,8 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		private readonly AlgorithmControls controls;
 		private readonly MainWindow mainWindow;
+
+		private CancellationTokenSource cts;
 
 		public static AlgorithmViewModel Create(string algorithmName, AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock)
 		{
@@ -53,15 +56,20 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			controls.ResultTab.Visibility = Visibility.Visible;
 			controls.TabControl.SelectedIndex = controls.ResultTabIndex;
 			controls.ResultScrollViewer.ScrollToVerticalOffset(0);
+
+			cts = new CancellationTokenSource();
+			controls.CancelButton.Click += Cancel;
+			controls.CloseButton.Click += Cancel;
+
 			try
 			{
 				switch(controls.AlgorithmMode)
 				{
 					case AlgorithmMode.AddWatermark:
-						await ProcessAdding();
+						await ProcessAdding(cts.Token);
 						break;
 					case AlgorithmMode.RemoveWatermark:
-						await ProcessRemoving();
+						await ProcessRemoving(cts.Token);
 						break;
 					default:
 						throw new InvalidOperationException($"Unknown algorithm mode {controls.AlgorithmMode}.");
@@ -75,11 +83,21 @@ namespace DigitalMarkingAnalyzer.viewmodels
 				});
 				throw;
 			}
+			finally
+			{
+				controls.CancelButton.Click -= Cancel;
+				controls.CloseButton.Click -= Cancel;
+			}
 		}
 
-		protected abstract Task ProcessAdding();
+		private void Cancel(object sender, RoutedEventArgs e)
+		{
+			cts.Cancel();
+		}
 
-		protected abstract Task ProcessRemoving();
+		protected abstract Task ProcessAdding(CancellationToken ct);
+
+		protected abstract Task ProcessRemoving(CancellationToken ct);
 
 		protected (EffectiveBitmap, EffectiveBitmap, EffectiveBitmap) ReadInputBitmaps()
 		{

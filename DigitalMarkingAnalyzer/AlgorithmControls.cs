@@ -17,9 +17,10 @@ namespace DigitalMarkingAnalyzer
 		public readonly Grid ResultGrid;
 		public readonly ScrollViewer ResultScrollViewer;
 		public readonly Button CloseButton;
+		public readonly Button CancelButton;
 
 		public AlgorithmControls(AlgorithmMode algorithmMode, Grid parametersGrid, Button processButton, Image originalImage, Image watermarkImage, Image watermarkedImage,
-			TabControl tabControl, TabItem resultTab, int resultTabIndex, Grid resultGrid, ScrollViewer resultScrollViewer, Button closeButton)
+			TabControl tabControl, TabItem resultTab, int resultTabIndex, Grid resultGrid, ScrollViewer resultScrollViewer, Button closeButton, Button cancelButton)
 		{
 			AlgorithmMode = algorithmMode;
 			ParametersGrid = parametersGrid;
@@ -33,6 +34,7 @@ namespace DigitalMarkingAnalyzer
 			ResultGrid = resultGrid;
 			ResultScrollViewer = resultScrollViewer;
 			CloseButton = closeButton;
+			CancelButton = cancelButton;
 		}
 	}
 }

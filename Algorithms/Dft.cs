@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Algorithms
@@ -107,20 +108,29 @@ namespace Algorithms
 				}
 		}
 
-        public override Task<AlgorithmResult> AddWatermark()
+        public override Task<AlgorithmResult> AddWatermark(CancellationToken ct)
         {
 			complexImage = ComplexImage.FromBitmap(parameters.Original);
 			complexWatermark = ComplexImage.FromBitmap(parameters.Watermark, complexImage.Width);
 
+			ct.ThrowIfCancellationRequested();
+
 			complexImage.ForwardFourierTransform();
 			var fourierDomain = complexImage.ToEffectiveBitmap();
+
+			ct.ThrowIfCancellationRequested();
 
 			complexWatermark.ForwardFourierTransform();
 			EmbedWatermark();
 			var fourierDomainWatermarked = complexImage.ToEffectiveBitmap();
 
+			ct.ThrowIfCancellationRequested();
+
 			complexImage.BackwardFourierTransform();
 			var watermarked = complexImage.ToEffectiveBitmap();
+
+			ct.ThrowIfCancellationRequested();
+
 			return Task.FromResult(new AlgorithmResult(
 				("Fourier domain (DFT)", fourierDomain.ToBitmap(parameters.Original.Size)),
 				("DFT + watermark", fourierDomainWatermarked.ToBitmap(parameters.Original.Size)),
@@ -128,7 +138,7 @@ namespace Algorithms
 				));
 		}
 
-        public override Task<AlgorithmResult> RemoveWatermark()
+        public override Task<AlgorithmResult> RemoveWatermark(CancellationToken ct)
         {
             throw new NotImplementedException();
         }

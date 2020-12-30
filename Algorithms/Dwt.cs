@@ -1,6 +1,7 @@
 ﻿using Algorithms.common;
 using System;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Algorithms
@@ -33,10 +34,12 @@ namespace Algorithms
 			this.parameters = parameters;
 		}
 
-		public override Task<AlgorithmResult> AddWatermark()
+		public override Task<AlgorithmResult> AddWatermark(CancellationToken ct)
 		{
+			ct.ThrowIfCancellationRequested();
 			var haared = ProcessHaar(parameters.Original, false, parameters.Layers);
 
+			ct.ThrowIfCancellationRequested();
 			var haaredWatermarked = BitmapOperations.Create((sources, i, j) =>
 			{
 				var layers = parameters.Layers;
@@ -59,12 +62,13 @@ namespace Algorithms
 				
 			}, haared, parameters.Watermark);
 
+			ct.ThrowIfCancellationRequested();
 			var watermarked = ProcessHaar(haaredWatermarked, true, parameters.Layers);
 
 			return Task.FromResult(new AlgorithmResult(("DWT", haared), ("DWT + watermark", haaredWatermarked), ("Watermarked", watermarked)));
 		}
 
-		public override Task<AlgorithmResult> RemoveWatermark()
+		public override Task<AlgorithmResult> RemoveWatermark(CancellationToken ct)
 		{
 			throw new NotImplementedException();
 		}
