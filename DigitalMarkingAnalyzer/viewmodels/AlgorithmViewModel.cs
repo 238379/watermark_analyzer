@@ -58,7 +58,9 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			controls.ResultScrollViewer.ScrollToVerticalOffset(0);
 
 			cts = new CancellationTokenSource();
+
 			controls.CancelButton.Click += Cancel;
+			controls.CancelButton.Visibility = Visibility.Visible;
 			controls.CloseButton.Click += Cancel;
 
 			try
@@ -86,6 +88,7 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			finally
 			{
 				controls.CancelButton.Click -= Cancel;
+				controls.CancelButton.Visibility = Visibility.Hidden;
 				controls.CloseButton.Click -= Cancel;
 			}
 		}

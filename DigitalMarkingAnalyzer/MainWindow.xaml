@@ -9,7 +9,7 @@
         ResizeMode="NoResize">
     <Grid>
         <ToolBar VerticalAlignment="Top" Height="30">
-            <Button x:Name="CancelButton" x:FieldModifier="private" Content="Cancel"></Button>
+            <Button x:Name="CancelButton" x:FieldModifier="private" Content="Cancel" Visibility="Hidden"></Button>
         </ToolBar>
         <Grid>
             <TabControl x:Name="Tabs" Margin="0,30,0,0">
