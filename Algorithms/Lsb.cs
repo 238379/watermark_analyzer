@@ -1,6 +1,7 @@
 ﻿using Algorithms.common;
 using System;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Algorithms
@@ -9,7 +10,7 @@ namespace Algorithms
 	{
 		public readonly int BitsForWatermark;
 
-		public LsbParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, int bitsForWatermark) : base(original, watermark, watermarked)
+		public LsbParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int bitsForWatermark) : base(original, watermark, watermarked)
 		{
 			BitsForWatermark = bitsForWatermark;
 		}
@@ -29,18 +30,28 @@ namespace Algorithms
 			this.parameters = parameters;
 		}
 
-		public override Task<AlgorithmResult> AddWatermark()
+		public override Task<AlgorithmResult> AddWatermark(CancellationToken ct)
 		{
+			ct.ThrowIfCancellationRequested();
 			var watermarked = Watermark(parameters.Original, parameters.Watermark);
+
+			ct.ThrowIfCancellationRequested();
 			var cleaned = CleanWatermark(watermarked);
+
+			ct.ThrowIfCancellationRequested();
 			var extracted = ExtractWatermark(watermarked);
+
 			return Task.FromResult(new AlgorithmResult(("Watermarked", watermarked), ("Cleaned", cleaned), ("Extracted watermark", extracted)));
 		}
 
-		public override Task<AlgorithmResult> RemoveWatermark()
+		public override Task<AlgorithmResult> RemoveWatermark(CancellationToken ct)
 		{
+			ct.ThrowIfCancellationRequested();
 			var cleaned = CleanWatermark(parameters.Watermarked);
+
+			ct.ThrowIfCancellationRequested();
 			var extracted = ExtractWatermark(parameters.Watermarked);
+
 			return Task.FromResult(new AlgorithmResult(("Cleaned", cleaned), ("Extracted watermark", extracted)));
 		}
 

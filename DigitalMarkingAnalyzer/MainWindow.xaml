@@ -5,11 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:System="clr-namespace:System;assembly=System.Runtime" x:Class="DigitalMarkingAnalyzer.MainWindow"
         mc:Ignorable="d"
-        Title="Watermark Analyzer" Height="700" Width="850"
+        Title="Watermark Analyzer" Height="730" Width="850"
         ResizeMode="NoResize">
     <Grid>
+        <ToolBar VerticalAlignment="Top" Height="30">
+            <Button x:Name="CancelButton" x:FieldModifier="private" Content="Cancel" Visibility="Hidden"></Button>
+        </ToolBar>
         <Grid>
-            <TabControl x:Name="Tabs">
+            <TabControl x:Name="Tabs" Margin="0,30,0,0">
                 <TabItem Header="Adding" x:Name="AddingWatermarkTab">
                     <Grid Background="#FFE5E5E5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid Background="#FFE5E5E5" Width="420" Height="500" HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -88,7 +91,7 @@
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
-                <TabItem Header="Removing" x:Name="RemovingWatermarkTab" Visibility="Collapsed">
+                <TabItem Header="Removing" x:Name="RemovingWatermarkTab">
                     <Grid Background="#FFE5E5E5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid Background="#FFE5E5E5" Width="420" Height="500" HorizontalAlignment="Left" VerticalAlignment="Top">
                             <Label Content="Watermarked" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>

@@ -1,7 +1,6 @@
 ﻿using Algorithms.common;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Algorithms
@@ -10,7 +9,7 @@ namespace Algorithms
 	{
 		public readonly double Ratio;
 
-		public PixelAveragingParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, double ratio) : base(original, watermark, watermarked)
+		public PixelAveragingParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, double ratio) : base(original, watermark, watermarked)
 		{
 			Ratio = ratio;
 		}
@@ -28,15 +27,21 @@ namespace Algorithms
 			this.parameters = parameters;
 		}
 
-		public override Task<AlgorithmResult> AddWatermark()
+		public override Task<AlgorithmResult> AddWatermark(CancellationToken ct)
 		{
+			ct.ThrowIfCancellationRequested();
 			var watermarked = Watermark(parameters.Original, parameters.Watermark);
+
+			ct.ThrowIfCancellationRequested();
 			var cleaned = CleanWatermark(watermarked, parameters.Watermark);
+
+			ct.ThrowIfCancellationRequested();
 			var extracted = ExtractWatermark(watermarked, parameters.Original);
+
 			return Task.FromResult(new AlgorithmResult(("Watermarked", watermarked), ("Cleaned", cleaned), ("Extracted watermark", extracted)));
 		}
 
-		public override Task<AlgorithmResult> RemoveWatermark()
+		public override Task<AlgorithmResult> RemoveWatermark(CancellationToken ct)
 		{
 			throw new NotImplementedException();
 		}

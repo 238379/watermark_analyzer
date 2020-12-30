@@ -1,7 +1,9 @@
 using Algorithms;
+using Algorithms.common;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AlgorithmTest
@@ -25,7 +27,7 @@ namespace AlgorithmTest
 			originalBitmap = CreateOriginal();
 			watermarkBitmap = CreateWatermark();
 			bitsForWatermark = 1;
-			parameters = new LsbParameters(originalBitmap, watermarkBitmap, null, bitsForWatermark);
+			parameters = new LsbParameters(originalBitmap.TransformToEffectiveBitmap(), watermarkBitmap.TransformToEffectiveBitmap(), null, bitsForWatermark);
 
 			algorithm = new Lsb(parameters);
 		}
@@ -34,7 +36,7 @@ namespace AlgorithmTest
 		public async Task BasicAddingTest()
 		{
 			// Act
-			var results = await algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None);
 
 			var watermarked = results[0];
 			var cleaned = results[1];

@@ -44,4 +44,8 @@
     </Page>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="viewmodels\advanced\" />
+  </ItemGroup>
+
 </Project>

@@ -53,10 +53,10 @@ namespace DigitalMarkingAnalyzer
 			WatermarkedImage = new UpdatableImage(WatermarkedImageControl);
 
 			addingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.AddWatermark, AddingParametersGrid, AddingProcess, OriginalImageControl, WatermarkImageControl, WatermarkedImageControl,
-				Tabs, AddingResultTab, ADDING_RESULT_TAB_INDEX, AddingResultGrid, AddingResultScrollViewer, CloseAddingResult);
+				Tabs, AddingResultTab, ADDING_RESULT_TAB_INDEX, AddingResultGrid, AddingResultScrollViewer, CloseAddingResult, CancelButton);
 
 			removingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.RemoveWatermark, RemovingParametersGrid, RemovingProcess, OriginalImageControl, WatermarkImageControl, WatermarkedImageControl,
-				Tabs, RemovingResultTab, REMOVING_RESULT_TAB_INDEX, RemovingResultGrid, RemovingResultScrollViewer, CloseRemovingResult);
+				Tabs, RemovingResultTab, REMOVING_RESULT_TAB_INDEX, RemovingResultGrid, RemovingResultScrollViewer, CloseRemovingResult, CancelButton);
 
 			inputImagesViewModel = new InputImagesViewModel(this, OriginalImageControl, WatermarkImageControl, WatermarkedImageControl, AddingErrorMessage);// TODO
 			inputImagesViewModel.SetUp();

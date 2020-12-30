@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace DigitalMarkingAnalyzer.viewmodels
@@ -32,14 +33,15 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			algorithmBox.SelectionChanged += ChangeSelectedAlgorithm;
 		}
 
-		private void Process(object sender, System.Windows.RoutedEventArgs e)
+		private void Process(object sender, RoutedEventArgs e)
 		{
-			Submit();
+			controls.ProcessButton.Visibility = Visibility.Hidden;
+			Submit().ContinueWith((t) => mainWindow.Dispatcher.Invoke(() => controls.ProcessButton.Visibility = Visibility.Visible));
 		}
 
-		protected override void OnSubmit()
+		protected override Task OnSubmit()
 		{
-			algorithmViewModel?.Submit();
+			return algorithmViewModel?.Submit();
 		}
 
 		private void ChangeSelectedAlgorithm(object sender, SelectionChangedEventArgs e)
