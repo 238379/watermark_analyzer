@@ -5,9 +5,16 @@ namespace Algorithms.common
 {
 	public abstract class Algorithm
 	{
-		public Algorithm()
+		private readonly string name;
+		private readonly AlgorithmParameters parameters;
+
+		public Algorithm(string name, AlgorithmParameters parameters)
 		{
+			this.name = name;
+			this.parameters = parameters;
 		}
+
+		public string Description => $"{name} {parameters}";
 
 		public abstract IAsyncEnumerable<AlgorithmResultElement> AddWatermark(CancellationToken ct);
 		public abstract IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark(CancellationToken ct);

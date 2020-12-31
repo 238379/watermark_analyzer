@@ -14,6 +14,11 @@ namespace Algorithms
 		{
 			BitsForWatermark = bitsForWatermark;
 		}
+
+		public override string ToString()
+		{
+			return "{" + $"Bits for watermark={BitsForWatermark}" + "}";
+		}
 	}
 
 	public class Lsb : Algorithm
@@ -25,7 +30,7 @@ namespace Algorithms
 		// TODO width and height
 		private readonly Random random = new Random();
 
-		public Lsb(LsbParameters parameters) : base()
+		public Lsb(LsbParameters parameters) : base(ALGORITHM_NAME, parameters)
 		{
 			this.parameters = parameters;
 		}

@@ -28,8 +28,9 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 				ct.ThrowIfCancellationRequested();
 				var p = ReadParameters();
 				ct.ThrowIfCancellationRequested();
-				var result = new PixelAveraging(p).AddWatermark(ct);
-				await AppendAlgorithmOutput(result);
+				var algorithm = new PixelAveraging(p);
+				var result = algorithm.AddWatermark(ct);
+				await ShowAlgorithmOutput(result, algorithm.Description);
 			});
 		}
 

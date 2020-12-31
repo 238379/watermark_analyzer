@@ -1,5 +1,6 @@
 ﻿using Algorithms;
 using Algorithms.common;
+using DigitalMarkingAnalyzer.viewmodels.advanced;
 using DigitalMarkingAnalyzer.viewmodels.basic;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,11 @@ namespace DigitalMarkingAnalyzer.viewmodels
 {
 	public abstract class AlgorithmViewModel : ViewModel
 	{
+		public enum ViewModelType {
+			Basic,
+			Advanced
+		}
+
 		protected readonly Dispatcher dispatcher;
 
 		private const int RESULT_VIEW_COLUMNS = 2;
@@ -23,15 +29,25 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 		private CancellationTokenSource cts;
 
-		public static AlgorithmViewModel Create(string algorithmName, AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock)
+		public static AlgorithmViewModel Create(string algorithmName, ViewModelType type, AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock)
 		{
-			return algorithmName switch
+			return type switch
 			{
-				Lsb.ALGORITHM_NAME => new LsbViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
-				PixelAveraging.ALGORITHM_NAME => new PixelAveragingViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
-				Dwt.ALGORITHM_NAME => new DwtViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
-				Dft.ALGORITHM_NAME => new DftViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
-				_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
+				ViewModelType.Basic => algorithmName switch
+				{
+					Lsb.ALGORITHM_NAME => new LsbViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+					PixelAveraging.ALGORITHM_NAME => new PixelAveragingViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+					Dwt.ALGORITHM_NAME => new DwtViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+					Dft.ALGORITHM_NAME => new DftViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+					UnspecifiedViewModel.ALGORITHM_NAME => new UnspecifiedViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+					_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
+				},
+				ViewModelType.Advanced => algorithmName switch
+				{
+					Lsb.ALGORITHM_NAME => new AdvancedLsbViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+					_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
+				},
+				_ => throw new ArgumentException($"Unknown view model type '{type}'."),
 			};
 		}
 
@@ -119,8 +135,32 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			return (originalAsBitmapImage, watermarkAsBitmapImage, watermarkedAsBitmapImage);
 		}
 
-		protected async Task AppendAlgorithmOutput(IAsyncEnumerable<AlgorithmResultElement> asyncResults)
+		protected async Task ShowAlgorithmOutput(IAsyncEnumerable<AlgorithmResultElement> asyncResults, string label)
 		{
+			dispatcher.Invoke(() =>
+			{
+				for (int column = controls.ResultGrid.Children.Count % RESULT_VIEW_COLUMNS; column != 0; column = controls.ResultGrid.Children.Count % RESULT_VIEW_COLUMNS)
+				{
+					// add placeholders
+					int row = controls.ResultGrid.Children.Count / RESULT_VIEW_COLUMNS;
+					AddAtPositionInResultGrid(new AlgorithmResultElementView(null, null, null).Grid, column, row);
+				}
+
+				{
+					// now we have a new row
+					var view = new AlgorithmLabelElementView(label);
+					controls.ResultGrid.RowDefinitions.Add(new RowDefinition
+					{
+						Height = new GridLength(view.Grid.Height)
+					});
+					int row = controls.ResultGrid.Children.Count / RESULT_VIEW_COLUMNS;
+					int column = controls.ResultGrid.Children.Count % RESULT_VIEW_COLUMNS;
+					AddAtPositionInResultGrid(view.Grid, column, row, 2);
+					AddAtPositionInResultGrid(new AlgorithmLabelElementView(null).Grid, column + 1, row);
+				}
+
+			});
+
 			await foreach (var result in asyncResults)
 			{
 				dispatcher.Invoke(() =>
@@ -130,14 +170,13 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 					if (column == 0) // it's a new row! :)
 					{
-						var rowDefinition = new RowDefinition
+						controls.ResultGrid.RowDefinitions.Add(new RowDefinition
 						{
 							Height = GridLength.Auto
-						};
-						controls.ResultGrid.RowDefinitions.Add(rowDefinition);
+						});
 					}
 
-					var view = new AlgorithmResultElementView(result.Label, result.Image);
+					var view = new AlgorithmResultElementView(result.Label, result.Image, controls.OnUse);
 					InterfaceTools.RegisterOpenImageWindowOnClick(mainWindow, view.Image);
 					AddAtPositionInResultGrid(view.Grid, column, row);
 				});
@@ -175,11 +214,12 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			Grid.SetRow(element, y);
 		}
 
-		private void AddAtPositionInResultGrid(UIElement element, int x, int y)
+		private void AddAtPositionInResultGrid(UIElement element, int x, int y, int columnSpan = 1)
 		{
 			controls.ResultGrid.Children.Add(element);
 			Grid.SetColumn(element, x);
 			Grid.SetRow(element, y);
+			Grid.SetColumnSpan(element, columnSpan);
 		}
 	}
 }

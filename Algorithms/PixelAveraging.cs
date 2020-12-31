@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Algorithms
 {
@@ -15,6 +14,11 @@ namespace Algorithms
 		{
 			Ratio = ratio;
 		}
+
+		public override string ToString()
+		{
+			return "{" + $"Ratio={Ratio}" + "}";
+		}
 	}
 
 	public class PixelAveraging : Algorithm
@@ -24,7 +28,7 @@ namespace Algorithms
 		private readonly PixelAveragingParameters parameters;
 
 
-		public PixelAveraging(PixelAveragingParameters parameters) : base()
+		public PixelAveraging(PixelAveragingParameters parameters) : base(ALGORITHM_NAME, parameters)
 		{
 			this.parameters = parameters;
 		}

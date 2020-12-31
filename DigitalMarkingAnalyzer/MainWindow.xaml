@@ -180,6 +180,7 @@
                         <Grid Background="#FFE5E5E5" Height="130" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                             <Label Content="Algorithm" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,10,0" VerticalAlignment="Top" Height="40" Width="120" FontSize="16"/>
                             <ComboBox x:Name="AdvancedRemovingAlgorithmBox" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="120" IsEditable="False">
+                                <System:String>Unspecified</System:String>
                                 <System:String>LSB</System:String>
                                 <System:String>PixelAveraging</System:String>
                                 <System:String>DWT</System:String>

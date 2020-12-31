@@ -1,7 +1,9 @@
 ﻿using DigitalMarkingAnalyzer.viewmodels;
 using LoggerUtils;
 using System;
+using System.Drawing;
 using System.Windows;
+using static DigitalMarkingAnalyzer.viewmodels.AlgorithmViewModel;
 
 namespace DigitalMarkingAnalyzer
 {
@@ -61,26 +63,26 @@ namespace DigitalMarkingAnalyzer
 			advancedWatermarkedImage = new UpdatableImage(AdvancedWatermarkedImageControl);
 
 			addingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.AddWatermark, AddingParametersGrid, AddingProcess,
-				OriginalImageControl, WatermarkImageControl, WatermarkedImageControl,
+				OriginalImageControl, WatermarkImageControl, WatermarkedImageControl, UseImageToRemoveWatermark,
 				Tabs, AddingResultTab, ADDING_RESULT_TAB_INDEX, AddingResultGrid, AddingResultScrollViewer, CloseAddingResult, CancelButton);
 
 			removingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.RemoveWatermark, RemovingParametersGrid, RemovingProcess,
-				OriginalImageControl, WatermarkImageControl, WatermarkedImageControl,
+				OriginalImageControl, WatermarkImageControl, WatermarkedImageControl, UseImageToRemoveWatermark,
 				Tabs, RemovingResultTab, REMOVING_RESULT_TAB_INDEX, RemovingResultGrid, RemovingResultScrollViewer, CloseRemovingResult, CancelButton);
 
 			advancedRemovingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.RemoveWatermark, AdvancedRemovingParametersGrid, AdvancedRemovingProcess,
-				OriginalImageControl, WatermarkImageControl, AdvancedWatermarkedImageControl,
+				OriginalImageControl, WatermarkImageControl, AdvancedWatermarkedImageControl, UseImageToRemoveWatermark,
 				Tabs, AdvancedRemovingResultTab, ADVANCED_REMOVING_RESULT_TAB_INDEX, AdvancedRemovingResultGrid, AdvancedRemovingResultScrollViewer, AdvancedCloseRemovingResult, CancelButton);
 
 			SetUpInputImagesViewModels();
 
-			addingAlgorithmSelectionViewModel = new AlgorithmSelectionViewModel(AddingAlgorithmBox, addingWatermarkAlgorithmControls, this, AddingErrorMessage);
+			addingAlgorithmSelectionViewModel = new AlgorithmSelectionViewModel(ViewModelType.Basic, AddingAlgorithmBox, addingWatermarkAlgorithmControls, this, AddingErrorMessage);
 			addingAlgorithmSelectionViewModel.SetUp();
 
-			removingAlgorithmSelectionViewModel = new AlgorithmSelectionViewModel(RemovingAlgorithmBox, removingWatermarkAlgorithmControls, this, RemovingErrorMessage);
+			removingAlgorithmSelectionViewModel = new AlgorithmSelectionViewModel(ViewModelType.Basic, RemovingAlgorithmBox, removingWatermarkAlgorithmControls, this, RemovingErrorMessage);
 			removingAlgorithmSelectionViewModel.SetUp();
 
-			advancedRemovingAlgorithmSelectionViewModel = new AlgorithmSelectionViewModel(AdvancedRemovingAlgorithmBox, advancedRemovingWatermarkAlgorithmControls, this, AdvancedRemovingErrorMessage);
+			advancedRemovingAlgorithmSelectionViewModel = new AlgorithmSelectionViewModel(ViewModelType.Advanced, AdvancedRemovingAlgorithmBox, advancedRemovingWatermarkAlgorithmControls, this, AdvancedRemovingErrorMessage);
 			advancedRemovingAlgorithmSelectionViewModel.SetUp();
 
 			originalGeneratorViewModel = new InternetImageGeneratorViewModel(new GeneratorControls(GenerateOriginalButton, originalImage), AddingErrorMessage);
@@ -125,6 +127,12 @@ namespace DigitalMarkingAnalyzer
 				Left = Left,
 				Top = Top
 			}.Show();
+		}
+
+		private void UseImageToRemoveWatermark(Bitmap bitmap)
+		{
+			watermarkedImage.SetSource(bitmap);
+			advancedWatermarkedImage.SetSource(bitmap);
 		}
 
 		private void CloseAddingResultTabButton_Click(object sender, RoutedEventArgs e)

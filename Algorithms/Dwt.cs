@@ -18,6 +18,11 @@ namespace Algorithms
 			Layers = layers;
 			Alpha = alpha;
 		}
+
+		public override string ToString()
+		{
+			return "{" + $"Layers={Layers}, Alpha={Alpha}" + "}";
+		}
 	}
 
 	public class Dwt: Algorithm
@@ -31,7 +36,7 @@ namespace Algorithms
 		private const double s0 = 0.5;
 		private const double s1 = 0.5;
 
-		public Dwt(DwtParameters parameters) : base()
+		public Dwt(DwtParameters parameters) : base(ALGORITHM_NAME, parameters)
 		{
 			this.parameters = parameters;
 		}

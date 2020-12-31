@@ -31,8 +31,9 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 				ct.ThrowIfCancellationRequested();
 				var p = ReadParameters();
 				ct.ThrowIfCancellationRequested();
-				var result = new Dwt(p).AddWatermark(ct);
-				await AppendAlgorithmOutput(result);
+				var algorithm = new Dwt(p);
+				var result = algorithm.AddWatermark(ct);
+				await ShowAlgorithmOutput(result, algorithm.Description);
 			});
 		}
 

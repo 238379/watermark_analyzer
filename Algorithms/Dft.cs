@@ -1,10 +1,8 @@
 ﻿using Algorithms.common;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Algorithms
 {
@@ -17,6 +15,11 @@ namespace Algorithms
 		{
 			Key = key;
 			Alpha = alpha;
+		}
+
+		public override string ToString()
+		{
+			return "{"+ $"Key={Key}, Alpha={Alpha}" + "}";
 		}
 	}
 
@@ -31,7 +34,7 @@ namespace Algorithms
 		private ComplexImage complexImage;
 		private ComplexImage complexWatermark;
 
-		public Dft(DftParameters parameters) : base()
+		public Dft(DftParameters parameters) : base(ALGORITHM_NAME, parameters)
 		{
 			this.parameters = parameters;
 		}
