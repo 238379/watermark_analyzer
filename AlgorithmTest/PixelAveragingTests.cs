@@ -1,5 +1,6 @@
 ﻿using Algorithms;
 using Algorithms.common;
+using Common;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Drawing;
@@ -36,7 +37,7 @@ namespace AlgorithmTest
 		public async Task BasicAddingTest()
 		{
 			// Act
-			var results = await algorithm.AddWatermark(CancellationToken.None);
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var watermarked = results[0];
 
@@ -52,7 +53,7 @@ namespace AlgorithmTest
 		public async Task BasicRemovingTest()
 		{
 			// Act
-			var results = await algorithm.AddWatermark(CancellationToken.None);
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var watermarked = results[1];
 

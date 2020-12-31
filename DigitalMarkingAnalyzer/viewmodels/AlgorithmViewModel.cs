@@ -2,6 +2,7 @@
 using Algorithms.common;
 using DigitalMarkingAnalyzer.viewmodels.basic;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -118,17 +119,14 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			return (originalAsBitmapImage, watermarkAsBitmapImage, watermarkedAsBitmapImage);
 		}
 
-		protected void ShowAlgorithmOutput(AlgorithmResult result)
+		protected async Task AppendAlgorithmOutput(IAsyncEnumerable<AlgorithmResultElement> asyncResults)
 		{
-			dispatcher.Invoke(() =>
+			await foreach (var result in asyncResults)
 			{
-				controls.ResultGrid.Children.Clear();
-				controls.ResultGrid.RowDefinitions.Clear();
-
-				result.ForEach((i, element) =>
+				dispatcher.Invoke(() =>
 				{
-					int row = i / RESULT_VIEW_COLUMNS;
-					int column = i % RESULT_VIEW_COLUMNS;
+					int row = controls.ResultGrid.Children.Count / RESULT_VIEW_COLUMNS;
+					int column = controls.ResultGrid.Children.Count % RESULT_VIEW_COLUMNS;
 
 					if (column == 0) // it's a new row! :)
 					{
@@ -139,11 +137,11 @@ namespace DigitalMarkingAnalyzer.viewmodels
 						controls.ResultGrid.RowDefinitions.Add(rowDefinition);
 					}
 
-					var view = new AlgorithmResultElementView(element.Label, element.Image);
+					var view = new AlgorithmResultElementView(result.Label, result.Image);
 					InterfaceTools.RegisterOpenImageWindowOnClick(mainWindow, view.Image);
 					AddAtPositionInResultGrid(view.Grid, column, row);
 				});
-			});
+			}
 		}
 
 		protected Label AddParameterLabel(string labelContent, int x, int y)

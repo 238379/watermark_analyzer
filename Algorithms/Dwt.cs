@@ -1,6 +1,8 @@
 ﻿using Algorithms.common;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,10 +36,12 @@ namespace Algorithms
 			this.parameters = parameters;
 		}
 
-		public override Task<AlgorithmResult> AddWatermark(CancellationToken ct)
+		public override async IAsyncEnumerable<AlgorithmResultElement> AddWatermark([EnumeratorCancellation] CancellationToken ct)
 		{
 			ct.ThrowIfCancellationRequested();
 			var haared = ProcessHaar(parameters.Original, false, parameters.Layers);
+
+			yield return new AlgorithmResultElement("DWT", haared);
 
 			ct.ThrowIfCancellationRequested();
 			var haaredWatermarked = BitmapOperations.Create((sources, i, j) =>
@@ -62,15 +66,19 @@ namespace Algorithms
 				
 			}, haared, parameters.Watermark);
 
+			yield return new AlgorithmResultElement("DWT + watermark", haaredWatermarked);
+
 			ct.ThrowIfCancellationRequested();
+
 			var watermarked = ProcessHaar(haaredWatermarked, true, parameters.Layers);
 
-			return Task.FromResult(new AlgorithmResult(("DWT", haared), ("DWT + watermark", haaredWatermarked), ("Watermarked", watermarked)));
+			yield return new AlgorithmResultElement("Watermarked", watermarked);
 		}
 
-		public override Task<AlgorithmResult> RemoveWatermark(CancellationToken ct)
+		public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)
 		{
 			throw new NotImplementedException();
+			yield return null;
 		}
 
 		private void FWT(HaarColor[] data)

@@ -27,8 +27,8 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 				ct.ThrowIfCancellationRequested();
 				var p = ReadParameters();
 				ct.ThrowIfCancellationRequested();
-				var result = await new Lsb(p).AddWatermark(ct);
-				ShowAlgorithmOutput(result);
+				var result = new Lsb(p).AddWatermark(ct);
+				await AppendAlgorithmOutput(result);
 			});
 		}
 
@@ -38,8 +38,8 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 			{
 				var p = ReadParameters();
 				var algorithm = new Lsb(p);
-				var result = await algorithm.RemoveWatermark(ct);
-				ShowAlgorithmOutput(result);
+				var result = algorithm.RemoveWatermark(ct);
+				await AppendAlgorithmOutput(result);
 			});
 		}
 

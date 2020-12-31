@@ -1,5 +1,7 @@
 ﻿using Algorithms.common;
 using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,23 +29,28 @@ namespace Algorithms
 			this.parameters = parameters;
 		}
 
-		public override Task<AlgorithmResult> AddWatermark(CancellationToken ct)
+		public override async IAsyncEnumerable<AlgorithmResultElement> AddWatermark([EnumeratorCancellation] CancellationToken ct)
 		{
 			ct.ThrowIfCancellationRequested();
 			var watermarked = Watermark(parameters.Original, parameters.Watermark);
 
+			yield return new AlgorithmResultElement("Watermarked", watermarked);
+
 			ct.ThrowIfCancellationRequested();
 			var cleaned = CleanWatermark(watermarked, parameters.Watermark);
+
+			yield return new AlgorithmResultElement("Cleaned", cleaned);
 
 			ct.ThrowIfCancellationRequested();
 			var extracted = ExtractWatermark(watermarked, parameters.Original);
 
-			return Task.FromResult(new AlgorithmResult(("Watermarked", watermarked), ("Cleaned", cleaned), ("Extracted watermark", extracted)));
+			yield return new AlgorithmResultElement("Extracted watermark", extracted);
 		}
 
-		public override Task<AlgorithmResult> RemoveWatermark(CancellationToken ct)
+		public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)
 		{
 			throw new NotImplementedException();
+			yield return null;
 		}
 
 		private EffectiveBitmap Watermark(EffectiveBitmap original, EffectiveBitmap watermark)

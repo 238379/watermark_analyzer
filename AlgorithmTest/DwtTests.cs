@@ -1,5 +1,6 @@
 ﻿using Algorithms;
 using Algorithms.common;
+using Common;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
@@ -47,7 +48,7 @@ namespace AlgorithmTest
 		public async Task WatermarkingTest()
 		{
 			// Act
-			var results = await algorithm.AddWatermark(CancellationToken.None);
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var watermarked = results[2];
 
@@ -61,7 +62,7 @@ namespace AlgorithmTest
 		public async Task DwtTest()
 		{
 			// Act
-			var results = await algorithm.AddWatermark(CancellationToken.None);
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var haared = results[0];
 
@@ -75,7 +76,7 @@ namespace AlgorithmTest
 		public async Task DwtPlusWatermarkTest()
 		{
 			// Act
-			var results = await algorithm.AddWatermark(CancellationToken.None);
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var haaredPlusWatermark = results[1];
 

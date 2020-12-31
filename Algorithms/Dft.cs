@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -108,7 +109,7 @@ namespace Algorithms
 				}
 		}
 
-        public override Task<AlgorithmResult> AddWatermark(CancellationToken ct)
+        public override async IAsyncEnumerable<AlgorithmResultElement> AddWatermark([EnumeratorCancellation] CancellationToken ct)
         {
 			complexImage = ComplexImage.FromBitmap(parameters.Original);
 			complexWatermark = ComplexImage.FromBitmap(parameters.Watermark, complexImage.Width);
@@ -118,29 +119,28 @@ namespace Algorithms
 			complexImage.ForwardFourierTransform();
 			var fourierDomain = complexImage.ToEffectiveBitmap();
 
+			yield return new AlgorithmResultElement("Fourier domain (DFT)", fourierDomain.ToBitmap(parameters.Original.Size));
+
 			ct.ThrowIfCancellationRequested();
 
 			complexWatermark.ForwardFourierTransform();
 			EmbedWatermark();
 			var fourierDomainWatermarked = complexImage.ToEffectiveBitmap();
 
+			yield return new AlgorithmResultElement("DFT + watermark", fourierDomainWatermarked.ToBitmap(parameters.Original.Size));
+
 			ct.ThrowIfCancellationRequested();
 
 			complexImage.BackwardFourierTransform();
 			var watermarked = complexImage.ToEffectiveBitmap();
 
-			ct.ThrowIfCancellationRequested();
-
-			return Task.FromResult(new AlgorithmResult(
-				("Fourier domain (DFT)", fourierDomain.ToBitmap(parameters.Original.Size)),
-				("DFT + watermark", fourierDomainWatermarked.ToBitmap(parameters.Original.Size)),
-				("Watermarked", watermarked.ToBitmap(parameters.Original.Size))
-				));
+			yield return new AlgorithmResultElement("Watermarked", watermarked.ToBitmap(parameters.Original.Size));
 		}
 
-        public override Task<AlgorithmResult> RemoveWatermark(CancellationToken ct)
+        public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)
         {
             throw new NotImplementedException();
-        }
-    }
+			yield return null;
+		}
+	}
 }

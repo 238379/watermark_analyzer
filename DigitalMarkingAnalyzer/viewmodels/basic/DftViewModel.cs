@@ -32,8 +32,8 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 				ct.ThrowIfCancellationRequested();
 				var p = ReadParameters();
 				ct.ThrowIfCancellationRequested();
-				var result = await new Dft(p).AddWatermark(ct);
-				ShowAlgorithmOutput(result);
+				var result = new Dft(p).AddWatermark(ct);
+				await AppendAlgorithmOutput(result);
 			});
 		}
 

@@ -1,8 +1,8 @@
 ﻿using Algorithms.common;
 using System;
-using System.Drawing;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Algorithms
 {
@@ -30,29 +30,35 @@ namespace Algorithms
 			this.parameters = parameters;
 		}
 
-		public override Task<AlgorithmResult> AddWatermark(CancellationToken ct)
+		public override async IAsyncEnumerable<AlgorithmResultElement> AddWatermark([EnumeratorCancellation] CancellationToken ct)
 		{
 			ct.ThrowIfCancellationRequested();
 			var watermarked = Watermark(parameters.Original, parameters.Watermark);
 
+			yield return new AlgorithmResultElement("Watermarked", watermarked);
+
 			ct.ThrowIfCancellationRequested();
 			var cleaned = CleanWatermark(watermarked);
+
+			yield return new AlgorithmResultElement("Cleaned", cleaned);
 
 			ct.ThrowIfCancellationRequested();
 			var extracted = ExtractWatermark(watermarked);
 
-			return Task.FromResult(new AlgorithmResult(("Watermarked", watermarked), ("Cleaned", cleaned), ("Extracted watermark", extracted)));
+			yield return new AlgorithmResultElement("Extracted watermark", extracted);
 		}
 
-		public override Task<AlgorithmResult> RemoveWatermark(CancellationToken ct)
+		public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)
 		{
 			ct.ThrowIfCancellationRequested();
 			var cleaned = CleanWatermark(parameters.Watermarked);
 
+			yield return new AlgorithmResultElement("Cleaned", cleaned);
+
 			ct.ThrowIfCancellationRequested();
 			var extracted = ExtractWatermark(parameters.Watermarked);
 
-			return Task.FromResult(new AlgorithmResult(("Cleaned", cleaned), ("Extracted watermark", extracted)));
+			yield return new AlgorithmResultElement("Extracted watermark", extracted);
 		}
 
 		private EffectiveBitmap Watermark(EffectiveBitmap original, EffectiveBitmap watermark)
