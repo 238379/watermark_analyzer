@@ -39,11 +39,12 @@ namespace DigitalMarkingAnalyzer.viewmodels
 					PixelAveraging.ALGORITHM_NAME => new PixelAveragingViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 					Dwt.ALGORITHM_NAME => new DwtViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 					Dft.ALGORITHM_NAME => new DftViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
-					UnspecifiedViewModel.ALGORITHM_NAME => new UnspecifiedViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+					RecognizerViewModel.ALGORITHM_NAME => new RecognizerViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 					_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
 				},
 				ViewModelType.Advanced => algorithmName switch
 				{
+					Recognizer.ALGORITHM_NAME => new RecognizerViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 					Lsb.ALGORITHM_NAME => new AdvancedLsbViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 					_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
 				},
@@ -127,42 +128,49 @@ namespace DigitalMarkingAnalyzer.viewmodels
 
 			dispatcher.Invoke(() =>
 			{
-				originalAsBitmapImage = ((BitmapImage)controls.OriginalImage.Source).ToBitmap().TransformToEffectiveBitmap();
-				watermarkAsBitmapImage = ((BitmapImage)controls.WatermarkImage.Source).ToBitmap().Resize(originalAsBitmapImage.Width, originalAsBitmapImage.Height).TransformToEffectiveBitmap();
-				watermarkedAsBitmapImage = ((BitmapImage)controls.WatermarkedImage.Source).ToBitmap().TransformToEffectiveBitmap();
+				originalAsBitmapImage = ((BitmapImage)controls.OriginalImage?.Source)?.ToBitmap()?.TransformToEffectiveBitmap();
+				watermarkAsBitmapImage = ((BitmapImage)controls.WatermarkImage?.Source)?.ToBitmap()?.Resize(originalAsBitmapImage.Width, originalAsBitmapImage.Height)?.TransformToEffectiveBitmap();
+				watermarkedAsBitmapImage = ((BitmapImage)controls.WatermarkedImage?.Source)?.ToBitmap()?.TransformToEffectiveBitmap();
+
 			});
 
 			return (originalAsBitmapImage, watermarkAsBitmapImage, watermarkedAsBitmapImage);
 		}
 
-		protected async Task ShowAlgorithmOutput(IAsyncEnumerable<AlgorithmResultElement> asyncResults, string label)
+		protected async Task ShowAlgorithmOutput(IAsyncEnumerable<AlgorithmResultElement> asyncResults)
 		{
-			dispatcher.Invoke(() =>
-			{
-				for (int column = controls.ResultGrid.Children.Count % RESULT_VIEW_COLUMNS; column != 0; column = controls.ResultGrid.Children.Count % RESULT_VIEW_COLUMNS)
-				{
-					// add placeholders
-					int row = controls.ResultGrid.Children.Count / RESULT_VIEW_COLUMNS;
-					AddAtPositionInResultGrid(new AlgorithmResultElementView(null, null, null).Grid, column, row);
-				}
-
-				{
-					// now we have a new row
-					var view = new AlgorithmLabelElementView(label);
-					controls.ResultGrid.RowDefinitions.Add(new RowDefinition
-					{
-						Height = new GridLength(view.Grid.Height)
-					});
-					int row = controls.ResultGrid.Children.Count / RESULT_VIEW_COLUMNS;
-					int column = controls.ResultGrid.Children.Count % RESULT_VIEW_COLUMNS;
-					AddAtPositionInResultGrid(view.Grid, column, row, 2);
-					AddAtPositionInResultGrid(new AlgorithmLabelElementView(null).Grid, column + 1, row);
-				}
-
-			});
-
+			bool first = true;
 			await foreach (var result in asyncResults)
 			{
+				if(first)
+				{
+					first = false;
+					dispatcher.Invoke(() =>
+					{
+						for (int column = controls.ResultGrid.Children.Count % RESULT_VIEW_COLUMNS; column != 0; column = controls.ResultGrid.Children.Count % RESULT_VIEW_COLUMNS)
+						{
+							// add placeholders
+							int row = controls.ResultGrid.Children.Count / RESULT_VIEW_COLUMNS;
+							AddAtPositionInResultGrid(new AlgorithmResultElementView(null, null, null).Grid, column, row);
+						}
+
+						{
+							// now we have a new row
+							var view = new AlgorithmLabelElementView(result.Description.ToString());
+							controls.ResultGrid.RowDefinitions.Add(new RowDefinition
+							{
+								Height = new GridLength(view.Grid.Height)
+							});
+							int row = controls.ResultGrid.Children.Count / RESULT_VIEW_COLUMNS;
+							int column = controls.ResultGrid.Children.Count % RESULT_VIEW_COLUMNS;
+							AddAtPositionInResultGrid(view.Grid, column, row, 2);
+							AddAtPositionInResultGrid(new AlgorithmLabelElementView(null).Grid, column + 1, row);
+						}
+
+					});
+				}
+
+
 				dispatcher.Invoke(() =>
 				{
 					int row = controls.ResultGrid.Children.Count / RESULT_VIEW_COLUMNS;
@@ -205,6 +213,18 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			};
 			AddAtPositionInParametersGrid(textBox, x, y);
 			return textBox;
+		}
+
+		protected CheckBox AddParameterCheckBox(bool initState, int x, int y)
+		{
+			var checkBox = new CheckBox
+			{
+				IsChecked = initState,
+				HorizontalContentAlignment = HorizontalAlignment.Right,
+				VerticalContentAlignment = VerticalAlignment.Center
+			};
+			AddAtPositionInParametersGrid(checkBox, x, y);
+			return checkBox;
 		}
 
 		private void AddAtPositionInParametersGrid(UIElement element, int x, int y)

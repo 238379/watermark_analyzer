@@ -36,6 +36,9 @@ namespace Algorithms
 		private const double s0 = 0.5;
 		private const double s1 = 0.5;
 
+		public override string ToString() => "DWT " + parameters;
+
+
 		public Dwt(DwtParameters parameters) : base(ALGORITHM_NAME, parameters)
 		{
 			this.parameters = parameters;
@@ -46,7 +49,7 @@ namespace Algorithms
 			ct.ThrowIfCancellationRequested();
 			var haared = ProcessHaar(parameters.Original, false, parameters.Layers);
 
-			yield return new AlgorithmResultElement("DWT", haared);
+			yield return new AlgorithmResultElement("DWT", haared, new ResultDescription(ToString()));
 
 			ct.ThrowIfCancellationRequested();
 			var haaredWatermarked = BitmapOperations.Create((sources, i, j) =>
@@ -71,13 +74,13 @@ namespace Algorithms
 				
 			}, haared, parameters.Watermark);
 
-			yield return new AlgorithmResultElement("DWT + watermark", haaredWatermarked);
+			yield return new AlgorithmResultElement("DWT + watermark", haaredWatermarked, new ResultDescription(ToString()));
 
 			ct.ThrowIfCancellationRequested();
 
 			var watermarked = ProcessHaar(haaredWatermarked, true, parameters.Layers);
 
-			yield return new AlgorithmResultElement("Watermarked", watermarked);
+			yield return new AlgorithmResultElement("Watermarked", watermarked, new ResultDescription(ToString()));
 		}
 
 		public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)

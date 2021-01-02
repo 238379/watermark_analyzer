@@ -30,6 +30,8 @@ namespace Algorithms
 		// TODO width and height
 		private readonly Random random = new Random();
 
+		public override string ToString() => "LSB " + parameters;
+
 		public Lsb(LsbParameters parameters) : base(ALGORITHM_NAME, parameters)
 		{
 			this.parameters = parameters;
@@ -40,17 +42,17 @@ namespace Algorithms
 			ct.ThrowIfCancellationRequested();
 			var watermarked = Watermark(parameters.Original, parameters.Watermark);
 
-			yield return new AlgorithmResultElement("Watermarked", watermarked);
+			yield return new AlgorithmResultElement("Watermarked", watermarked, new ResultDescription(ToString()));
 
 			ct.ThrowIfCancellationRequested();
 			var cleaned = CleanWatermark(watermarked);
 
-			yield return new AlgorithmResultElement("Cleaned", cleaned);
+			yield return new AlgorithmResultElement("Cleaned", cleaned, new ResultDescription(ToString()));
 
 			ct.ThrowIfCancellationRequested();
 			var extracted = ExtractWatermark(watermarked);
 
-			yield return new AlgorithmResultElement("Extracted watermark", extracted);
+			yield return new AlgorithmResultElement("Extracted watermark", extracted, new ResultDescription(ToString()));
 		}
 
 		public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)
@@ -58,12 +60,12 @@ namespace Algorithms
 			ct.ThrowIfCancellationRequested();
 			var cleaned = CleanWatermark(parameters.Watermarked);
 
-			yield return new AlgorithmResultElement("Cleaned", cleaned);
+			yield return new AlgorithmResultElement("Cleaned", cleaned, new ResultDescription(ToString()));
 
 			ct.ThrowIfCancellationRequested();
 			var extracted = ExtractWatermark(parameters.Watermarked);
 
-			yield return new AlgorithmResultElement("Extracted watermark", extracted);
+			yield return new AlgorithmResultElement("Extracted watermark", extracted, new ResultDescription(ToString()));
 		}
 
 		private EffectiveBitmap Watermark(EffectiveBitmap original, EffectiveBitmap watermark)
@@ -90,7 +92,7 @@ namespace Algorithms
 			{
 				var watermarkedImgPixel = sources[0].GetPixel(i, j);
 
-				var divider = (int)Math.Pow(2, parameters.BitsForWatermark);
+				var divider = (int)(Math.Pow(2, parameters.BitsForWatermark) + 0.5);
 				// TODO better method instead of random bit on last position
 				var r = (byte)(watermarkedImgPixel.R - watermarkedImgPixel.R % divider + CreateRandomNumber(divider));
 				var g = (byte)(watermarkedImgPixel.G - watermarkedImgPixel.G % divider + CreateRandomNumber(divider));

@@ -27,6 +27,7 @@ namespace Algorithms
 
 		private readonly PixelAveragingParameters parameters;
 
+		public override string ToString() => "PixelAveraging " + parameters;
 
 		public PixelAveraging(PixelAveragingParameters parameters) : base(ALGORITHM_NAME, parameters)
 		{
@@ -38,17 +39,17 @@ namespace Algorithms
 			ct.ThrowIfCancellationRequested();
 			var watermarked = Watermark(parameters.Original, parameters.Watermark);
 
-			yield return new AlgorithmResultElement("Watermarked", watermarked);
+			yield return new AlgorithmResultElement("Watermarked", watermarked, new ResultDescription(ToString()));
 
 			ct.ThrowIfCancellationRequested();
 			var cleaned = CleanWatermark(watermarked, parameters.Watermark);
 
-			yield return new AlgorithmResultElement("Cleaned", cleaned);
+			yield return new AlgorithmResultElement("Cleaned", cleaned, new ResultDescription(ToString()));
 
 			ct.ThrowIfCancellationRequested();
 			var extracted = ExtractWatermark(watermarked, parameters.Original);
 
-			yield return new AlgorithmResultElement("Extracted watermark", extracted);
+			yield return new AlgorithmResultElement("Extracted watermark", extracted, new ResultDescription(ToString()));
 		}
 
 		public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)

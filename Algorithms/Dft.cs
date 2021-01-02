@@ -34,6 +34,9 @@ namespace Algorithms
 		private ComplexImage complexImage;
 		private ComplexImage complexWatermark;
 
+		public override string ToString() => "DFT " + parameters;
+
+
 		public Dft(DftParameters parameters) : base(ALGORITHM_NAME, parameters)
 		{
 			this.parameters = parameters;
@@ -122,7 +125,7 @@ namespace Algorithms
 			complexImage.ForwardFourierTransform();
 			var fourierDomain = complexImage.ToEffectiveBitmap();
 
-			yield return new AlgorithmResultElement("Fourier domain (DFT)", fourierDomain.ToBitmap(parameters.Original.Size));
+			yield return new AlgorithmResultElement("Fourier domain (DFT)", fourierDomain.ToBitmap(parameters.Original.Size), new ResultDescription(ToString()));
 
 			ct.ThrowIfCancellationRequested();
 
@@ -130,14 +133,14 @@ namespace Algorithms
 			EmbedWatermark();
 			var fourierDomainWatermarked = complexImage.ToEffectiveBitmap();
 
-			yield return new AlgorithmResultElement("DFT + watermark", fourierDomainWatermarked.ToBitmap(parameters.Original.Size));
+			yield return new AlgorithmResultElement("DFT + watermark", fourierDomainWatermarked.ToBitmap(parameters.Original.Size), new ResultDescription(ToString()));
 
 			ct.ThrowIfCancellationRequested();
 
 			complexImage.BackwardFourierTransform();
 			var watermarked = complexImage.ToEffectiveBitmap();
 
-			yield return new AlgorithmResultElement("Watermarked", watermarked.ToBitmap(parameters.Original.Size));
+			yield return new AlgorithmResultElement("Watermarked", watermarked.ToBitmap(parameters.Original.Size), new ResultDescription(ToString()));
 		}
 
         public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)

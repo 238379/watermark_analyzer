@@ -6,17 +6,18 @@ namespace Algorithms.common
 	{
 		public readonly string Label;
 		public readonly Bitmap Image;
+		public ResultDescription Description;
 
-		public AlgorithmResultElement(string label, EffectiveBitmap image)
+
+		public AlgorithmResultElement(string label, EffectiveBitmap image, ResultDescription description) : this(label, image.ToBitmap(), description)
 		{
-			Label = label;
-			Image = image.ToBitmap();
 		}
 
-		public AlgorithmResultElement(string label, Bitmap image)
+		public AlgorithmResultElement(string label, Bitmap image, ResultDescription description)
 		{
 			Label = label;
 			Image = image;
+			Description = description;
 		}
 	}
 }

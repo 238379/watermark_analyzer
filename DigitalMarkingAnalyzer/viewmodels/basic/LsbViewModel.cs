@@ -29,7 +29,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 				ct.ThrowIfCancellationRequested();
 				var algorithm = new Lsb(p);
 				var result = algorithm.AddWatermark(ct);
-				await ShowAlgorithmOutput(result, algorithm.Description);
+				await ShowAlgorithmOutput(result);
 			});
 		}
 
@@ -40,7 +40,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 				var p = ReadParameters();
 				var algorithm = new Lsb(p);
 				var result = algorithm.RemoveWatermark(ct);
-				await ShowAlgorithmOutput(result, algorithm.Description);
+				await ShowAlgorithmOutput(result);
 			});
 		}
 

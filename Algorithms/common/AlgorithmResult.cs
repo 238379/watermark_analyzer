@@ -26,14 +26,14 @@ namespace Algorithms.common
 			this.results = new List<AlgorithmResultElement>(results);
 		}
 
-		public AlgorithmResult(params (string, Bitmap)[] results)
+		public AlgorithmResult(ResultDescription description, params (string, Bitmap)[] results)
 		{
-			this.results = new List<AlgorithmResultElement>(results.Select(x => new AlgorithmResultElement(x.Item1, x.Item2)));
+			this.results = new List<AlgorithmResultElement>(results.Select(x => new AlgorithmResultElement(x.Item1, x.Item2, description)));
 		}
 
-		public AlgorithmResult(params (string, EffectiveBitmap)[] results)
+		public AlgorithmResult(ResultDescription description, params (string, EffectiveBitmap)[] results)
 		{
-			this.results = new List<AlgorithmResultElement>(results.Select(x => new AlgorithmResultElement(x.Item1, x.Item2.ToBitmap())));
+			this.results = new List<AlgorithmResultElement>(results.Select(x => new AlgorithmResultElement(x.Item1, x.Item2.ToBitmap(), description)));
 		}
 
 		public AlgorithmResultElement Get(int index)

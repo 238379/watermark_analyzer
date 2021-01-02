@@ -3,7 +3,6 @@ using Algorithms.common;
 using Common;
 using FluentAssertions;
 using NUnit.Framework;
-using System;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;

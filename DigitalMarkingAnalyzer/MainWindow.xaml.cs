@@ -39,10 +39,13 @@ namespace DigitalMarkingAnalyzer
 
 		#region Private AdvancedRemoving
 		private readonly UpdatableImage advancedWatermarkedImage;
+		private readonly UpdatableImage advancedOriginalImage;
 
 		private readonly AlgorithmControls advancedRemovingWatermarkAlgorithmControls;
 		private readonly AlgorithmSelectionViewModel advancedRemovingAlgorithmSelectionViewModel;
 		private readonly InternetImageGeneratorViewModel advancedWatermarkedGeneratorViewModel;
+		private readonly InternetImageGeneratorViewModel advancedOriginalGeneratorViewModel;
+
 		#endregion
 
 		private readonly Logger logger;
@@ -61,17 +64,18 @@ namespace DigitalMarkingAnalyzer
 			watermarkImage = new UpdatableImage(WatermarkImageControl);
 			watermarkedImage = new UpdatableImage(WatermarkedImageControl);
 			advancedWatermarkedImage = new UpdatableImage(AdvancedWatermarkedImageControl);
+			advancedOriginalImage = new UpdatableImage(AdvancedOriginalImageControl);
 
 			addingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.AddWatermark, AddingParametersGrid, AddingProcess,
 				OriginalImageControl, WatermarkImageControl, WatermarkedImageControl, UseImageToRemoveWatermark,
 				Tabs, AddingResultTab, ADDING_RESULT_TAB_INDEX, AddingResultGrid, AddingResultScrollViewer, CloseAddingResult, CancelButton);
 
 			removingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.RemoveWatermark, RemovingParametersGrid, RemovingProcess,
-				OriginalImageControl, WatermarkImageControl, WatermarkedImageControl, UseImageToRemoveWatermark,
+				null, null, WatermarkedImageControl, UseImageToRemoveWatermark,
 				Tabs, RemovingResultTab, REMOVING_RESULT_TAB_INDEX, RemovingResultGrid, RemovingResultScrollViewer, CloseRemovingResult, CancelButton);
 
 			advancedRemovingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.RemoveWatermark, AdvancedRemovingParametersGrid, AdvancedRemovingProcess,
-				OriginalImageControl, WatermarkImageControl, AdvancedWatermarkedImageControl, UseImageToRemoveWatermark,
+				AdvancedOriginalImageControl, null, AdvancedWatermarkedImageControl, UseImageToRemoveWatermark,
 				Tabs, AdvancedRemovingResultTab, ADVANCED_REMOVING_RESULT_TAB_INDEX, AdvancedRemovingResultGrid, AdvancedRemovingResultScrollViewer, AdvancedCloseRemovingResult, CancelButton);
 
 			SetUpInputImagesViewModels();
@@ -97,12 +101,14 @@ namespace DigitalMarkingAnalyzer
 			advancedWatermarkedGeneratorViewModel = new InternetImageGeneratorViewModel(new GeneratorControls(AdvancedGenerateWatermarkedButton, advancedWatermarkedImage), AdvancedRemovingErrorMessage);
 			advancedWatermarkedGeneratorViewModel.SetUp();
 
+			advancedOriginalGeneratorViewModel = new InternetImageGeneratorViewModel(new GeneratorControls(GenerateAdvancedOriginalButton, advancedOriginalImage), AdvancedRemovingErrorMessage);
+			advancedOriginalGeneratorViewModel.SetUp();
+
 			logger.LogDebug("Created MainWindow");
 		}
 
 		private void SetUpInputImagesViewModels()
 		{
-			// WatermarkImageControl, WatermarkedImageControl
 			var original = new InputImageViewModel(this, OriginalImageControl, originalImage, new Uri("/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg", UriKind.RelativeOrAbsolute),
 				BrowseOriginalButton, UndoOriginalButton, ToDefaultOriginalButton, AddingErrorMessage);
 			original.SetUp();
@@ -118,6 +124,10 @@ namespace DigitalMarkingAnalyzer
 			var advancedWatermarked = new InputImageViewModel(this, AdvancedWatermarkedImageControl, advancedWatermarkedImage, new Uri("/DigitalMarkingAnalyzer;component/Resources/t_corgi_tekst_dolny.jpg", UriKind.RelativeOrAbsolute),
 				AdvancedBrowseWatermarkedButton, AdvancedUndoWatermarkedButton, AdvancedToDefaultWatermarkedButton, AdvancedRemovingErrorMessage);
 			advancedWatermarked.SetUp();
+
+			var advancedOriginal = new InputImageViewModel(this, AdvancedOriginalImageControl, advancedOriginalImage, new Uri("/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg", UriKind.RelativeOrAbsolute),
+				BrowseAdvancedOriginalButton, UndoAdvancedOriginalButton, ToDefaultAdvancedOriginalButton, AdvancedRemovingErrorMessage);
+			advancedOriginal.SetUp();
 		}
 
 		public void StartLogConsole()

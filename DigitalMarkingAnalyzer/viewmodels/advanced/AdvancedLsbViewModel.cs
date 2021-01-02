@@ -1,15 +1,19 @@
 ﻿using Algorithms;
+using Algorithms.common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using Common;
+using Algorithms.matchers;
 
 namespace DigitalMarkingAnalyzer.viewmodels.advanced
 {
 	public class AdvancedLsbViewModel : AlgorithmViewModel
 	{
+		private CheckBox useOriginalImageCheckBox;
 		private TextBox minBitsTextBox;
 		private TextBox maxBitsTextBox;
 
@@ -19,10 +23,14 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 
 		public override void SetUp()
 		{
-			AddParameterLabel("Min bits for watermark", 0, 0);
-			minBitsTextBox = AddParameterTextBox("1", 1, 0);
-			AddParameterLabel("Max bits for watermark", 0, 1);
-			maxBitsTextBox = AddParameterTextBox("7", 1, 1);
+			AddParameterLabel("Use original bitmap", 0, 0);
+			useOriginalImageCheckBox = AddParameterCheckBox(false, 1, 0);
+
+			AddParameterLabel("Min bits for watermark", 0, 1);
+			minBitsTextBox = AddParameterTextBox("1", 1, 1);
+
+			AddParameterLabel("Max bits for watermark", 0, 2);
+			maxBitsTextBox = AddParameterTextBox("7", 1, 2);
 		}
 
 		protected override Task ProcessAdding(CancellationToken ct)
@@ -34,14 +42,24 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 		{
 			return Task.Run(async () =>
 			{
+				ct.ThrowIfCancellationRequested();
+
 				var ps = PrepareParameters();
-				var results = ps.Select(p => {
-					var algorithm = new Lsb(p);
-					return new { Description=algorithm.Description, Results=algorithm.RemoveWatermark(ct) };
-				});
-				foreach(var result in results)
+				var results = ps.Select(p => new Lsb(p).RemoveWatermark(ct));
+
+				foreach (var result in results)
 				{
-					await ShowAlgorithmOutput(result.Results, result.Description);
+					ct.ThrowIfCancellationRequested();
+					await ShowAlgorithmOutput(result);
+				}
+				bool? isChecked = null;
+				dispatcher.Invoke(() => isChecked = useOriginalImageCheckBox.IsChecked);
+				if (isChecked.Value)
+				{
+					ct.ThrowIfCancellationRequested();
+					var theBestResult = await GuessResult(results, ps.First().Original, ct);
+					theBestResult.First().Description = new ResultDescription("Best result: " + theBestResult.First().Description);	// hack
+					await ShowAlgorithmOutput(theBestResult.ToIAsyncEnumerable());
 				}
 			});
 		}
@@ -81,6 +99,22 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 			{
 				throw new ArgumentException($"Invalid min bits for watermark value. It should be between [1; 6] but it is: {text}");
 			}
+		}
+
+		private Task<List<AlgorithmResultElement>> GuessResult(IEnumerable<IAsyncEnumerable<AlgorithmResultElement>> results, EffectiveBitmap target, CancellationToken ct)
+		{
+			ct.ThrowIfCancellationRequested();
+			var evaluatedResults = results.Select(async x => await x.ToListAsync()).ToList();
+
+			var bitmapMatcher = new BasicBitmapMatcher(target);
+
+			var bests = evaluatedResults.OrderBy(x => bitmapMatcher
+				.CalculateDifference(
+					x.Result.Where(r => r.Label == "Cleaned").First().Image.TransformToEffectiveBitmap()
+				)
+			);
+
+			return bests.First(); ;
 		}
 	}
 }
