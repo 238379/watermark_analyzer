@@ -155,5 +155,10 @@ namespace Algorithms.common
 
 			return new byte[3] { Y, Cb, Cr };
 		}
+
+		public EffectiveBitmap Crop(int startX, int startY, int stopX, int stopY)
+        {
+			return ToBitmap().Crop(startX, startY, stopX, stopY).TransformToEffectiveBitmap();
+		}
 	}
 }

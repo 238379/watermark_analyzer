@@ -80,5 +80,16 @@ namespace Algorithms.common
 
             return destImage;
         }
+
+        public static Bitmap Crop(this Bitmap that, int startX, int startY, int stopX, int stopY)
+        {
+            return that.Clone(
+            new Rectangle(
+                startX, startY,
+                Math.Abs(startX-stopX),
+                Math.Abs(startY-stopY)
+            ),
+            System.Drawing.Imaging.PixelFormat.DontCare);
+        }
     }
 }
