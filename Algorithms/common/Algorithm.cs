@@ -1,13 +1,23 @@
-﻿namespace Algorithms.common
+﻿using System.Collections.Generic;
+using System.Threading;
+
+namespace Algorithms.common
 {
 	public abstract class Algorithm
 	{
-		public Algorithm()
+		private readonly string name;
+		private readonly AlgorithmParameters parameters;
+
+		public Algorithm(string name, AlgorithmParameters parameters)
 		{
+			this.name = name;
+			this.parameters = parameters;
 		}
 
-		public abstract AlgorithmResult AddWatermark();
-		public abstract AlgorithmResult RemoveWatermark();
+		public string Description => $"{name} {parameters}";
+
+		public abstract IAsyncEnumerable<AlgorithmResultElement> AddWatermark(CancellationToken ct);
+		public abstract IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark(CancellationToken ct);
 	}
 
 	public enum AlgorithmMode

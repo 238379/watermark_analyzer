@@ -1,6 +1,8 @@
 ﻿using Algorithms.common;
 using System;
-using System.Drawing;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Algorithms
 {
@@ -8,9 +10,14 @@ namespace Algorithms
 	{
 		public readonly int BitsForWatermark;
 
-		public LsbParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, int bitsForWatermark) : base(original, watermark, watermarked)
+		public LsbParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int bitsForWatermark) : base(original, watermark, watermarked)
 		{
 			BitsForWatermark = bitsForWatermark;
+		}
+
+		public override string ToString()
+		{
+			return "{" + $"Bits for watermark={BitsForWatermark}" + "}";
 		}
 	}
 
@@ -23,34 +30,52 @@ namespace Algorithms
 		// TODO width and height
 		private readonly Random random = new Random();
 
-		public Lsb(LsbParameters parameters) : base()
+		public override string ToString() => "LSB " + parameters;
+
+		public Lsb(LsbParameters parameters) : base(ALGORITHM_NAME, parameters)
 		{
 			this.parameters = parameters;
 		}
 
-		public override AlgorithmResult AddWatermark()
+		public override async IAsyncEnumerable<AlgorithmResultElement> AddWatermark([EnumeratorCancellation] CancellationToken ct)
 		{
+			ct.ThrowIfCancellationRequested();
 			var watermarked = Watermark(parameters.Original, parameters.Watermark);
+
+			yield return new AlgorithmResultElement("Watermarked", watermarked, new ResultDescription(ToString()));
+
+			ct.ThrowIfCancellationRequested();
 			var cleaned = CleanWatermark(watermarked);
+
+			yield return new AlgorithmResultElement("Cleaned", cleaned, new ResultDescription(ToString()));
+
+			ct.ThrowIfCancellationRequested();
 			var extracted = ExtractWatermark(watermarked);
-			return new AlgorithmResult(("Watermarked", watermarked), ("Cleaned", cleaned), ("Extracted watermark", extracted));
+
+			yield return new AlgorithmResultElement("Extracted watermark", extracted, new ResultDescription(ToString()));
 		}
 
-		public override AlgorithmResult RemoveWatermark()
+		public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)
 		{
+			ct.ThrowIfCancellationRequested();
 			var cleaned = CleanWatermark(parameters.Watermarked);
+
+			yield return new AlgorithmResultElement("Cleaned", cleaned, new ResultDescription(ToString()));
+
+			ct.ThrowIfCancellationRequested();
 			var extracted = ExtractWatermark(parameters.Watermarked);
-			return new AlgorithmResult(("Cleaned", cleaned), ("Extracted watermark", extracted));
+
+			yield return new AlgorithmResultElement("Extracted watermark", extracted, new ResultDescription(ToString()));
 		}
 
-		private Bitmap Watermark(Bitmap original, Bitmap watermark)
+		private EffectiveBitmap Watermark(EffectiveBitmap original, EffectiveBitmap watermark)
 		{
 			var simplifiedWatermark = PreprocessToSimplifiedWatermark(watermark);
 
-			return BitmapOperations.Create((sources, i, j) =>
+			return EffectiveBitmap.Create(original.Width, original.Height, original.Depth, (i, j) =>
 			{
-				var originalPixel = sources[0].GetPixel(i, j);
-				var watermarkPixel = sources[1].GetPixel(i, j);
+				var originalPixel = original.GetPixel(i, j);
+				var watermarkPixel = simplifiedWatermark.GetPixel(i, j);
 
 				var divider = (int)Math.Pow(2, parameters.BitsForWatermark);
 				var r = (byte)(Math.Clamp(originalPixel.R - originalPixel.R % divider + watermarkPixel.R, 0, 255));
@@ -58,16 +83,16 @@ namespace Algorithms
 				var b = (byte)(Math.Clamp(originalPixel.B - originalPixel.B % divider + watermarkPixel.B, 0, 255));
 
 				return new PixelInfo(r, g, b);
-			}, original, simplifiedWatermark);
+			});
 		}
 
-		private Bitmap CleanWatermark(Bitmap watermarked)
+		private EffectiveBitmap CleanWatermark(EffectiveBitmap watermarked)
 		{
 			return BitmapOperations.Create((sources, i, j) =>
 			{
 				var watermarkedImgPixel = sources[0].GetPixel(i, j);
 
-				var divider = (int)Math.Pow(2, parameters.BitsForWatermark);
+				var divider = (int)(Math.Pow(2, parameters.BitsForWatermark) + 0.5);
 				// TODO better method instead of random bit on last position
 				var r = (byte)(watermarkedImgPixel.R - watermarkedImgPixel.R % divider + CreateRandomNumber(divider));
 				var g = (byte)(watermarkedImgPixel.G - watermarkedImgPixel.G % divider + CreateRandomNumber(divider));
@@ -77,7 +102,7 @@ namespace Algorithms
 			}, watermarked);
 		}
 
-		private Bitmap ExtractWatermark(Bitmap watermarked)
+		private EffectiveBitmap ExtractWatermark(EffectiveBitmap watermarked)
 		{
 			return BitmapOperations.Create((sources, i, j) =>
 			{
@@ -93,7 +118,7 @@ namespace Algorithms
 			}, watermarked);
 		}
 
-		private Bitmap PreprocessToSimplifiedWatermark(Bitmap watermark)
+		private EffectiveBitmap PreprocessToSimplifiedWatermark(EffectiveBitmap watermark)
 		{
 			var divider = (byte)(Math.Ceiling(255 / Math.Pow(2, parameters.BitsForWatermark)) + 0.5);
 

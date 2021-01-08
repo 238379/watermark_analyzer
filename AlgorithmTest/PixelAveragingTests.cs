@@ -1,7 +1,11 @@
 ﻿using Algorithms;
+using Algorithms.common;
+using Common;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AlgorithmTest
 {
@@ -24,16 +28,16 @@ namespace AlgorithmTest
 			originalBitmap = CreateOriginal();
 			watermarkBitmap = CreateWatermark();
 			ratio = 0.5;
-			parameters = new PixelAveragingParameters(originalBitmap, watermarkBitmap, null, ratio);
+			parameters = new PixelAveragingParameters(originalBitmap.TransformToEffectiveBitmap(), watermarkBitmap.TransformToEffectiveBitmap(), null, ratio);
 
 			algorithm = new PixelAveraging(parameters);
 		}
 
 		[Test]
-		public void BasicAddingTest()
+		public async Task BasicAddingTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var watermarked = results[0];
 
@@ -46,10 +50,10 @@ namespace AlgorithmTest
 		}
 
 		[Test]
-		public void BasicRemovingTest()
+		public async Task BasicRemovingTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var watermarked = results[1];
 

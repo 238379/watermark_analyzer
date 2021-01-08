@@ -4,20 +4,20 @@ namespace Algorithms.common
 {
 	public class AlgorithmParameters
 	{
-		public readonly Bitmap Original;
-		public readonly Bitmap Watermark;
-		public readonly Bitmap Watermarked;
+		public readonly EffectiveBitmap Original;
+		public readonly EffectiveBitmap Watermark;
+		public readonly EffectiveBitmap Watermarked;
 
-		public AlgorithmParameters(Bitmap original, Bitmap watermark, Bitmap watermarked)
+		public AlgorithmParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked)
 		{
 			Original = original;
-			Watermark = watermark.Resize(original.Width, original.Height);  // TODO better method
+			Watermark = watermark;
 			Watermarked = watermarked;
 		}
 
 		public AlgorithmParameters(Bitmap watermarked)
 		{
-			Watermarked = watermarked;
+			Watermarked = watermarked.TransformToEffectiveBitmap();
 		}
 	}
 }

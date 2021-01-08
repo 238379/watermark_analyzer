@@ -1,9 +1,11 @@
 ﻿using Algorithms;
 using System;
 using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace DigitalMarkingAnalyzer.viewmodels
+namespace DigitalMarkingAnalyzer.viewmodels.basic
 {
 	public class PixelAveragingViewModel : AlgorithmViewModel
 	{
@@ -19,15 +21,20 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			ratioTextBox = AddParameterTextBox("0.5", 1, 0);
 		}
 
-		protected override void ProcessAdding()
+		protected override Task ProcessAdding(CancellationToken ct)
 		{
-			var p = ReadParameters();
-			var algorithm = new PixelAveraging(p);
-			var result = algorithm.AddWatermark();
-			ShowAlgorithmOutput(result);
+			return Task.Run(async () =>
+			{
+				ct.ThrowIfCancellationRequested();
+				var p = ReadParameters();
+				ct.ThrowIfCancellationRequested();
+				var algorithm = new PixelAveraging(p);
+				var result = algorithm.AddWatermark(ct);
+				await ShowAlgorithmOutput(result);
+			});
 		}
 
-		protected override void ProcessRemoving()
+		protected override Task ProcessRemoving(CancellationToken ct)
 		{
 			throw new NotImplementedException();
 		}
@@ -36,13 +43,16 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		{
 			var (original, watermark, watermarked) = ReadInputBitmaps();
 
-			if (double.TryParse(ratioTextBox.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out var ratio) && ratio >= 0 && ratio <= 1)
+			string text = null;
+			dispatcher.Invoke(() => text = ratioTextBox.Text);
+
+			if (double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out var ratio) && ratio >= 0 && ratio <= 1)
 			{
 				return new PixelAveragingParameters(original, watermark, watermarked, ratio);
 			}
 			else
 			{
-				throw new ArgumentException($"Invalid value for ratio. It should be between [0; 1] but it is: {ratioTextBox.Text}");
+				throw new ArgumentException($"Invalid value for ratio. It should be between [0; 1] but it is: {text}");
 			}
 		}
 	}

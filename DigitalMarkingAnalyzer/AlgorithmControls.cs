@@ -1,4 +1,5 @@
 ﻿using Algorithms.common;
+using System;
 using System.Windows.Controls;
 
 namespace DigitalMarkingAnalyzer
@@ -13,13 +14,15 @@ namespace DigitalMarkingAnalyzer
 		public readonly TabItem ResultTab;
 		public readonly int ResultTabIndex;
 		public readonly Image WatermarkedImage;
+		public readonly Action<System.Drawing.Bitmap> OnUse;
 		public readonly TabControl TabControl;
 		public readonly Grid ResultGrid;
 		public readonly ScrollViewer ResultScrollViewer;
 		public readonly Button CloseButton;
+		public readonly Button CancelButton;
 
 		public AlgorithmControls(AlgorithmMode algorithmMode, Grid parametersGrid, Button processButton, Image originalImage, Image watermarkImage, Image watermarkedImage,
-			TabControl tabControl, TabItem resultTab, int resultTabIndex, Grid resultGrid, ScrollViewer resultScrollViewer, Button closeButton)
+			Action<System.Drawing.Bitmap> onUse, TabControl tabControl, TabItem resultTab, int resultTabIndex, Grid resultGrid, ScrollViewer resultScrollViewer, Button closeButton, Button cancelButton)
 		{
 			AlgorithmMode = algorithmMode;
 			ParametersGrid = parametersGrid;
@@ -27,12 +30,14 @@ namespace DigitalMarkingAnalyzer
 			OriginalImage = originalImage;
 			WatermarkImage = watermarkImage;
 			WatermarkedImage = watermarkedImage;
+			OnUse = onUse;
 			TabControl = tabControl;
 			ResultTab = resultTab;
 			ResultTabIndex = resultTabIndex;
 			ResultGrid = resultGrid;
 			ResultScrollViewer = resultScrollViewer;
 			CloseButton = closeButton;
+			CancelButton = cancelButton;
 		}
 	}
 }

@@ -1,18 +1,23 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using static DigitalMarkingAnalyzer.viewmodels.AlgorithmViewModel;
 
 namespace DigitalMarkingAnalyzer.viewmodels
 {
 	public class AlgorithmSelectionViewModel : ViewModel
 	{
+		private readonly ViewModelType type;
 		private readonly ComboBox algorithmBox;
 		private readonly AlgorithmControls controls;
 		private readonly MainWindow mainWindow;
 
 		private AlgorithmViewModel algorithmViewModel;
 
-		public AlgorithmSelectionViewModel(ComboBox algorithmBox, AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(errorMessageTextBlock)
+		public AlgorithmSelectionViewModel(ViewModelType type, ComboBox algorithmBox, AlgorithmControls algorithmControls, MainWindow mainWindow,
+			TextBlock errorMessageTextBlock) : base(errorMessageTextBlock)
 		{
+			this.type = type;
 			this.algorithmBox = algorithmBox;
 			this.controls = algorithmControls;
 			this.mainWindow = mainWindow;
@@ -32,30 +37,34 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			algorithmBox.SelectionChanged += ChangeSelectedAlgorithm;
 		}
 
-		private void Process(object sender, System.Windows.RoutedEventArgs e)
+		private void Process(object sender, RoutedEventArgs e)
 		{
-			Submit();
+			controls.ProcessButton.Visibility = Visibility.Hidden;
+			Submit().ContinueWith((t) => mainWindow.Dispatcher.Invoke(() => controls.ProcessButton.Visibility = Visibility.Visible));
 		}
 
-		protected override void OnSubmit()
+		protected override Task OnSubmit()
 		{
-			algorithmViewModel?.Submit();
+			return algorithmViewModel?.Submit();
 		}
 
 		private void ChangeSelectedAlgorithm(object sender, SelectionChangedEventArgs e)
 		{
-			string algorithm = (sender as ComboBox).SelectedItem.ToString();
-			logger.LogDebug($"Selected algorithm: {algorithm}.");
-
-			algorithmViewModel?.Dispose();
-
-			algorithmViewModel = AlgorithmViewModel.Create(algorithm, controls, mainWindow, errorMessageTextBlock);
-			algorithmViewModel.SetUp();
-
-			if (controls.ProcessButton.Visibility == Visibility.Hidden)
+			Do(() =>
 			{
-				controls.ProcessButton.Visibility = Visibility.Visible;
-			}
+				string algorithm = (sender as ComboBox).SelectedItem.ToString();
+				logger.LogDebug($"Selected algorithm: {algorithm}.");
+
+				algorithmViewModel?.Dispose();
+
+				algorithmViewModel = Create(algorithm, type, controls, mainWindow, errorMessageTextBlock);
+				algorithmViewModel.SetUp();
+
+				if (controls.ProcessButton.Visibility == Visibility.Hidden)
+				{
+					controls.ProcessButton.Visibility = Visibility.Visible;
+				}
+			});
 		}
 	}
 }

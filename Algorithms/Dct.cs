@@ -1,6 +1,8 @@
 ﻿using Algorithms.common;
 using System;
-using System.Drawing;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Algorithms
 {
@@ -9,10 +11,15 @@ namespace Algorithms
 		public readonly int Key;
 		public readonly double Alpha;
 
-		public DctParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, int key, double alpha) : base(original, watermark, watermarked)
+		public DctParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int key, double alpha) : base(original, watermark, watermarked)
 		{
 			Key = key;
 			Alpha = alpha;
+		}
+		
+		public override string ToString()
+		{
+			return "{" + $"Key={Key}, Alpha={Alpha}" + "}";
 		}
 	}
 
@@ -22,63 +29,82 @@ namespace Algorithms
 
 		private readonly DctParameters parameters;
 
-		public Dct(DctParameters parameters) : base()
+		private int[] v;
+		private Random random;
+		private ComplexImage complexImage;
+		private ComplexImage complexWatermark;
+
+		public override string ToString() => "DCT " + parameters;
+
+		public Dct(DctParameters parameters) : base(ALGORITHM_NAME, parameters)
 		{
 			this.parameters = parameters;
 		}
 
-		public Bitmap CleanWatermark(Bitmap watermarked)
+		public EffectiveBitmap CleanWatermark(EffectiveBitmap watermarked)
 		{
 			throw new NotImplementedException();
 		}
 
-		public Bitmap ExtractWatermark(Bitmap watermarked)
+		public EffectiveBitmap ExtractWatermark(EffectiveBitmap watermarked)
 		{
 			throw new NotImplementedException();
 		}
 
-		private DctImage EmbedWatermark(DctImage image, DctImage watermark)
+		public void EmbedWatermark()
 		{
-			int[] v = new int[image.Width];
-            double[] vAlpha = new double[image.Width];
-            Random random = new Random(parameters.Key);
-            for (int i = 0; i < image.Width; i++)
-            {
-                v[i] = random.Next(0, 2);
-                vAlpha[i] = v[i] * parameters.Alpha;
-            }
-
-			DctImage watermarked = new DctImage(image);
-
-            for (int y = 0; y < image.Height; y++)
-            {
-				for (int x = 0; x < image.Width; x++)
-				{
-					watermarked.Data[y, x] += vAlpha[x] * watermark.Data[y, x];
-				}
+			v = new int[complexImage.Width];
+			double[] vAlpha = new double[complexImage.Width];
+			random = new Random(parameters.Key);
+			for (int i = 0; i < complexImage.Width; i++)
+			{
+				v[i] = random.Next(0, 2);
+				vAlpha[i] = v[i] * parameters.Alpha;
 			}
-			watermarked.Transformed = true;
-			return watermarked;
-        }
 
-        public override AlgorithmResult AddWatermark()
-        {
-			var cosineTransform = new DctImage(parameters.Original);
-			cosineTransform.DCT();
-			
-			var cosineWatermarked = new DctImage(parameters.Watermark);
-			cosineWatermarked.DCT();
-
-			var watermarked = EmbedWatermark(cosineTransform, cosineWatermarked);
-
-			watermarked.IDCT();
-
-			return new AlgorithmResult(("Cosine transform (DCT)", cosineTransform.ToBitmap()), ("DCT + watermark", cosineWatermarked.ToBitmap()), ("Watermarked", watermarked.ToBitmap()));
+			for (int y = 0; y < complexImage.Height; y++)
+				for (int x = 0; x < complexImage.Width; x++)
+				{
+					double imageReal = complexImage.Data[y, x].Real;
+					double imageImaginary = complexImage.Data[y, x].Imaginary;
+					double watermarkReal = complexWatermark.Data[y, x].Real;
+					double watermarkImaginary = complexWatermark.Data[y, x].Imaginary;
+					complexImage.Data[y, x] = new System.Numerics.Complex(imageReal + vAlpha[x] * watermarkReal, imageImaginary + vAlpha[x] * watermarkImaginary);
+				}
 		}
 
-        public override AlgorithmResult RemoveWatermark()
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public override async IAsyncEnumerable<AlgorithmResultElement> AddWatermark([EnumeratorCancellation] CancellationToken ct)
+		{
+			complexImage = ComplexImage.FromBitmap(parameters.Original);
+			complexWatermark = ComplexImage.FromBitmap(parameters.Watermark, complexImage.Width);
+
+			ct.ThrowIfCancellationRequested();
+
+			complexImage.DCT();
+			var cosineTransform = complexImage.ToEffectiveBitmap();
+			
+			yield return new AlgorithmResultElement("Cosine transform (DCT)", cosineTransform.ToBitmap(parameters.Original.Size), new ResultDescription(ToString()));
+
+			ct.ThrowIfCancellationRequested();
+
+			complexWatermark.DCT();
+			EmbedWatermark();
+			var cosineWatermarked = complexImage.ToEffectiveBitmap();
+
+			yield return new AlgorithmResultElement("DCT + watermark", cosineWatermarked.ToBitmap(parameters.Original.Size), new ResultDescription(ToString()));
+
+			ct.ThrowIfCancellationRequested();
+
+			complexImage.IDCT();
+			var watermarked = complexImage.ToEffectiveBitmap();
+
+			yield return new AlgorithmResultElement("Watermarked", watermarked.ToBitmap(parameters.Original.Size), new ResultDescription(ToString()));
+		}
+
+		public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)
+		{
+			throw new NotImplementedException();
+			yield return null;
+		}
+	}
 }

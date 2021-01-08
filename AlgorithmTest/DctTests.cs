@@ -1,8 +1,11 @@
 ﻿using Algorithms;
+using Algorithms.common;
+using Common;
 using FluentAssertions;
 using NUnit.Framework;
-using System;
 using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AlgorithmTest
 {
@@ -21,7 +24,7 @@ namespace AlgorithmTest
 		private DctParameters parameters;
 		private Dct algorithm;
 
-		private static readonly String myResourcesPath = resourcesPath + "/Dct/";
+		private static readonly string myResourcesPath = resourcesPath + "/Dct/";
 
 		[SetUp]
 		public void Setup()
@@ -35,16 +38,16 @@ namespace AlgorithmTest
 
 			key = 10;
 			alpha = 0.01;
-			parameters = new DctParameters(originalBitmap, watermarkBitmap, null, key, alpha);
+			parameters = new DctParameters(originalBitmap.TransformToEffectiveBitmap(), watermarkBitmap.TransformToEffectiveBitmap(), null, key, alpha);
 
 			algorithm = new Dct(parameters);
 		}
 
 		[Test]
-		public void WatermarkingTest()
+		public async Task WatermarkingTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var watermarked = results[2];
 
@@ -55,10 +58,10 @@ namespace AlgorithmTest
 		}
 
 		[Test]
-		public void DctPlusWatermarkTest()
+		public async Task DctPlusWatermarkTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var fourierWatermarked = results[1];
 
@@ -69,10 +72,10 @@ namespace AlgorithmTest
 		}
 
 		[Test]
-		public void DctTest()
+		public async Task DctTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var originalFourier = results[0];
 

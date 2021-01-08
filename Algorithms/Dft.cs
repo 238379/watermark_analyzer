@@ -1,7 +1,8 @@
 ﻿using Algorithms.common;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Algorithms
 {
@@ -10,10 +11,15 @@ namespace Algorithms
 		public readonly int Key;
 		public readonly double Alpha;
 
-		public DftParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, int key, double alpha) : base(original, watermark, watermarked)
+		public DftParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int key, double alpha) : base(original, watermark, watermarked)
 		{
 			Key = key;
 			Alpha = alpha;
+		}
+
+		public override string ToString()
+		{
+			return "{"+ $"Key={Key}, Alpha={Alpha}" + "}";
 		}
 	}
 
@@ -28,12 +34,15 @@ namespace Algorithms
 		private ComplexImage complexImage;
 		private ComplexImage complexWatermark;
 
-		public Dft(DftParameters parameters) : base()
+		public override string ToString() => "DFT " + parameters;
+
+
+		public Dft(DftParameters parameters) : base(ALGORITHM_NAME, parameters)
 		{
 			this.parameters = parameters;
 		}
 
-		public Bitmap CleanWatermark(Bitmap watermarked)
+		public EffectiveBitmap CleanWatermark(EffectiveBitmap watermarked)
 		{
 			ComplexImage complexWatermarked = ComplexImage.FromBitmap(watermarked);
 			complexWatermarked.ForwardFourierTransform();
@@ -47,17 +56,19 @@ namespace Algorithms
 			}
 
 			for (int y = 0; y < complexWatermarked.Height; y++)
+			{
 				for (int x = 0; x < complexWatermarked.Width; x++)
 				{
 					double imageReal = complexWatermarked.Data[y, x].Real;
 					double imageImaginary = complexWatermarked.Data[y, x].Imaginary;
 					complexWatermarked.Data[y, x] = new System.Numerics.Complex(imageReal - vAlpha[x] * imageReal, imageImaginary - vAlpha[x] * imageImaginary);
 				}
+			}
 			complexWatermarked.BackwardFourierTransform();
-			return complexWatermarked.ToBitmap();
+			return complexWatermarked.ToEffectiveBitmap();
 		}
 
-		public Bitmap ExtractWatermark(Bitmap watermarked)
+		public EffectiveBitmap ExtractWatermark(EffectiveBitmap watermarked)
 		{
 			ComplexImage complexWatermarked = ComplexImage.FromBitmap(watermarked);
 			complexWatermarked.ForwardFourierTransform();
@@ -78,7 +89,7 @@ namespace Algorithms
 					complexWatermarked.Data[y, x] = new System.Numerics.Complex(vAlpha[x] * imageReal - imageReal, vAlpha[x] * imageImaginary - imageImaginary);
 				}
 			complexWatermarked.BackwardFourierTransform();
-			return complexWatermarked.ToBitmap();
+			return complexWatermarked.ToEffectiveBitmap();
 		}
 
 
@@ -104,26 +115,38 @@ namespace Algorithms
 				}
 		}
 
-        public override AlgorithmResult AddWatermark()
+        public override async IAsyncEnumerable<AlgorithmResultElement> AddWatermark([EnumeratorCancellation] CancellationToken ct)
         {
 			complexImage = ComplexImage.FromBitmap(parameters.Original);
-			complexWatermark = ComplexImage.FromBitmap(parameters.Watermark, parameters.Original.Width);
+			complexWatermark = ComplexImage.FromBitmap(parameters.Watermark, complexImage.Width);
+
+			ct.ThrowIfCancellationRequested();
 
 			complexImage.ForwardFourierTransform();
-			var fourierDomain = complexImage.ToBitmap();
+			var fourierDomain = complexImage.ToEffectiveBitmap();
+
+			yield return new AlgorithmResultElement("Fourier domain (DFT)", fourierDomain.ToBitmap(parameters.Original.Size), new ResultDescription(ToString()));
+
+			ct.ThrowIfCancellationRequested();
 
 			complexWatermark.ForwardFourierTransform();
 			EmbedWatermark();
-			var fourierDomainWatermarked = complexImage.ToBitmap();
+			var fourierDomainWatermarked = complexImage.ToEffectiveBitmap();
+
+			yield return new AlgorithmResultElement("DFT + watermark", fourierDomainWatermarked.ToBitmap(parameters.Original.Size), new ResultDescription(ToString()));
+
+			ct.ThrowIfCancellationRequested();
 
 			complexImage.BackwardFourierTransform();
-			var watermarked = complexImage.ToBitmap();
-			return new AlgorithmResult(("Fourier domain (DFT)", fourierDomain), ("DFT + watermark", fourierDomainWatermarked), ("Watermarked", watermarked));
+			var watermarked = complexImage.ToEffectiveBitmap();
+
+			yield return new AlgorithmResultElement("Watermarked", watermarked.ToBitmap(parameters.Original.Size), new ResultDescription(ToString()));
 		}
 
-        public override AlgorithmResult RemoveWatermark()
+        public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)
         {
             throw new NotImplementedException();
-        }
-    }
+			yield return null;
+		}
+	}
 }

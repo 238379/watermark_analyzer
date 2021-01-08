@@ -1,9 +1,13 @@
 ﻿using Algorithms;
+using Algorithms.common;
+using Common;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AlgorithmTest
 {
@@ -22,13 +26,13 @@ namespace AlgorithmTest
 		private DwtParameters parameters;
 		private Dwt algorithm;
 
-		private static readonly String myResourcesPath = resourcesPath + "/DWT/";
+		private static readonly string myResourcesPath = resourcesPath + "/DWT/";
 
 		[SetUp]
 		public void Setup()
 		{
-			Console.WriteLine(new System.IO.FileInfo(resourcesPath + "c_corgi.jpg").FullName);
-			originalBitmap = new Bitmap(resourcesPath + "c_corgi.jpg");
+			Console.WriteLine(new FileInfo(resourcesPath + "c_corgi.png").FullName);
+			originalBitmap = new Bitmap(resourcesPath + "c_corgi.png");
 			watermarkBitmap = new Bitmap(resourcesPath + "w_tekst_dolny.png");
 			expectedWatermarkedBitmap = new Bitmap(myResourcesPath + "corgi_dolny_watermarked.png");
 			expectedDwtBitmap = new Bitmap(myResourcesPath + "corgi_dolny_dwt.png");
@@ -36,15 +40,15 @@ namespace AlgorithmTest
 
 			layers = 2;
 			alpha = 0.01;
-			parameters = new DwtParameters(originalBitmap, watermarkBitmap, null, layers, alpha);
+			parameters = new DwtParameters(originalBitmap.TransformToEffectiveBitmap(), watermarkBitmap.TransformToEffectiveBitmap(), null, layers, alpha);
 			algorithm = new Dwt(parameters);
 		}
 
 		[Test]
-		public void WatermarkingTest()
+		public async Task WatermarkingTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var watermarked = results[2];
 
@@ -55,10 +59,10 @@ namespace AlgorithmTest
 		}
 
 		[Test]
-		public void DwtTest()
+		public async Task DwtTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var haared = results[0];
 
@@ -69,10 +73,10 @@ namespace AlgorithmTest
 		}
 
 		[Test]
-		public void DwtPlusWatermarkTest()
+		public async Task DwtPlusWatermarkTest()
 		{
 			// Act
-			var results = algorithm.AddWatermark();
+			var results = await algorithm.AddWatermark(CancellationToken.None).ToListAsync();
 
 			var haaredPlusWatermark = results[1];
 

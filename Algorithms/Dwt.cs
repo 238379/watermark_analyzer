@@ -1,6 +1,10 @@
 ﻿using Algorithms.common;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Algorithms
 {
@@ -9,10 +13,15 @@ namespace Algorithms
 		public readonly int Layers;
 		public readonly double Alpha;
 
-		public DwtParameters(Bitmap original, Bitmap watermark, Bitmap watermarked, int layers, double alpha) : base(original, watermark, watermarked)
+		public DwtParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int layers, double alpha) : base(original, watermark, watermarked)
 		{
 			Layers = layers;
 			Alpha = alpha;
+		}
+
+		public override string ToString()
+		{
+			return "{" + $"Layers={Layers}, Alpha={Alpha}" + "}";
 		}
 	}
 
@@ -27,25 +36,35 @@ namespace Algorithms
 		private const double s0 = 0.5;
 		private const double s1 = 0.5;
 
-		public Dwt(DwtParameters parameters) : base()
+		public override string ToString() => "DWT " + parameters;
+
+
+		public Dwt(DwtParameters parameters) : base(ALGORITHM_NAME, parameters)
 		{
 			this.parameters = parameters;
 		}
 
-		public override AlgorithmResult AddWatermark()
+		public override async IAsyncEnumerable<AlgorithmResultElement> AddWatermark([EnumeratorCancellation] CancellationToken ct)
 		{
+			ct.ThrowIfCancellationRequested();
 			var haared = ProcessHaar(parameters.Original, false, parameters.Layers);
+
+			yield return new AlgorithmResultElement("DWT", haared, new ResultDescription(ToString()));
+
+			ct.ThrowIfCancellationRequested();
+
+			var watermark = parameters.Watermark;
+			watermark = parameters.Watermark.Resize(watermark.Width / (2 * parameters.Layers), watermark.Height / (2 * parameters.Layers));
 
 			var haaredWatermarked = BitmapOperations.Create((sources, i, j) =>
 			{
 				var layers = parameters.Layers;
 				var originalPixel = sources[0].GetPixel(i, j);
-				var watermarkPixel = sources[1].GetPixel(i, j);
+				var watermarkPixel = sources[1].GetPixel(i % watermark.Width, j % watermark.Height);
 
-				//TODO watermark scaling
-				if (i>sources[0].Height * (2 * layers - 1) / (2 * layers ) && j<sources[0].Width/(2 * layers)) {
+				if (i >= sources[0].Height * (2 * layers - 1) / (2 * layers) && j <= sources[0].Width / (2 * layers)) {
 					var alpha = parameters.Alpha;
-	
+
 					var r = (int)(originalPixel.R + (watermarkPixel.R * alpha)) % 255;
 					var g = (int)(originalPixel.G + (watermarkPixel.G * alpha)) % 255;
 					var b = (int)(originalPixel.B + (watermarkPixel.B * alpha)) % 255;
@@ -54,18 +73,52 @@ namespace Algorithms
 				}
 
 				return originalPixel;
-				
-				
-			}, haared, parameters.Watermark);
+
+
+			}, haared, watermark);
+
+			yield return new AlgorithmResultElement("DWT + watermark", haaredWatermarked, new ResultDescription(ToString()));
+
+			ct.ThrowIfCancellationRequested();
 
 			var watermarked = ProcessHaar(haaredWatermarked, true, parameters.Layers);
 
-			return new AlgorithmResult( ("DWT", haared), ("DWT + watermark", haaredWatermarked), ("Watermarked", watermarked));
+			yield return new AlgorithmResultElement("Watermarked", watermarked, new ResultDescription(ToString()));
+
+			ct.ThrowIfCancellationRequested();
+
+			var extractedWatermark = BitmapOperations.Create((sources, i, j) =>
+			{
+				var layers = parameters.Layers;
+				var haaredWatermarkedPixel = sources[0].GetPixel(i, j);
+				var haaredPixel = sources[1].GetPixel(i, j);
+
+				var alpha = parameters.Alpha;
+
+				var r = (int)((haaredWatermarkedPixel.R - haaredPixel.R )/alpha) % 255;
+				var g = (int)((haaredWatermarkedPixel.G - haaredPixel.G )/alpha) % 255;
+				var b = (int)((haaredWatermarkedPixel.B - haaredPixel.B )/alpha) % 255;
+
+				return new PixelInfo(r, g, b);
+
+			}, haaredWatermarked, haared);
+
+			EffectiveBitmap croppedRemovedWatermark = null;
+			if (parameters.Layers == 1)
+			{
+				 croppedRemovedWatermark = extractedWatermark.Crop(extractedWatermark.Width/2, 0, extractedWatermark.Width, extractedWatermark.Height/2);
+			}else if(parameters.Layers == 2)
+            {
+				croppedRemovedWatermark = extractedWatermark.Crop(extractedWatermark.Width*3/4, 0, extractedWatermark.Width, extractedWatermark.Height / 4);
+			}
+
+			yield return new AlgorithmResultElement("Extrated watermark", croppedRemovedWatermark, new ResultDescription(ToString()));
 		}
 
-		public override AlgorithmResult RemoveWatermark()
+		public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)
 		{
 			throw new NotImplementedException();
+			yield return null;
 		}
 
 		private void FWT(HaarColor[] data)
@@ -152,7 +205,7 @@ namespace Algorithms
 			}
 		}
 
-		public Bitmap ProcessHaar(Bitmap image, Boolean isRevert, int layers)
+		public EffectiveBitmap ProcessHaar(EffectiveBitmap image, bool isRevert, int layers)
 		{
 			var haarColors = new HaarColor[image.Height, image.Width];
 
@@ -160,9 +213,9 @@ namespace Algorithms
 			{
 				for (int j = 0; j < image.Width; j++)
 				{
-					var color = image.GetPixel(j, i);
+					var color = image.GetPixel(i, j);
 					var haarColor = new HaarColor(color);
-					haarColors[i, j] = haarColor;
+					haarColors[j, i] = haarColor;
 				}
 			}
 
@@ -175,15 +228,11 @@ namespace Algorithms
 				IWT(haarColors, layers);
 			}
 
-			var haarBitmap = new Bitmap(image.Width, image.Height);
-			for (int i = 0; i < haarBitmap.Height; i++)
+			var haarBitmap = EffectiveBitmap.Create(image.Width, image.Height, image.Depth, (i, j) =>
 			{
-				for (int j = 0; j < haarBitmap.Width; j++)
-				{
-					var haarColor = haarColors[i, j];
-					haarBitmap.SetPixel(j, i, haarColor.GetColor());
-				}
-			}
+				var haarColor = haarColors[j, i];
+				return haarColor.GetPixelInfo();
+			});
 
 			return haarBitmap;
 		}
