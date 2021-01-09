@@ -13,7 +13,9 @@ namespace Algorithms
         public int OriginalWidth { get; }
         public int OriginalHeight { get; }
         public bool FourierTransformed { get; private set; } = false;
+        public bool CosineTransformed { get; private set; } = false;
         public Complex[,] Data { get; set; }
+        public double[,] DCTData { get; set; }
         public byte[,,] YCbCr
         {
             get => _YCbCr;
@@ -36,6 +38,7 @@ namespace Algorithms
             OriginalWidth = originalWidth;
             OriginalHeight = originalHeight;
             Data = new Complex[height, width];
+            DCTData = new double[height, width];
             FourierTransformed = false;
         }
 
@@ -46,11 +49,13 @@ namespace Algorithms
             OriginalWidth = complexImage.OriginalWidth;
             OriginalHeight = complexImage.OriginalHeight;
             Data = new Complex[Height, Width];
+            DCTData = new double[Height, Width];
             for (int y = 0; y < Width; y++)
             {
                 for (int x = 0; x < Height; x++)
                 {
                     Data[x, y] = new Complex(complexImage.Data[x, y].Real, complexImage.Data[x, y].Imaginary);
+                    DCTData[x, y] = complexImage.DCTData[x, y];
                 }
             }
             YCbCr = new byte[Width, Height, 3];
@@ -69,12 +74,13 @@ namespace Algorithms
         {
             ComplexImage dstImage = new ComplexImage(Width, Height, OriginalWidth, OriginalHeight);
             Complex[,] data = dstImage.Data;
-
+            double[,] dctData = dstImage.DCTData;
             for (int i = 0; i < Height; i++)
             {
                 for (int j = 0; j < Width; j++)
                 {
                     data[i, j] = this.Data[i, j];
+                    dctData[i, j] = this.DCTData[i, j];
                 }
             }
 
@@ -95,10 +101,11 @@ namespace Algorithms
             };
 
             Complex[,] data = complexImage.Data;
-
+            double[,] dctData = complexImage.DCTData;
             resizedImage.RunOnEveryPixel((i, j) =>
             {
                 data[j, i] = new Complex(complexImage.YCbCr[i, j, 0] / 255.0, data[j, i].Imaginary);
+                dctData[j, i] = complexImage.YCbCr[i, j, 0];
             });
 
             return complexImage;
@@ -106,14 +113,17 @@ namespace Algorithms
 
         public EffectiveBitmap ToEffectiveBitmap()
         {
-            double scale = FourierTransformed ? Math.Sqrt(Width * Height) : 1;
-
+            double scale = FourierTransformed && !CosineTransformed ? Math.Sqrt(Width * Height) : 1;
             // todo depth
             return EffectiveBitmap.Create(Width, Height, 4, (i, j) =>
             {
                 var value = (byte)Math.Max(0, Math.Min(255, Data[j, i].Magnitude * scale * 255));
-                if (FourierTransformed)
+                if (FourierTransformed || CosineTransformed)
                 {
+                    if (CosineTransformed)
+                    {
+                        value = (byte)DCTData[j, i];
+                    }
                     return new PixelInfo(value, value, value);
                 }
                 else
@@ -162,6 +172,18 @@ namespace Algorithms
                     }
                 }
             }
-        }        
+        }
+
+        public void DCT()
+        {
+            CosineTransform.DCT(DCTData);
+            CosineTransformed = true;
+        }
+
+        public void IDCT()
+        {
+            CosineTransform.IDCT(DCTData);
+            CosineTransformed = false;
+        }
     }
 }
