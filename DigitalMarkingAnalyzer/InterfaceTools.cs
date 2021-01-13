@@ -15,6 +15,10 @@ namespace DigitalMarkingAnalyzer
 		{
 			var encoder = new PngBitmapEncoder();
 			encoder.Frames.Add(BitmapFrame.Create((BitmapSource)image.Source));
+			if(File.Exists(pathToSave))
+            {
+				File.Delete(pathToSave);
+            }
 			using (FileStream stream = new FileStream(pathToSave, FileMode.OpenOrCreate))
 			{
 				encoder.Save(stream);

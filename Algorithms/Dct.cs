@@ -75,7 +75,12 @@ namespace Algorithms
 
 		public override async IAsyncEnumerable<AlgorithmResultElement> AddWatermark([EnumeratorCancellation] CancellationToken ct)
 		{
-			complexImage = ComplexImage.FromBitmap(parameters.Original);
+			int size = 0;
+            if (Math.Max(parameters.Original.Width, parameters.Original.Width) > 512)
+            {
+				size = Math.Max(parameters.Original.Width, parameters.Original.Width) / 2;
+			}
+			complexImage = ComplexImage.FromBitmap(parameters.Original, size);
 			complexWatermark = ComplexImage.FromBitmap(parameters.Watermark, complexImage.Width);
 
 			ct.ThrowIfCancellationRequested();
