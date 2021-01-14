@@ -36,7 +36,15 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 
 		protected override Task ProcessRemoving(CancellationToken ct)
 		{
-			throw new NotImplementedException();
+			return Task.Run(async () =>
+			{
+				ct.ThrowIfCancellationRequested();
+				var p = ReadParameters();
+				ct.ThrowIfCancellationRequested();
+				var algorithm = new PixelAveraging(p);
+				var result = algorithm.RemoveWatermark(ct);
+				await ShowAlgorithmOutput(result);
+			});
 		}
 
 		private PixelAveragingParameters ReadParameters()
