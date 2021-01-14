@@ -19,7 +19,7 @@ namespace AlgorithmTest
 		private Bitmap expectedWatermarkedBitmap;
 
 		private int key;
-		private double alpha;
+		private decimal alpha;
 
 		private DctParameters parameters;
 		private Dct algorithm;
@@ -37,7 +37,7 @@ namespace AlgorithmTest
 			expectedWatermarkedBitmap = new Bitmap(myResourcesPath + "dct_watermarked_test.png");
 
 			key = 10;
-			alpha = 0.01;
+			alpha = 0.01M;
 			parameters = new DctParameters(originalBitmap.TransformToEffectiveBitmap(), watermarkBitmap.TransformToEffectiveBitmap(), null, key, alpha);
 
 			algorithm = new Dct(parameters);
