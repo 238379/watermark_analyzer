@@ -26,7 +26,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 			AddParameterLabel("Use original bitmap", 0, 0);
 			useOriginalImageCheckBox = AddParameterCheckBox(false, 1, 0);
 
-			ratioRangeParameterControls = AddDecimalRangeParameter("Ratio", 1, (0, 1), 0.2);
+			ratioRangeParameterControls = AddDecimalRangeParameter("Ratio", 1, (0, 1), 0.05);
 		}
 
 		protected override Task ProcessAdding(CancellationToken ct)
