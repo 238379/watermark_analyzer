@@ -99,6 +99,16 @@ namespace Algorithms.common
 			return Create(width, height, pixelFormat == PixelFormat.Format24bppRgb ? 3 : 4, creator);
 		}
 
+		public void ToGrayscale()
+		{
+			RunOnEveryPixel((x, y) =>
+			{
+				var p = GetPixel(x, y);
+				var v = (p.R + p.G + p.B) / 3;
+				SetPixel(x, y, new PixelInfo(v, v, v));
+			});
+		}
+
 		public static EffectiveBitmap Create(int width, int height, int depth, Func<int, int, PixelInfo> creator)
 		{
 			var buffer = new byte[width * height * depth];

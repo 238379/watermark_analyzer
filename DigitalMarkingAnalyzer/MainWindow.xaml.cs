@@ -3,6 +3,7 @@ using LoggerUtils;
 using System;
 using System.Drawing;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using static DigitalMarkingAnalyzer.viewmodels.AlgorithmViewModel;
 
 namespace DigitalMarkingAnalyzer
@@ -69,15 +70,15 @@ namespace DigitalMarkingAnalyzer
 			advancedOriginalImage = new UpdatableImage(AdvancedOriginalImageControl);
 
 			addingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.AddWatermark, AddingParametersGrid, AddingProcess,
-				OriginalImageControl, WatermarkImageControl, null, UseImageToRemoveWatermark,
+				OriginalImageControl, WatermarkImageControl, null, UseImageToRemoveWatermarkAsWatermarked,
 				Tabs, AddingResultTab, ADDING_RESULT_TAB_INDEX, AddingResultGrid, AddingResultScrollViewer, CloseAddingResult, CancelButton);
 
 			removingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.RemoveWatermark, RemovingParametersGrid, RemovingProcess,
-				RemovingOriginalImageControl, null, WatermarkedImageControl, UseImageToRemoveWatermark,
+				RemovingOriginalImageControl, null, WatermarkedImageControl, UseImageToRemoveWatermarkAsWatermarked,
 				Tabs, RemovingResultTab, REMOVING_RESULT_TAB_INDEX, RemovingResultGrid, RemovingResultScrollViewer, CloseRemovingResult, CancelButton);
 
 			advancedRemovingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.RemoveWatermark, AdvancedRemovingParametersGrid, AdvancedRemovingProcess,
-				AdvancedOriginalImageControl, null, AdvancedWatermarkedImageControl, UseImageToRemoveWatermark,
+				AdvancedOriginalImageControl, null, AdvancedWatermarkedImageControl, UseImageToRemoveWatermarkAsWatermarked,
 				Tabs, AdvancedRemovingResultTab, ADVANCED_REMOVING_RESULT_TAB_INDEX, AdvancedRemovingResultGrid, AdvancedRemovingResultScrollViewer, AdvancedCloseRemovingResult, CancelButton);
 
 			SetUpInputImagesViewModels();
@@ -115,27 +116,27 @@ namespace DigitalMarkingAnalyzer
 		private void SetUpInputImagesViewModels()
 		{
 			var original = new InputImageViewModel(this, OriginalImageControl, originalImage, new Uri("/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg", UriKind.RelativeOrAbsolute),
-				BrowseOriginalButton, UndoOriginalButton, ToDefaultOriginalButton, AddingErrorMessage);
+				GrayscaleOriginalButton, BrowseOriginalButton, SaveOriginalButton, UndoOriginalButton, ToDefaultOriginalButton, AddingErrorMessage);
 			original.SetUp();
 
 			var watermark = new InputImageViewModel(this, WatermarkImageControl, watermarkImage, new Uri("/DigitalMarkingAnalyzer;component/Resources/w_tekst_dolny.png", UriKind.RelativeOrAbsolute),
-				BrowseWatermarkButton, UndoWatermarkButton, ToDefaultWatermarkButton, AddingErrorMessage);
+				GrayscaleWatermarkButton, BrowseWatermarkButton, SaveWatermarkButton, UndoWatermarkButton, ToDefaultWatermarkButton, AddingErrorMessage);
 			watermark.SetUp();
 
 			var watermarked = new InputImageViewModel(this, WatermarkedImageControl, watermarkedImage, new Uri("/DigitalMarkingAnalyzer;component/Resources/t_corgi_tekst_dolny.jpg", UriKind.RelativeOrAbsolute),
-				BrowseWatermarkedButton, UndoWatermarkedButton, ToDefaultWatermarkedButton, RemovingErrorMessage);
+				GrayscaleWatermarkedButton ,BrowseWatermarkedButton, SaveWatermarkedButton, UndoWatermarkedButton, ToDefaultWatermarkedButton, RemovingErrorMessage);
 			watermarked.SetUp();
 
 			var removingOriginal = new InputImageViewModel(this, RemovingOriginalImageControl, removingOriginalImage, new Uri("/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg", UriKind.RelativeOrAbsolute),
-				BrowseRemovingOriginalButton, UndoRemovingOriginalButton, ToDefaultRemovingOriginalButton, RemovingErrorMessage);
+				GrayscaleRemovingOriginalButton, BrowseRemovingOriginalButton, SaveRemovingOriginalButton, UndoRemovingOriginalButton, ToDefaultRemovingOriginalButton, RemovingErrorMessage);
 			removingOriginal.SetUp();
 
 			var advancedWatermarked = new InputImageViewModel(this, AdvancedWatermarkedImageControl, advancedWatermarkedImage, new Uri("/DigitalMarkingAnalyzer;component/Resources/t_corgi_tekst_dolny.jpg", UriKind.RelativeOrAbsolute),
-				AdvancedBrowseWatermarkedButton, AdvancedUndoWatermarkedButton, AdvancedToDefaultWatermarkedButton, AdvancedRemovingErrorMessage);
+				AdvancedGrayscaleWatermarkedButton, AdvancedBrowseWatermarkedButton, AdvancedSaveWatermarkedButton, AdvancedUndoWatermarkedButton, AdvancedToDefaultWatermarkedButton, AdvancedRemovingErrorMessage);
 			advancedWatermarked.SetUp();
 
 			var advancedOriginal = new InputImageViewModel(this, AdvancedOriginalImageControl, advancedOriginalImage, new Uri("/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg", UriKind.RelativeOrAbsolute),
-				BrowseAdvancedOriginalButton, UndoAdvancedOriginalButton, ToDefaultAdvancedOriginalButton, AdvancedRemovingErrorMessage);
+				GrayscaleAdvancedOriginalButton, BrowseAdvancedOriginalButton, SaveAdvancedOriginalButton, UndoAdvancedOriginalButton, ToDefaultAdvancedOriginalButton, AdvancedRemovingErrorMessage);
 			advancedOriginal.SetUp();
 		}
 
@@ -148,10 +149,16 @@ namespace DigitalMarkingAnalyzer
 			}.Show();
 		}
 
-		private void UseImageToRemoveWatermark(Bitmap bitmap)
+		private void UseImageToRemoveWatermarkAsWatermarked(Bitmap bitmap)
 		{
 			watermarkedImage.SetSource(bitmap);
 			advancedWatermarkedImage.SetSource(bitmap);
+		}
+
+		private void UseImageToRemoveWatermarkAsOriginal(Bitmap bitmap)
+		{
+			removingOriginalImage.SetSource(bitmap);
+			advancedOriginalImage.SetSource(bitmap);
 		}
 
 		private void CloseAddingResultTabButton_Click(object sender, RoutedEventArgs e)
@@ -173,6 +180,12 @@ namespace DigitalMarkingAnalyzer
 			logger.LogDebug("Clicked CloseAdvancedRemovingResultTabButton.");
 			Tabs.SelectedIndex = ADVANCED_REMOVING_TAB_INDEX;
 			AdvancedRemovingResultTab.Visibility = Visibility.Collapsed;
+		}
+
+
+		private void UseOriginalButton_Click(object sender, RoutedEventArgs e)
+		{
+			UseImageToRemoveWatermarkAsOriginal(InterfaceTools.BitmapImageToBitmap((BitmapImage)originalImage.Source));
 		}
 	}
 }

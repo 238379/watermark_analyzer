@@ -24,10 +24,13 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <Button x:Name="GenerateOriginalButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="80"/>
-                                <Button x:Name="BrowseOriginalButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="100"/>
-                                <Button x:Name="UndoOriginalButton" Content="⎌" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="336,0,0,0"/>
-                                <Button x:Name="ToDefaultOriginalButton" Content="D" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="368,0,0,0"/>
+                                <Button x:Name="GenerateOriginalButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="60"/>
+                                <Button x:Name="GrayscaleOriginalButton" Content="GS" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="65,0,0,0" Height="30" Width="30"/>
+                                <Button x:Name="UseOriginalButton" Content="Use" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="100,0,0,0" Height="30" Width="30"  Click="UseOriginalButton_Click"/>
+                                <Button x:Name="SaveOriginalButton" Content="Save" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,60,0" Height="30" Width="30"/>
+                                <Button x:Name="BrowseOriginalButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Height="30" Width="100"/>
+                                <Button x:Name="UndoOriginalButton" Content="⎌" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,30,0"/>
+                                <Button x:Name="ToDefaultOriginalButton" Content="D" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,0,0"/>
                             </Grid>
                             <Image x:Name="OriginalImageControl" x:FieldModifier="private" HorizontalAlignment="Left" Height="400" Margin="10,50,0,0" VerticalAlignment="Top" Width="400" Stretch="Fill"/>
                         </Grid>
@@ -40,10 +43,12 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <Button x:Name="GenerateWatermarkButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="80"/>
+                                <Button x:Name="GenerateWatermarkButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="60"/>
+                                <Button x:Name="GrayscaleWatermarkButton" Content="GS" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="65,0,0,0" Height="30" Width="30"/>
                                 <Button x:Name="BrowseWatermarkButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="100"/>
-                                <Button x:Name="UndoWatermarkButton" Content="⎌" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="336,0,0,0"/>
-                                <Button x:Name="ToDefaultWatermarkButton" Content="D" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="368,0,0,0"/>
+                                <Button x:Name="SaveWatermarkButton" Content="Save" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,60,0" Height="30" Width="30"/>
+                                <Button x:Name="UndoWatermarkButton" Content="⎌" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,30,0"/>
+                                <Button x:Name="ToDefaultWatermarkButton" Content="D" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,0,0"/>
                             </Grid>
                             <Image x:Name="WatermarkImageControl" x:FieldModifier="protected" HorizontalAlignment="Right" Height="400" Margin="0,50,10,0" VerticalAlignment="Top" Width="400" Stretch="Fill"/>
                         </Grid>
@@ -56,7 +61,7 @@
                                 <System:String>DFT</System:String>
                                 <System:String>DCT</System:String>
                             </ComboBox>
-                            <Grid x:Name="AddingParametersGrid" x:FieldModifier="private" Background="#FFE5E5E5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="150,0,0,0" Width="300" Height="100">
+                            <Grid x:Name="AddingParametersGrid" x:FieldModifier="private" Background="#FFE5E5E5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="150,0,0,0" Width="200" Height="100">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*"/>
                                     <ColumnDefinition Width="1*"/>
@@ -78,17 +83,21 @@
                 <TabItem Header="Adding Result" x:Name="AddingResultTab" Height="20" VerticalAlignment="Bottom">
                     <ScrollViewer x:Name="AddingResultScrollViewer" Background="#FF000128" VerticalScrollBarVisibility="Visible">
                         <Grid Background="#FFE5E5E5" ScrollViewer.CanContentScroll="True">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="33*"/>
+                                <ColumnDefinition Width="794*"/>
+                            </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Grid x:Name="AddingResultGrid" Background="#FFE5E5E5" Grid.Row="0" Margin="5,0,0,0">
+                            <Grid x:Name="AddingResultGrid" Background="#FFE5E5E5" Grid.Row="0" Margin="5,0,0,0" Grid.ColumnSpan="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
                             </Grid>
-                            <Button x:Name="CloseAddingResult" Grid.Row="1" Content="Close" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10,0,10" Height="50" Width="100" Click="CloseAddingResultTabButton_Click"/>
+                            <Button x:Name="CloseAddingResult" Grid.Row="1" Content="Close" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="331,0,0,10" Height="50" Width="100" Click="CloseAddingResultTabButton_Click" Grid.Column="1"/>
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
@@ -103,8 +112,10 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <Button x:Name="GenerateWatermarkedButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="80"/>
+                                <Button x:Name="GenerateWatermarkedButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="60"/>
+                                <Button x:Name="GrayscaleWatermarkedButton" Content="GS" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="65,0,0,0" Height="30" Width="30"/>
                                 <Button x:Name="BrowseWatermarkedButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="100"/>
+                                <Button x:Name="SaveWatermarkedButton" Content="Save" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,60,0" Height="30" Width="30"/>
                                 <Button x:Name="UndoWatermarkedButton" Content="⎌" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,30,0"/>
                                 <Button x:Name="ToDefaultWatermarkedButton" Content="D" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30"/>
                             </Grid>
@@ -123,10 +134,12 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <Button x:Name="GenerateRemovingOriginalButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="80"/>
+                                <Button x:Name="GenerateRemovingOriginalButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="60"/>
+                                <Button x:Name="GrayscaleRemovingOriginalButton" Content="GS" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="65,0,0,0" Height="30" Width="30"/>
                                 <Button x:Name="BrowseRemovingOriginalButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="100"/>
-                                <Button x:Name="UndoRemovingOriginalButton" Content="⎌" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="336,0,0,0"/>
-                                <Button x:Name="ToDefaultRemovingOriginalButton" Content="D" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="368,0,0,0"/>
+                                <Button x:Name="SaveRemovingOriginalButton" Content="Save" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,60,0" Height="30" Width="30"/>
+                                <Button x:Name="UndoRemovingOriginalButton" Content="⎌" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,30,0"/>
+                                <Button x:Name="ToDefaultRemovingOriginalButton" Content="D" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,0,0"/>
                             </Grid>
                             <Image x:Name="RemovingOriginalImageControl" x:FieldModifier="protected" HorizontalAlignment="Left" Height="400" Margin="10,0,0,0" VerticalAlignment="Center" Width="400" Stretch="Fill" Grid.ColumnSpan="2"/>
                         </Grid>
@@ -139,7 +152,7 @@
                                 <System:String>DFT</System:String>
                                 <System:String>DCT</System:String>
                             </ComboBox>
-                            <Grid x:Name="RemovingParametersGrid" x:FieldModifier="private" Background="#FFE5E5E5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="150,0,0,0" Width="300" Height="100">
+                            <Grid x:Name="RemovingParametersGrid" x:FieldModifier="private" Background="#FFE5E5E5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="150,0,0,0" Width="200" Height="100">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*"/>
                                     <ColumnDefinition Width="1*"/>
@@ -188,8 +201,10 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <Button x:Name="AdvancedGenerateWatermarkedButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="80"/>
+                                <Button x:Name="AdvancedGenerateWatermarkedButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="60"/>
+                                <Button x:Name="AdvancedGrayscaleWatermarkedButton" Content="GS" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="65,0,0,0" Height="30" Width="30"/>
                                 <Button x:Name="AdvancedBrowseWatermarkedButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="100"/>
+                                <Button x:Name="AdvancedSaveWatermarkedButton" Content="Save" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,60,0" Height="30" Width="30"/>
                                 <Button x:Name="AdvancedUndoWatermarkedButton" Content="⎌" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,30,0"/>
                                 <Button x:Name="AdvancedToDefaultWatermarkedButton" Content="D" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30"/>
                             </Grid>
@@ -204,10 +219,12 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <Button x:Name="GenerateAdvancedOriginalButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="80"/>
+                                <Button x:Name="GenerateAdvancedOriginalButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="60"/>
+                                <Button x:Name="GrayscaleAdvancedOriginalButton" Content="GS" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="65,0,0,0" Height="30" Width="30"/>
                                 <Button x:Name="BrowseAdvancedOriginalButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="100"/>
-                                <Button x:Name="UndoAdvancedOriginalButton" Content="⎌" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="336,0,0,0"/>
-                                <Button x:Name="ToDefaultAdvancedOriginalButton" Content="D" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="368,0,0,0"/>
+                                <Button x:Name="SaveAdvancedOriginalButton" Content="Save" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,60,0" Height="30" Width="30"/>
+                                <Button x:Name="UndoAdvancedOriginalButton" Content="⎌" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,30,0"/>
+                                <Button x:Name="ToDefaultAdvancedOriginalButton" Content="D" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" Width="30" Margin="0,0,0,0"/>
                             </Grid>
                             <Image x:Name="AdvancedOriginalImageControl" x:FieldModifier="protected" HorizontalAlignment="Right" Height="400" Margin="0,50,10,0" VerticalAlignment="Top" Width="400" Stretch="Fill"/>
                         </Grid>
@@ -221,7 +238,7 @@
                                 <System:String>DFT</System:String>
                                 <System:String>DCT</System:String>
                             </ComboBox>
-                            <Grid x:Name="AdvancedRemovingParametersGrid" x:FieldModifier="private" Background="#FFE5E5E5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="150,0,0,0" Width="400" Height="100">
+                            <Grid x:Name="AdvancedRemovingParametersGrid" x:FieldModifier="private" Background="#FFE5E5E5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="150,0,0,0" Width="300" Height="100">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*"/>
                                     <ColumnDefinition Width="1*"/>
