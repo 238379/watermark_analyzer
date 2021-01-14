@@ -111,6 +111,20 @@
                             <Image x:Name="WatermarkedImageControl" x:FieldModifier="protected" HorizontalAlignment="Left" Height="400" Margin="10,50,0,0" VerticalAlignment="Top" Width="400" Stretch="Fill"/>
                         </Grid>
                         <Grid Background="#FFE5E5E5" Width="420" Height="500" HorizontalAlignment="Right" VerticalAlignment="Top">
+                            <Label Content="Original" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top" Height="50" Width="400" FontSize="24"/>
+                            <Grid x:Name="RemovingOriginalButtonsGrid" Background="#FFE5E5E5" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="400" Height="50">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Button x:Name="GenerateRemovingOriginalButton" Content="Generate" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="80"/>
+                                <Button x:Name="BrowseRemovingOriginalButton" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Width="100"/>
+                                <Button x:Name="UndoRemovingOriginalButton" Content="⎌" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="336,0,0,0"/>
+                                <Button x:Name="ToDefaultRemovingOriginalButton" Content="D" HorizontalAlignment="Left" VerticalAlignment="Center" Height="30" Width="30" Margin="368,0,0,0"/>
+                            </Grid>
+                            <Image x:Name="RemovingOriginalImageControl" x:FieldModifier="protected" HorizontalAlignment="Right" Height="400" Margin="0,50,10,0" VerticalAlignment="Top" Width="400" Stretch="Fill"/>
                         </Grid>
                         <Grid Background="#FFE5E5E5" Height="130" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                             <Label Content="Algorithm" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,10,0" VerticalAlignment="Top" Height="40" Width="120" FontSize="16"/>

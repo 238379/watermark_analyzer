@@ -31,10 +31,12 @@ namespace DigitalMarkingAnalyzer
 
 		#region Private Removing
 		private readonly UpdatableImage watermarkedImage;
+		private readonly UpdatableImage removingOriginalImage;
 
 		private readonly AlgorithmControls removingWatermarkAlgorithmControls;
 		private readonly AlgorithmSelectionViewModel removingAlgorithmSelectionViewModel;
 		private readonly InternetImageGeneratorViewModel watermarkedGeneratorViewModel;
+		private readonly InternetImageGeneratorViewModel removingOriginalGeneratorViewModel;
 		#endregion
 
 		#region Private AdvancedRemoving
@@ -45,7 +47,6 @@ namespace DigitalMarkingAnalyzer
 		private readonly AlgorithmSelectionViewModel advancedRemovingAlgorithmSelectionViewModel;
 		private readonly InternetImageGeneratorViewModel advancedWatermarkedGeneratorViewModel;
 		private readonly InternetImageGeneratorViewModel advancedOriginalGeneratorViewModel;
-
 		#endregion
 
 		private readonly Logger logger;
@@ -63,15 +64,16 @@ namespace DigitalMarkingAnalyzer
 			originalImage = new UpdatableImage(OriginalImageControl);
 			watermarkImage = new UpdatableImage(WatermarkImageControl);
 			watermarkedImage = new UpdatableImage(WatermarkedImageControl);
+			removingOriginalImage = new UpdatableImage(RemovingOriginalImageControl);
 			advancedWatermarkedImage = new UpdatableImage(AdvancedWatermarkedImageControl);
 			advancedOriginalImage = new UpdatableImage(AdvancedOriginalImageControl);
 
 			addingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.AddWatermark, AddingParametersGrid, AddingProcess,
-				OriginalImageControl, WatermarkImageControl, WatermarkedImageControl, UseImageToRemoveWatermark,
+				OriginalImageControl, WatermarkImageControl, null, UseImageToRemoveWatermark,
 				Tabs, AddingResultTab, ADDING_RESULT_TAB_INDEX, AddingResultGrid, AddingResultScrollViewer, CloseAddingResult, CancelButton);
 
 			removingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.RemoveWatermark, RemovingParametersGrid, RemovingProcess,
-				null, null, WatermarkedImageControl, UseImageToRemoveWatermark,
+				RemovingOriginalImageControl, null, WatermarkedImageControl, UseImageToRemoveWatermark,
 				Tabs, RemovingResultTab, REMOVING_RESULT_TAB_INDEX, RemovingResultGrid, RemovingResultScrollViewer, CloseRemovingResult, CancelButton);
 
 			advancedRemovingWatermarkAlgorithmControls = new AlgorithmControls(Algorithms.common.AlgorithmMode.RemoveWatermark, AdvancedRemovingParametersGrid, AdvancedRemovingProcess,
@@ -98,6 +100,9 @@ namespace DigitalMarkingAnalyzer
 			watermarkedGeneratorViewModel = new InternetImageGeneratorViewModel(new GeneratorControls(GenerateWatermarkedButton, watermarkedImage), RemovingErrorMessage);
 			watermarkedGeneratorViewModel.SetUp();
 
+			removingOriginalGeneratorViewModel = new InternetImageGeneratorViewModel(new GeneratorControls(GenerateRemovingOriginalButton, removingOriginalImage), RemovingErrorMessage);
+			removingOriginalGeneratorViewModel.SetUp();
+
 			advancedWatermarkedGeneratorViewModel = new InternetImageGeneratorViewModel(new GeneratorControls(AdvancedGenerateWatermarkedButton, advancedWatermarkedImage), AdvancedRemovingErrorMessage);
 			advancedWatermarkedGeneratorViewModel.SetUp();
 
@@ -120,6 +125,10 @@ namespace DigitalMarkingAnalyzer
 			var watermarked = new InputImageViewModel(this, WatermarkedImageControl, watermarkedImage, new Uri("/DigitalMarkingAnalyzer;component/Resources/t_corgi_tekst_dolny.jpg", UriKind.RelativeOrAbsolute),
 				BrowseWatermarkedButton, UndoWatermarkedButton, ToDefaultWatermarkedButton, RemovingErrorMessage);
 			watermarked.SetUp();
+
+			var removingOriginal = new InputImageViewModel(this, RemovingOriginalImageControl, removingOriginalImage, new Uri("/DigitalMarkingAnalyzer;component/Resources/c_corgi.jpg", UriKind.RelativeOrAbsolute),
+				BrowseRemovingOriginalButton, UndoRemovingOriginalButton, ToDefaultRemovingOriginalButton, RemovingErrorMessage);
+			removingOriginal.SetUp();
 
 			var advancedWatermarked = new InputImageViewModel(this, AdvancedWatermarkedImageControl, advancedWatermarkedImage, new Uri("/DigitalMarkingAnalyzer;component/Resources/t_corgi_tekst_dolny.jpg", UriKind.RelativeOrAbsolute),
 				AdvancedBrowseWatermarkedButton, AdvancedUndoWatermarkedButton, AdvancedToDefaultWatermarkedButton, AdvancedRemovingErrorMessage);
