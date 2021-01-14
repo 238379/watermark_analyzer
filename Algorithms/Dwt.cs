@@ -91,12 +91,11 @@ namespace Algorithms
 		{
 			ct.ThrowIfCancellationRequested();
 			var haaredWatermarked = ProcessHaar(parameters.Watermarked, false, parameters.Layers);
-			yield return new AlgorithmResultElement("DWT watermarked", haaredWatermarked, new ResultDescription(ToString()));
 
 			ct.ThrowIfCancellationRequested();
 			var haaredOriginal = ProcessHaar(parameters.Original, false, parameters.Layers);
-			yield return new AlgorithmResultElement("DWT original", haaredOriginal, new ResultDescription(ToString()));
 
+			ct.ThrowIfCancellationRequested();
 			var extractedWatermark = BitmapOperations.Create((sources, i, j) =>
 			{
 				var layers = parameters.Layers;
@@ -122,8 +121,6 @@ namespace Algorithms
 			{
 				croppedRemovedWatermark = extractedWatermark.Crop(extractedWatermark.Width * 3 / 4, 0, extractedWatermark.Width, extractedWatermark.Height / 4);
 			}
-
-			//yield return new AlgorithmResultElement("Extrated watermark", croppedRemovedWatermark, new ResultDescription(ToString()));
 
 			ct.ThrowIfCancellationRequested();
 
@@ -151,7 +148,12 @@ namespace Algorithms
 
 			var removedWatermark = ProcessHaar(haaredRemovedWatermark, true, parameters.Layers);
 
-			yield return new AlgorithmResultElement("Removed watermark", removedWatermark, new ResultDescription(ToString()));
+			ct.ThrowIfCancellationRequested();
+			yield return new AlgorithmResultElement("Cleaned", removedWatermark, new ResultDescription(ToString()));
+
+			ct.ThrowIfCancellationRequested();
+			yield return new AlgorithmResultElement("Extracted watermark", croppedRemovedWatermark, new ResultDescription(ToString()));
+
 		}
 
 		private void FWT(HaarColor[] data)
