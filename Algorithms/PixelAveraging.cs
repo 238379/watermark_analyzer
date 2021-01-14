@@ -54,8 +54,15 @@ namespace Algorithms
 
 		public override async IAsyncEnumerable<AlgorithmResultElement> RemoveWatermark([EnumeratorCancellation] CancellationToken ct)
 		{
-			throw new NotImplementedException();
-			yield return null;
+			ct.ThrowIfCancellationRequested();
+			var extracted = ExtractWatermark(parameters.Watermarked, parameters.Original);
+
+			ct.ThrowIfCancellationRequested();
+			var cleaned = CleanWatermark(parameters.Watermarked, extracted);
+
+			yield return new AlgorithmResultElement("Cleaned", cleaned, new ResultDescription(ToString()));
+			ct.ThrowIfCancellationRequested();
+			yield return new AlgorithmResultElement("Extracted watermark", extracted, new ResultDescription(ToString()));
 		}
 
 		private EffectiveBitmap Watermark(EffectiveBitmap original, EffectiveBitmap watermark)
