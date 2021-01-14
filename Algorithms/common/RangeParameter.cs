@@ -25,7 +25,7 @@ namespace Algorithms.common
 				values.Add(val);
 			}
 
-			if (Math.Abs((double)(dynamic)max - (double)(dynamic)values[values.Count - 1]) >= 0.001)
+			if (Math.Abs((double)(dynamic)max - (double)(dynamic)values[values.Count - 1]) >= 0.00001)
 			{
 				values.Add(max);
 			}

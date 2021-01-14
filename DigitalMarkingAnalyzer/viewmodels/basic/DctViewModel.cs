@@ -53,7 +53,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 			if (int.TryParse(text, out var key) && key >= 0)
 			{
 				dispatcher.Invoke(() => text = alphaTextBox.Text);
-				if (double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out var alpha) && alpha >= 0 && alpha <= 1)
+				if (decimal.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out var alpha) && alpha >= 0 && alpha <= 1)
 					return new DctParameters(original, watermark, watermarked, key, alpha);
 				throw new ArgumentException($"Invalid alpha value. It should be between [0; 1] but it is: {text}");
 			}

@@ -9,9 +9,9 @@ namespace Algorithms
 	public class DctParameters : AlgorithmParameters
 	{
 		public readonly int Key;
-		public readonly double Alpha;
+		public readonly decimal Alpha;
 
-		public DctParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int key, double alpha) : base(original, watermark, watermarked)
+		public DctParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int key, decimal alpha) : base(original, watermark, watermarked)
 		{
 			Key = key;
 			Alpha = alpha;
@@ -59,7 +59,7 @@ namespace Algorithms
 			for (int i = 0; i < complexImage.Width; i++)
 			{
 				v[i] = random.Next(0, 2);
-				vAlpha[i] = v[i] * parameters.Alpha;
+				vAlpha[i] = v[i] * (double)parameters.Alpha;
 			}
 
 			for (int y = 0; y < complexImage.Height; y++)

@@ -21,7 +21,7 @@ namespace AlgorithmTest
 		private Bitmap expectedDwtPlusWatermarkBitmap;
 
 		private int layers;
-		private double alpha;
+		private decimal alpha;
 
 		private DwtParameters parameters;
 		private Dwt algorithm;
@@ -39,7 +39,7 @@ namespace AlgorithmTest
 			expectedDwtPlusWatermarkBitmap = new Bitmap(myResourcesPath + "corgi_dolny_dwt_plus_watermark.png");
 
 			layers = 2;
-			alpha = 0.01;
+			alpha = 0.01M;
 			parameters = new DwtParameters(originalBitmap.TransformToEffectiveBitmap(), watermarkBitmap.TransformToEffectiveBitmap(), null, layers, alpha);
 			algorithm = new Dwt(parameters);
 		}

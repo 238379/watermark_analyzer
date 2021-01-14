@@ -46,7 +46,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 			string text = null;
 			dispatcher.Invoke(() => text = ratioTextBox.Text);
 
-			if (double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out var ratio) && ratio >= 0 && ratio <= 1)
+			if (decimal.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out var ratio) && ratio >= 0 && ratio <= 1)
 			{
 				return new PixelAveragingParameters(original, watermark, watermarked, ratio);
 			}

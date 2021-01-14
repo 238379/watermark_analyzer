@@ -19,7 +19,7 @@ namespace AlgorithmTest
 		private Bitmap expectedWatermarkedBitmap;
 
 		private int key;
-		private double alpha;
+		private decimal alpha;
 
 		private DftParameters parameters;
 		private Dft algorithm;
@@ -37,7 +37,7 @@ namespace AlgorithmTest
 			expectedWatermarkedBitmap = new Bitmap(myResourcesPath + "dft_watermarked_test.png");
 
 			key = 10;
-			alpha = 0.01;
+			alpha = 0.01M;
 			parameters = new DftParameters(originalBitmap.TransformToEffectiveBitmap(), watermarkBitmap.TransformToEffectiveBitmap(), null, key, alpha);
 
 			algorithm = new Dft(parameters);

@@ -201,10 +201,10 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			return new RangeParameterView<int>(paramName, allowedRange, controls.Item1, controls.Item2, controls.Item3, controls.Item4, Dispatcher.CurrentDispatcher);
 		}
 
-		protected RangeParameterView<double> AddDoubleRangeParameter(string paramName, int yPosition, (double, double) allowedRange, double defaultInterval)
+		protected RangeParameterView<decimal> AddDecimalRangeParameter(string paramName, int yPosition, (double, double) allowedRange, double defaultInterval)
 		{
 			var controls = AddRangeParameterControls(paramName, yPosition, allowedRange, defaultInterval);
-			return new RangeParameterView<double>(paramName, allowedRange, controls.Item1, controls.Item2, controls.Item3, controls.Item4, Dispatcher.CurrentDispatcher);
+			return new RangeParameterView<decimal>(paramName, allowedRange, controls.Item1, controls.Item2, controls.Item3, controls.Item4, Dispatcher.CurrentDispatcher);
 		}
 
 		private (Label, TextBox, TextBox, TextBox) AddRangeParameterControls(string paramName, int yPosition, (object, object) allowedRange, object defaultInterval)

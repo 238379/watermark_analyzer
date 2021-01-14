@@ -17,7 +17,7 @@ namespace AlgorithmTest
 
 		private Bitmap originalBitmap;
 		private Bitmap watermarkBitmap;
-		private double ratio;
+		private decimal ratio;
 
 		private PixelAveragingParameters parameters;
 		private PixelAveraging algorithm;
@@ -27,7 +27,7 @@ namespace AlgorithmTest
 		{
 			originalBitmap = CreateOriginal();
 			watermarkBitmap = CreateWatermark();
-			ratio = 0.5;
+			ratio = 0.5M;
 			parameters = new PixelAveragingParameters(originalBitmap.TransformToEffectiveBitmap(), watermarkBitmap.TransformToEffectiveBitmap(), null, ratio);
 
 			algorithm = new PixelAveraging(parameters);

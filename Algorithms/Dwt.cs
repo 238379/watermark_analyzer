@@ -11,9 +11,9 @@ namespace Algorithms
 	public class DwtParameters : AlgorithmParameters
 	{
 		public readonly int Layers;
-		public readonly double Alpha;
+		public readonly decimal Alpha;
 
-		public DwtParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int layers, double alpha) : base(original, watermark, watermarked)
+		public DwtParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int layers, decimal alpha) : base(original, watermark, watermarked)
 		{
 			Layers = layers;
 			Alpha = alpha;

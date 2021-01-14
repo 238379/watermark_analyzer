@@ -16,7 +16,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 	{
 		private CheckBox useOriginalImageCheckBox;
 		private RangeParameterView<int> keyRangeParameterControls;
-		private RangeParameterView<double> alphaRangeParameterControls;
+		private RangeParameterView<decimal> alphaRangeParameterControls;
 
 		public AdvancedDftViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
 		{
@@ -28,7 +28,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 			useOriginalImageCheckBox = AddParameterCheckBox(false, 1, 0);
 
 			keyRangeParameterControls = AddIntRangeParameter("Key", 1, (0, int.MaxValue), 1);
-			alphaRangeParameterControls = AddDoubleRangeParameter("Alpha", 2, (0, 1), 0.2);
+			alphaRangeParameterControls = AddDecimalRangeParameter("Alpha", 2, (0, 1), 0.2);
 		}
 
 		protected override Task ProcessAdding(CancellationToken ct)

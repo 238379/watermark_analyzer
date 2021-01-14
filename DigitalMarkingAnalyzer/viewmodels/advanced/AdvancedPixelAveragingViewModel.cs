@@ -15,7 +15,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 	public class AdvancedPixelAveragingViewModel : AlgorithmViewModel
 	{
 		private CheckBox useOriginalImageCheckBox;
-		private RangeParameterView<double> ratioRangeParameterControls;
+		private RangeParameterView<decimal> ratioRangeParameterControls;
 
 		public AdvancedPixelAveragingViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
 		{
@@ -26,7 +26,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 			AddParameterLabel("Use original bitmap", 0, 0);
 			useOriginalImageCheckBox = AddParameterCheckBox(false, 1, 0);
 
-			ratioRangeParameterControls = AddDoubleRangeParameter("Ratio", 1, (0, 1), 0.2);
+			ratioRangeParameterControls = AddDecimalRangeParameter("Ratio", 1, (0, 1), 0.2);
 		}
 
 		protected override Task ProcessAdding(CancellationToken ct)
