@@ -1,6 +1,5 @@
 ﻿using Algorithms.common;
 using System;
-using System.Drawing;
 using System.Numerics;
 
 namespace Algorithms
@@ -79,8 +78,8 @@ namespace Algorithms
             {
                 for (int j = 0; j < Width; j++)
                 {
-                    data[i, j] = this.Data[i, j];
-                    dctData[i, j] = this.DCTData[i, j];
+                    data[i, j] = Data[i, j];
+                    dctData[i, j] = DCTData[i, j];
                 }
             }
 
@@ -111,25 +110,54 @@ namespace Algorithms
             return complexImage;
         }
 
-        public EffectiveBitmap ToEffectiveBitmap()
+        public EffectiveBitmap ToEffectiveBitmapFourier(bool grayScale = false)
         {
-            double scale = FourierTransformed && !CosineTransformed ? Math.Sqrt(Width * Height) : 1;
-            // todo depth
+            double scale = FourierTransformed ? Math.Sqrt(Width * Height) : 1;
             return EffectiveBitmap.Create(Width, Height, 4, (i, j) =>
             {
                 var value = (byte)Math.Max(0, Math.Min(255, Data[j, i].Magnitude * scale * 255));
-                if (FourierTransformed || CosineTransformed)
+                if (FourierTransformed)
                 {
-                    if (CosineTransformed)
-                    {
-                        value = (byte)DCTData[j, i];
-                    }
                     return new PixelInfo(value, value, value);
                 }
                 else
                 {
-                    YCbCr[i, j, 0] = value;
-                    return PixelInfo.FromYCbCr(YCbCr[i, j, 0], YCbCr[i, j, 1], YCbCr[i, j, 2]);
+                    if (!grayScale)
+                    {
+                        YCbCr[i, j, 0] = value;
+                        return PixelInfo.FromYCbCr(YCbCr[i, j, 0], YCbCr[i, j, 1], YCbCr[i, j, 2]);
+                    }
+                    else
+                    {
+                        byte invValue = (byte)(255 - value);
+                        YCbCr[i, j, 0] = invValue;
+                        return new PixelInfo(invValue, invValue, invValue);
+                    }
+                }
+            });
+        }
+        public EffectiveBitmap ToEffectiveBitmapCosine(bool grayScale = false)
+        {
+            return EffectiveBitmap.Create(Width, Height, 4, (i, j) =>
+            {
+                var value = (byte)Math.Max(0, Math.Min(255, DCTData[j, i]));
+                if (CosineTransformed)
+                {
+                    value = (byte)DCTData[j, i];
+                    return new PixelInfo(value, value, value);
+                }
+                else
+                {
+                    if (!grayScale)
+                    {
+                        YCbCr[i, j, 0] = value;
+                        return PixelInfo.FromYCbCr(YCbCr[i, j, 0], YCbCr[i, j, 1], YCbCr[i, j, 2]);
+                    }
+                    else
+                    {
+                        YCbCr[i, j, 0] = value;
+                        return new PixelInfo(value, value, value);
+                    }
                 }
             });
         }
@@ -184,6 +212,47 @@ namespace Algorithms
         {
             CosineTransform.IDCT(DCTData);
             CosineTransformed = false;
+        }
+
+        public void EmbedImageFourier(ComplexImage image, int key, double alpha)
+        {
+
+            int[] v = new int[Width];
+            double[] vAlpha = new double[Width];
+            Random random = new Random(key);
+            for (int i = 0; i < Width; i++)
+            {
+                v[i] = random.Next(0, 2);
+                vAlpha[i] = v[i] * alpha;
+            }
+
+            for (int y = 0; y < Height; y++)
+                for (int x = 0; x < Width; x++)
+                {
+                    double Real = Data[y, x].Real;
+                    double Imaginary = Data[y, x].Imaginary;
+                    double imageReal = image.Data[y, x].Real;
+                    double imageImaginary = image.Data[y, x].Imaginary;
+                    Data[y, x] = new Complex(Real + vAlpha[x] * imageReal, Imaginary + vAlpha[x] * imageImaginary);
+                }
+        }
+        public void EmbedImageCosine(ComplexImage image, int key, double alpha)
+        {
+
+            int[] v = new int[Width];
+            double[] vAlpha = new double[Width];
+            Random random = new Random(key);
+            for (int i = 0; i < Width; i++)
+            {
+                v[i] = random.Next(0, 2);
+                vAlpha[i] = v[i] * alpha;
+            }
+
+            for (int y = 0; y < Height; y++)
+                for (int x = 0; x < Width; x++)
+                {
+                    DCTData[y, x] += vAlpha[x] * image.DCTData[y, x];
+                }
         }
     }
 }
