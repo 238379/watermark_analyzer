@@ -12,12 +12,12 @@ using DigitalMarkingAnalyzer.common;
 
 namespace DigitalMarkingAnalyzer.viewmodels.advanced
 {
-	public class AdvancedLsbViewModel : AlgorithmViewModel
+	public class AdvancedPixelAveragingViewModel : AlgorithmViewModel
 	{
 		private CheckBox useOriginalImageCheckBox;
-		private RangeParameterView<int> bitsRangeParameterControls;
+		private RangeParameterView<double> ratioRangeParameterControls;
 
-		public AdvancedLsbViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
+		public AdvancedPixelAveragingViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
 		{
 		}
 
@@ -26,7 +26,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 			AddParameterLabel("Use original bitmap", 0, 0);
 			useOriginalImageCheckBox = AddParameterCheckBox(false, 1, 0);
 
-			bitsRangeParameterControls = AddIntRangeParameter("Bits for watermark", 1, (1, 7), 1);
+			ratioRangeParameterControls = AddDoubleRangeParameter("Ratio", 1, (0, 1), 0.2);
 		}
 
 		protected override Task ProcessAdding(CancellationToken ct)
@@ -41,7 +41,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 				ct.ThrowIfCancellationRequested();
 
 				var ps = PrepareParameters();
-				var results = ps.Select(p => new Lsb(p).RemoveWatermark(ct));
+				var results = ps.Select(p => new PixelAveraging(p).RemoveWatermark(ct));
 
 				foreach (var result in results)
 				{
@@ -54,19 +54,19 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 				{
 					ct.ThrowIfCancellationRequested();
 					var theBestResult = await GuessResult(results, ps.First().Original, ct);
-					theBestResult.First().Description = new ResultDescription("Best result: " + theBestResult.First().Description);	// hack
+					theBestResult.First().Description = new ResultDescription("Best result: " + theBestResult.First().Description); // hack
 					await ShowAlgorithmOutput(theBestResult.ToIAsyncEnumerable());
 				}
 			});
 		}
 
-		private List<LsbParameters> PrepareParameters()
+		private List<PixelAveragingParameters> PrepareParameters()
 		{
 			var (original, watermark, watermarked) = ReadInputBitmaps();
 
-			var ratioValues = bitsRangeParameterControls.Read().Values();
+			var ratioValues = ratioRangeParameterControls.Read().Values();
 
-			return ratioValues.Select(x => new LsbParameters(original, watermark, watermarked, x)).ToList();
+			return ratioValues.Select(x => new PixelAveragingParameters(original, watermark, watermarked, x)).ToList();
 		}
 
 		private Task<List<AlgorithmResultElement>> GuessResult(IEnumerable<IAsyncEnumerable<AlgorithmResultElement>> results, EffectiveBitmap target, CancellationToken ct)

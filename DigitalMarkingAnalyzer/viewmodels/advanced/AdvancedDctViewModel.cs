@@ -12,12 +12,13 @@ using DigitalMarkingAnalyzer.common;
 
 namespace DigitalMarkingAnalyzer.viewmodels.advanced
 {
-	public class AdvancedLsbViewModel : AlgorithmViewModel
+	public class AdvancedDctViewModel : AlgorithmViewModel
 	{
 		private CheckBox useOriginalImageCheckBox;
-		private RangeParameterView<int> bitsRangeParameterControls;
+		private RangeParameterView<int> keyRangeParameterControls;
+		private RangeParameterView<double> alphaRangeParameterControls;
 
-		public AdvancedLsbViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
+		public AdvancedDctViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
 		{
 		}
 
@@ -26,7 +27,8 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 			AddParameterLabel("Use original bitmap", 0, 0);
 			useOriginalImageCheckBox = AddParameterCheckBox(false, 1, 0);
 
-			bitsRangeParameterControls = AddIntRangeParameter("Bits for watermark", 1, (1, 7), 1);
+			keyRangeParameterControls = AddIntRangeParameter("Key", 1, (0, int.MaxValue), 1);
+			alphaRangeParameterControls = AddDoubleRangeParameter("Alpha", 2, (0, 1), 0.2);
 		}
 
 		protected override Task ProcessAdding(CancellationToken ct)
@@ -41,7 +43,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 				ct.ThrowIfCancellationRequested();
 
 				var ps = PrepareParameters();
-				var results = ps.Select(p => new Lsb(p).RemoveWatermark(ct));
+				var results = ps.Select(p => new Dct(p).RemoveWatermark(ct));
 
 				foreach (var result in results)
 				{
@@ -60,13 +62,15 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 			});
 		}
 
-		private List<LsbParameters> PrepareParameters()
+		private List<DctParameters> PrepareParameters()
 		{
 			var (original, watermark, watermarked) = ReadInputBitmaps();
 
-			var ratioValues = bitsRangeParameterControls.Read().Values();
+			var keyValues = keyRangeParameterControls.Read().Values();
+			var alphaValues = alphaRangeParameterControls.Read().Values();
+			var combinedValues = keyValues.Combine(alphaValues);
 
-			return ratioValues.Select(x => new LsbParameters(original, watermark, watermarked, x)).ToList();
+			return combinedValues.Select(x => new DctParameters(original, watermark, watermarked, x.Item1, x.Item2)).ToList();
 		}
 
 		private Task<List<AlgorithmResultElement>> GuessResult(IEnumerable<IAsyncEnumerable<AlgorithmResultElement>> results, EffectiveBitmap target, CancellationToken ct)

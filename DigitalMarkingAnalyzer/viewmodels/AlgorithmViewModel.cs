@@ -1,5 +1,6 @@
 ﻿using Algorithms;
 using Algorithms.common;
+using DigitalMarkingAnalyzer.common;
 using DigitalMarkingAnalyzer.viewmodels.advanced;
 using DigitalMarkingAnalyzer.viewmodels.basic;
 using System;
@@ -40,13 +41,16 @@ namespace DigitalMarkingAnalyzer.viewmodels
 					Dwt.ALGORITHM_NAME => new DwtViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 					Dft.ALGORITHM_NAME => new DftViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 					Dct.ALGORITHM_NAME => new DctViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
-					RecognizerViewModel.ALGORITHM_NAME => new RecognizerViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 					_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
 				},
 				ViewModelType.Advanced => algorithmName switch
 				{
 					Recognizer.ALGORITHM_NAME => new RecognizerViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 					Lsb.ALGORITHM_NAME => new AdvancedLsbViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+					PixelAveraging.ALGORITHM_NAME => new AdvancedPixelAveragingViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+					Dwt.ALGORITHM_NAME => new AdvancedDwtViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+					Dft.ALGORITHM_NAME => new AdvancedDftViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
+					Dct.ALGORITHM_NAME => new AdvancedDctViewModel(algorithmControls, mainWindow, errorMessageTextBlock),
 					_ => throw new ArgumentException($"Unknown algorithmName '{algorithmName}'."),
 				},
 				_ => throw new ArgumentException($"Unknown view model type '{type}'."),
@@ -171,7 +175,6 @@ namespace DigitalMarkingAnalyzer.viewmodels
 					});
 				}
 
-
 				dispatcher.Invoke(() =>
 				{
 					int row = controls.ResultGrid.Children.Count / RESULT_VIEW_COLUMNS;
@@ -191,6 +194,54 @@ namespace DigitalMarkingAnalyzer.viewmodels
 				});
 			}
 		}
+
+		protected RangeParameterView<int> AddIntRangeParameter(string paramName, int yPosition, (int, int) allowedRange, int defaultInterval)
+		{
+			var controls = AddRangeParameterControls(paramName, yPosition, allowedRange, defaultInterval);
+			return new RangeParameterView<int>(paramName, allowedRange, controls.Item1, controls.Item2, controls.Item3, controls.Item4, Dispatcher.CurrentDispatcher);
+		}
+
+		protected RangeParameterView<double> AddDoubleRangeParameter(string paramName, int yPosition, (double, double) allowedRange, double defaultInterval)
+		{
+			var controls = AddRangeParameterControls(paramName, yPosition, allowedRange, defaultInterval);
+			return new RangeParameterView<double>(paramName, allowedRange, controls.Item1, controls.Item2, controls.Item3, controls.Item4, Dispatcher.CurrentDispatcher);
+		}
+
+		private (Label, TextBox, TextBox, TextBox) AddRangeParameterControls(string paramName, int yPosition, (object, object) allowedRange, object defaultInterval)
+		{
+			var label = new Label
+			{
+				Content = paramName + " range",
+				HorizontalContentAlignment = HorizontalAlignment.Left,
+				VerticalContentAlignment = VerticalAlignment.Center
+			};
+			var min = new TextBox
+			{
+				Text = allowedRange.Item1.ToString().Replace(",", "."),
+				HorizontalContentAlignment = HorizontalAlignment.Right,
+				VerticalContentAlignment = VerticalAlignment.Center
+			};
+			var max = new TextBox
+			{
+				Text = allowedRange.Item2.ToString().Replace(",", "."),
+				HorizontalContentAlignment = HorizontalAlignment.Right,
+				VerticalContentAlignment = VerticalAlignment.Center
+			};
+			var interval = new TextBox
+			{
+				Text = defaultInterval.ToString().Replace(",", "."),
+				HorizontalContentAlignment = HorizontalAlignment.Right,
+				VerticalContentAlignment = VerticalAlignment.Center
+			};
+
+			AddAtPositionInParametersGrid(label, 0, yPosition);
+			AddAtPositionInParametersGrid(min, 1, yPosition);
+			AddAtPositionInParametersGrid(max, 2, yPosition);
+			AddAtPositionInParametersGrid(interval, 3, yPosition);
+
+			return (label, min, max, interval);
+		}
+
 
 		protected Label AddParameterLabel(string labelContent, int x, int y)
 		{

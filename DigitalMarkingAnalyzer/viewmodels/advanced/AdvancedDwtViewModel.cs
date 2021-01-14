@@ -12,12 +12,13 @@ using DigitalMarkingAnalyzer.common;
 
 namespace DigitalMarkingAnalyzer.viewmodels.advanced
 {
-	public class AdvancedLsbViewModel : AlgorithmViewModel
+	public class AdvancedDwtViewModel : AlgorithmViewModel
 	{
 		private CheckBox useOriginalImageCheckBox;
-		private RangeParameterView<int> bitsRangeParameterControls;
+		private RangeParameterView<int> layersRangeParameterControls;
+		private RangeParameterView<double> alphaRangeParameterControls;
 
-		public AdvancedLsbViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
+		public AdvancedDwtViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
 		{
 		}
 
@@ -26,7 +27,8 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 			AddParameterLabel("Use original bitmap", 0, 0);
 			useOriginalImageCheckBox = AddParameterCheckBox(false, 1, 0);
 
-			bitsRangeParameterControls = AddIntRangeParameter("Bits for watermark", 1, (1, 7), 1);
+			layersRangeParameterControls = AddIntRangeParameter("Layers", 1, (0, int.MaxValue), 1);
+			alphaRangeParameterControls = AddDoubleRangeParameter("Alpha", 2, (0, 1), 0.2);
 		}
 
 		protected override Task ProcessAdding(CancellationToken ct)
@@ -41,7 +43,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 				ct.ThrowIfCancellationRequested();
 
 				var ps = PrepareParameters();
-				var results = ps.Select(p => new Lsb(p).RemoveWatermark(ct));
+				var results = ps.Select(p => new Dwt(p).RemoveWatermark(ct));
 
 				foreach (var result in results)
 				{
@@ -54,19 +56,21 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 				{
 					ct.ThrowIfCancellationRequested();
 					var theBestResult = await GuessResult(results, ps.First().Original, ct);
-					theBestResult.First().Description = new ResultDescription("Best result: " + theBestResult.First().Description);	// hack
+					theBestResult.First().Description = new ResultDescription("Best result: " + theBestResult.First().Description); // hack
 					await ShowAlgorithmOutput(theBestResult.ToIAsyncEnumerable());
 				}
 			});
 		}
 
-		private List<LsbParameters> PrepareParameters()
+		private List<DwtParameters> PrepareParameters()
 		{
 			var (original, watermark, watermarked) = ReadInputBitmaps();
 
-			var ratioValues = bitsRangeParameterControls.Read().Values();
+			var keyValues = layersRangeParameterControls.Read().Values();
+			var alphaValues = alphaRangeParameterControls.Read().Values();
+			var combinedValues = keyValues.Combine(alphaValues);
 
-			return ratioValues.Select(x => new LsbParameters(original, watermark, watermarked, x)).ToList();
+			return combinedValues.Select(x => new DwtParameters(original, watermark, watermarked, x.Item1, x.Item2)).ToList();
 		}
 
 		private Task<List<AlgorithmResultElement>> GuessResult(IEnumerable<IAsyncEnumerable<AlgorithmResultElement>> results, EffectiveBitmap target, CancellationToken ct)

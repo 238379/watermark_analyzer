@@ -8,8 +8,6 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 {
 	public class RecognizerViewModel : AlgorithmViewModel
 	{
-		public const string ALGORITHM_NAME = "Unspecified";
-
 		public RecognizerViewModel(AlgorithmControls algorithmControls, MainWindow mainWindow, TextBlock errorMessageTextBlock) : base(algorithmControls, mainWindow, errorMessageTextBlock)
 		{
 		}
