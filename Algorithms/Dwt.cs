@@ -11,17 +11,19 @@ namespace Algorithms
 	public class DwtParameters : AlgorithmParameters
 	{
 		public readonly int Layers;
-		public readonly decimal Alpha;
+		public readonly double Alpha;
+		public readonly decimal AlphaM;
 
 		public DwtParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int layers, decimal alpha) : base(original, watermark, watermarked)
 		{
 			Layers = layers;
-			Alpha = alpha;
+			Alpha = (double)alpha;
+			AlphaM = alpha;
 		}
 
 		public override string ToString()
 		{
-			return "{" + $"Layers={Layers}, Alpha={Alpha}" + "}";
+			return "{" + $"Layers={Layers}, Alpha={AlphaM}" + "}";
 		}
 	}
 

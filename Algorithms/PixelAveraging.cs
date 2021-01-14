@@ -8,16 +8,18 @@ namespace Algorithms
 {
 	public class PixelAveragingParameters : AlgorithmParameters
 	{
-		public readonly decimal Ratio;
+		public readonly double Ratio;
+		public readonly decimal RatioM;
 
 		public PixelAveragingParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, decimal ratio) : base(original, watermark, watermarked)
 		{
-			Ratio = ratio;
+			Ratio = (double)ratio;
+			RatioM = ratio;
 		}
 
 		public override string ToString()
 		{
-			return "{" + $"Ratio={Ratio}" + "}";
+			return "{" + $"Ratio={RatioM}" + "}";
 		}
 	}
 

@@ -9,17 +9,19 @@ namespace Algorithms
 	public class DftParameters : AlgorithmParameters
 	{
 		public readonly int Key;
-		public readonly decimal Alpha;
+		public readonly double Alpha;
+		public readonly decimal AlphaM;
 
 		public DftParameters(EffectiveBitmap original, EffectiveBitmap watermark, EffectiveBitmap watermarked, int key, decimal alpha) : base(original, watermark, watermarked)
 		{
 			Key = key;
-			Alpha = alpha;
+			Alpha = (double)alpha;
+			AlphaM = alpha;
 		}
 
 		public override string ToString()
 		{
-			return "{"+ $"Key={Key}, Alpha={Alpha}" + "}";
+			return "{"+ $"Key={Key}, Alpha={AlphaM}" + "}";
 		}
 	}
 
@@ -52,7 +54,7 @@ namespace Algorithms
 			for (int i = 0; i < complexWatermarked.Width; i++)
 			{
 				v[i] = random.Next(0, 2);
-				vAlpha[i] = v[i] * (double)parameters.Alpha;
+				vAlpha[i] = v[i] * parameters.Alpha;
 			}
 
 			for (int y = 0; y < complexWatermarked.Height; y++)
@@ -78,7 +80,7 @@ namespace Algorithms
 			for (int i = 0; i < complexWatermarked.Width; i++)
 			{
 				v[i] = random.Next(0, 2);
-				vAlpha[i] = v[i] * (double)parameters.Alpha;
+				vAlpha[i] = v[i] * parameters.Alpha;
 			}
 
 			for (int y = 0; y < complexWatermarked.Height; y++)
@@ -101,7 +103,7 @@ namespace Algorithms
 			for (int i = 0; i < complexImage.Width; i++)
             {
 				v[i] = random.Next(0, 2);
-				vAlpha[i] = v[i] * (double)parameters.Alpha;
+				vAlpha[i] = v[i] * parameters.Alpha;
 			}
 				
 			for (int y = 0; y < complexImage.Height; y++)
