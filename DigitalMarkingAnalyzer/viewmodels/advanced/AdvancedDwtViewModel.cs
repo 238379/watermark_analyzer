@@ -24,7 +24,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 
 		public override void SetUp()
 		{
-			AddParameterLabel("Use original bitmap", 0, 0);
+			AddParameterLabel("Find best", 0, 0);
 			useOriginalImageCheckBox = AddParameterCheckBox(false, 1, 0);
 
 			layersRangeParameterControls = AddIntRangeParameter("Layers", 1, (0, int.MaxValue), 1);
