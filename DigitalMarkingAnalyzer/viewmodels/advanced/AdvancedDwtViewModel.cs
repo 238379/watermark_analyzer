@@ -27,8 +27,8 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 			AddParameterLabel("Find best", 0, 0);
 			useOriginalImageCheckBox = AddParameterCheckBox(false, 1, 0);
 
-			layersRangeParameterControls = AddIntRangeParameter("Layers", 1, (0, int.MaxValue), 1);
-			alphaRangeParameterControls = AddDecimalRangeParameter("Alpha", 2, (0, 1), 0.2);
+			layersRangeParameterControls = AddIntRangeParameter("Layers", 1, (1, 2), 1);
+			alphaRangeParameterControls = AddDecimalRangeParameter("Alpha", 2, (0, 0.2), 0.01);
 		}
 
 		protected override Task ProcessAdding(CancellationToken ct)

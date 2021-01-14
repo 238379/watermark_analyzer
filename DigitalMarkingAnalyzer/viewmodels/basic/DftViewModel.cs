@@ -40,7 +40,13 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 
 		protected override Task ProcessRemoving(CancellationToken ct)
 		{
-			throw new NotImplementedException();
+			return Task.Run(async () =>
+			{
+				var p = ReadParameters();
+				var algorithm = new Dft(p);
+				var result = algorithm.RemoveWatermark(ct);
+				await ShowAlgorithmOutput(result);
+			});
 		}
 
 		private DftParameters ReadParameters()
@@ -59,7 +65,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 			}
 			else
 			{
-				throw new ArgumentException($"Invalid number of layers value. It should be greater or equal 0 but it is: {text}");
+				throw new ArgumentException($"Invalid key value. It should be greater or equal 0 but it is: {text}");
 			}
 		}
 	}

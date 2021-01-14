@@ -156,8 +156,7 @@ namespace Algorithms
 
         private static bool IsPowerOf2(int x)
         {
-            double sqrt = Math.Sqrt(x);
-            return sqrt == (int)sqrt;
+            return (x > 0) ? ((x & (x - 1)) == 0) : false;
         }
 
         private static void ReorderData(Complex[] data)
