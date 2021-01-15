@@ -10,19 +10,17 @@ namespace DigitalMarkingAnalyzer.common
 	{
 		private readonly string paramName;
 		private readonly (dynamic, dynamic) allowedRange;
-		private readonly Label label;
 		private readonly TextBox min;
 		private readonly TextBox max;
 		private readonly TextBox interval;
 		private readonly Dispatcher dispatcher;
 
-		public RangeParameterView(string paramName, (dynamic, dynamic) allowedRange, Label label, TextBox min, TextBox max, TextBox interval, Dispatcher dispatcher)
+		public RangeParameterView(string paramName, (dynamic, dynamic) allowedRange, TextBox min, TextBox max, TextBox interval, Dispatcher dispatcher)
 		{
 			if (allowedRange.Item1 >= allowedRange.Item2)
 				throw new ArgumentOutOfRangeException();
 			this.paramName = paramName;
 			this.allowedRange = allowedRange;
-			this.label = label;
 			this.min = min;
 			this.max = max;
 			this.interval = interval;

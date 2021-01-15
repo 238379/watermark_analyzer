@@ -198,16 +198,16 @@ namespace DigitalMarkingAnalyzer.viewmodels
 		protected RangeParameterView<int> AddIntRangeParameter(string paramName, int yPosition, (int, int) allowedRange, int defaultInterval)
 		{
 			var controls = AddRangeParameterControls(paramName, yPosition, allowedRange, defaultInterval);
-			return new RangeParameterView<int>(paramName, allowedRange, controls.Item1, controls.Item2, controls.Item3, controls.Item4, Dispatcher.CurrentDispatcher);
+			return new RangeParameterView<int>(paramName, allowedRange, controls.Item1, controls.Item2, controls.Item3, Dispatcher.CurrentDispatcher);
 		}
 
 		protected RangeParameterView<decimal> AddDecimalRangeParameter(string paramName, int yPosition, (double, double) allowedRange, double defaultInterval)
 		{
 			var controls = AddRangeParameterControls(paramName, yPosition, allowedRange, defaultInterval);
-			return new RangeParameterView<decimal>(paramName, allowedRange, controls.Item1, controls.Item2, controls.Item3, controls.Item4, Dispatcher.CurrentDispatcher);
+			return new RangeParameterView<decimal>(paramName, allowedRange, controls.Item1, controls.Item2, controls.Item3, Dispatcher.CurrentDispatcher);
 		}
 
-		private (Label, TextBox, TextBox, TextBox) AddRangeParameterControls(string paramName, int yPosition, (object, object) allowedRange, object defaultInterval)
+		private (TextBox, TextBox, TextBox) AddRangeParameterControls(string paramName, int yPosition, (object, object) allowedRange, object defaultInterval)
 		{
 			var label = new Label
 			{
@@ -227,6 +227,12 @@ namespace DigitalMarkingAnalyzer.viewmodels
 				HorizontalContentAlignment = HorizontalAlignment.Right,
 				VerticalContentAlignment = VerticalAlignment.Center
 			};
+			var stepLabel = new Label
+			{
+				Content = "step",
+				HorizontalContentAlignment = HorizontalAlignment.Center,
+				VerticalContentAlignment = VerticalAlignment.Center
+			};
 			var interval = new TextBox
 			{
 				Text = defaultInterval.ToString().Replace(",", "."),
@@ -237,9 +243,10 @@ namespace DigitalMarkingAnalyzer.viewmodels
 			AddAtPositionInParametersGrid(label, 0, yPosition);
 			AddAtPositionInParametersGrid(min, 1, yPosition);
 			AddAtPositionInParametersGrid(max, 2, yPosition);
-			AddAtPositionInParametersGrid(interval, 3, yPosition);
+			AddAtPositionInParametersGrid(stepLabel, 3, yPosition);
+			AddAtPositionInParametersGrid(interval, 4, yPosition);
 
-			return (label, min, max, interval);
+			return (min, max, interval);
 		}
 
 
