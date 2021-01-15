@@ -14,7 +14,6 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 {
 	public class AdvancedDctViewModel : AlgorithmViewModel
 	{
-		private CheckBox useOriginalImageCheckBox;
 		private RangeParameterView<int> keyRangeParameterControls;
 		private RangeParameterView<decimal> alphaRangeParameterControls;
 
@@ -24,9 +23,6 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 
 		public override void SetUp()
 		{
-			AddParameterLabel("Find best", 0, 0);
-			useOriginalImageCheckBox = AddParameterCheckBox(false, 1, 0);
-
 			keyRangeParameterControls = AddIntRangeParameter("Key", 1, (0, int.MaxValue), 1);
 			alphaRangeParameterControls = AddDecimalRangeParameter("Alpha", 2, (0, 1), 0.2);
 		}
@@ -49,15 +45,6 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 				{
 					ct.ThrowIfCancellationRequested();
 					await ShowAlgorithmOutput(result);
-				}
-				bool? isChecked = null;
-				dispatcher.Invoke(() => isChecked = useOriginalImageCheckBox.IsChecked);
-				if (isChecked.Value)
-				{
-					ct.ThrowIfCancellationRequested();
-					var theBestResult = await GuessResult(results, ps.First().Original, ct);
-					theBestResult.First().Description = new ResultDescription("Best result: " + theBestResult.First().Description);	// hack
-					await ShowAlgorithmOutput(theBestResult.ToIAsyncEnumerable());
 				}
 			});
 		}
