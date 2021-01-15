@@ -23,7 +23,7 @@ namespace DigitalMarkingAnalyzer.viewmodels.advanced
 
 		public override void SetUp()
 		{
-			keyRangeParameterControls = AddIntRangeParameter("Key", 1, (0, int.MaxValue), 1);
+			keyRangeParameterControls = AddIntRangeParameter("Key", 1, (0, 5), 1);
 			alphaRangeParameterControls = AddDecimalRangeParameter("Alpha", 2, (0, 1), 0.2);
 		}
 

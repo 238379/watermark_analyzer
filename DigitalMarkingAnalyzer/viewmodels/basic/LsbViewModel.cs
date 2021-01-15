@@ -51,13 +51,13 @@ namespace DigitalMarkingAnalyzer.viewmodels.basic
 			string text = null;
 			dispatcher.Invoke(() => text = bitsTextBox.Text);
 
-			if (int.TryParse(text, out var bitsForWatermark) && bitsForWatermark >= 1 && bitsForWatermark <= 8)
+			if (int.TryParse(text, out var bitsForWatermark) && bitsForWatermark >= 1 && bitsForWatermark <= 7)
 			{
 				return new LsbParameters(original, watermark, watermarked, bitsForWatermark);
 			}
 			else
 			{
-				throw new ArgumentException($"Invalid bits for watermark value. It should be between [1; 8] but it is: {text}");
+				throw new ArgumentException($"Invalid bits for watermark value. It should be between [1; 7] but it is: {text}");
 			}
 		}
 	}
